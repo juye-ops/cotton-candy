@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  docker:
+    image: docker:latest
+    privileged: true
+    environment:
+      DOCKER_TLS_CERTDIR: ""
+    ports:
+      - 2375:2375
+    networks:
+      - cotton-net
+
+  backend:
+    build: ./backend
+    working_dir: /root/
+    ports:
+      - 5000:5000
+    volumes:
+      - ./backend/:/root/
+    depends_on:
+      - docker
+    command: python app.py
+    networks:
+      - cotton-net
+
+  react:
+    image: node:18
+    working_dir: /root/
+    port:
+      - 3000:3000
+    volume:
+      - ./frontend/:/root/
+    command: npm start
+    networks:
+      - cotton-net
+
+
+networks:
+  cotton-net:
+    external: false
