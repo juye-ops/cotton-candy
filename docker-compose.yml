@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  docker:
+    image: docker:latest
+    privileged: true
+    environment:
+      DOCKER_TLS_CERTDIR: ""
+    ports:
+      - 2375:2375
+    networks:
+      cotton-net:
+        ipv4_address: 172.24.0.2
+
+  backend:
+    build: ./backend
+    ports:
+      - 5000:5000
+    volumes:
+      - ./backend/:/root/
+    command: python app.py
+    networks:
+      cotton-net:
+        ipv4_address: 172.24.0.3
+
+  react:
+    build: ./frontend
+    ports:
+      - 3000:3000
+    networks:
+      cotton-net:
+        ipv4_address: 172.24.0.4
+    stdin_open: true
+    tty: true
+
+networks:
+  cotton-net:
+    external: false
+    ipam:
+      config:
+        - subnet: 172.24.0.0/16
