@@ -13,27 +13,22 @@ services:
 
   backend:
     build: ./backend
-    working_dir: /root/
     ports:
       - 5000:5000
     volumes:
       - ./backend/:/root/
-    depends_on:
-      - docker
     command: python app.py
     networks:
       - cotton-net
 
   react:
-    image: node:18
-    working_dir: /root/
-    port:
+    build: ./frontend
+    ports:
       - 3000:3000
-    volume:
-      - ./frontend/:/root/
-    command: npm start
     networks:
       - cotton-net
+    stdin_open: true
+    tty: true
 
 
 networks:
