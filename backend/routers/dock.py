@@ -6,7 +6,6 @@ import os
 
 import docker
 
-
 router = APIRouter(
     prefix="/docker",
 )
@@ -60,9 +59,10 @@ def build(config: Container):
 
     os.makedirs(f"projects/{project_name}", exist_ok=True)
 
-    f = open(f"projects/{project_name}/Dockerfile", "w")
 
     # Create Dockerfile
+    f = open(f"projects/{project_name}/Dockerfile", "w")
+
     f.write(f"FROM {project_os['name']}:{project_os['version']}\n")
     f.write("\n")
     f.write("RUN apt update\n")
@@ -75,9 +75,9 @@ def build(config: Container):
         for cmd in app_installer[app_name](app_version):
             f.write(f"{cmd}\n")
     f.write("\n")
-    f.write("CMD [\"code-server\", \"--bind-addr=0.0.0.0\", \"--port=8080\"]")
-    ###################
+    f.write("CMD [\"code-server\", \"--bind-addr=0.0.0.0\", \"--port=8080\", \"--auth=none\"]")
     f.close()
+
 
     # build dockerfile
     client.images.build(path=f"projects/{project_name}", dockerfile=f"Dockerfile", tag=project_name)
