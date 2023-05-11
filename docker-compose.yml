@@ -21,6 +21,8 @@ services:
       - 5000:5000
     volumes:
       - ./backend/:/root/backend
+    depends_on:
+      - database
     networks:
       cotton-net:
         ipv4_address: 172.24.0.3
