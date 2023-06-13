@@ -27,30 +27,33 @@ services:
       cotton-net:
         ipv4_address: 172.24.0.3
 
-  docker:
-    image: docker:latest
-    container_name: cotton-docker
+  containers:
+    # image: docker:latest
+    build: ./proxy
+    container_name: cotton-containers
     privileged: true
+    # volumes:
+    #   - /var/run/docker.sock:/var/run/docker.sock
     environment:
       DOCKER_TLS_CERTDIR: ""
     ports:
+      - 80:80
       - 2375:2375
       - 8080:8080
     networks:
       cotton-net:
         ipv4_address: 172.24.0.4
+    command: python3 app.py & dockerd -H tcp://0.0.0.0:2375
 
   database:
-    image: mongo
+    image: mongo:6.0
     container_name: cotton-db
     restart: always
     environment:
       - MONGO_DATA_DIR=/data/db
       - MONGO_LOG_DIR=/dev/null
-    volumes:
-      - "mongodb_data:/data/db"
     ports:
-      - "27017:27017"
+      - 27017:27017
     networks:
       cotton-net:
         ipv4_address: 172.24.0.5
