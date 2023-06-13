@@ -5,7 +5,7 @@ from fastapi import APIRouter
 from pydantic import BaseModel
 from typing import List, Dict, Any
 
-from utils import dockerfile
+from utils import iac
 
 router = APIRouter(
     prefix="/docker",
@@ -38,7 +38,7 @@ class Container(BaseModel):
 def access():
     global docker_cli
     docker_cli = docker.DockerClient(base_url="tcp://docker:2375")
-    
+
     return 200
 
 @router.post("/build")
@@ -60,7 +60,7 @@ def build(config: Container):
 
 
     # create dockerfile
-    dockerfile.create(project_name, project_os, project_pfs)
+    iac.create(project_name, project_os, project_pfs)
 
     # build dockerfile
     docker_cli.images.build(path=f"projects/{project_name}", dockerfile=f"Dockerfile", tag=project_name)
