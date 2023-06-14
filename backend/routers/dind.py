@@ -37,7 +37,7 @@ class Container(BaseModel):
 @router.get("/access")
 def access():
     global docker_cli
-    docker_cli = docker.DockerClient(base_url="tcp://docker:2375")
+    docker_cli = docker.DockerClient(base_url="tcp://containers:2375")
 
     return 200
 
