@@ -56,4 +56,4 @@ def update_nginx_config():
 
 # 서버 시작
 if __name__ == '__main__':
-    uvicorn.run(app, host='0.0.0.0', port=8080)
+    uvicorn.run(app, host='0.0.0.0', port=28001)
