@@ -1,15 +1,26 @@
 import os
+import requests
+import json
 
-import docker
 from fastapi import APIRouter
 from pydantic import BaseModel
 from typing import List, Dict, Any
 
-from utils import iac
+from utils.container import IaC, Docker
+from utils import database
 
 router = APIRouter(
     prefix="/docker",
 )
+
+global docker_cli
+
+while True:
+    try:
+        docker_cli = Docker.preprocess()
+        break
+    except:
+        pass
 
 class Container(BaseModel):
     class Build(BaseModel):
@@ -34,17 +45,9 @@ class Container(BaseModel):
     build: Build
     settings: Settings
 
-@router.get("/access")
-def access():
-    global docker_cli
-    docker_cli = docker.DockerClient(base_url="tcp://containers:2375")
-
-    return 200
-
 @router.post("/build")
 def build(config: Container):
     global docker_cli
-
     config = config.dict()
 
     project_name = config['project']
@@ -60,7 +63,7 @@ def build(config: Container):
 
 
     # create dockerfile
-    iac.create(project_name, project_os, project_pfs)
+    IaC.create(project_name, project_os, project_pfs)
 
     # build dockerfile
     docker_cli.images.build(path=f"projects/{project_name}", dockerfile=f"Dockerfile", tag=project_name)
@@ -70,6 +73,21 @@ def build(config: Container):
     for p in project_ports:
         ports[p] = p
 
-    docker_cli.containers.run(image=project_name, ports=ports, environment=project_environments, detach=True)
+    docker_cli.containers.run(
+        image=project_name, 
+        name=project_name, 
+        network="cotton-net",
+        ports=ports, 
+        environment=project_environments, 
+        detach=True)
+    next_ip = f"172.24.1.{len(database.read('Containers', 'infos'))+1}"
+    database.push("Containers", "infos", {"name": project_name, "ip": "next_ip"})
+
+    container_info = {
+        "name": "webserver",
+        "url": f"http://{next_ip}/"
+    }
+
+    requests.post("http://containers:28001/api/proxies", json=container_info)
 
     return 200

@@ -32,6 +32,10 @@ def preprocess():
     db.os.insert_many(os)
 
 
+def push(db: str, collection: str, key: dict = {}) -> dict:    
+    return db_cli[db][collection].insert_one(key)
+
+
 def read(db: str, collection: str, key: dict = {}) -> dict:
     '''
     Read collection's data with any key
