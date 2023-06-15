@@ -1,37 +1,62 @@
 version: '3.8'
 
 services:
-  docker:
-    image: docker:latest
-    privileged: true
-    environment:
-      DOCKER_TLS_CERTDIR: ""
-    ports:
-      - 2375:2375
-    networks:
-      cotton-net:
-        ipv4_address: 172.24.0.2
-
-  backend:
-    build: ./backend
-    ports:
-      - 5000:5000
-    volumes:
-      - ./backend/:/root/
-    command: python app.py
-    networks:
-      cotton-net:
-        ipv4_address: 172.24.0.3
-
-  react:
+  frontend:
     build: ./frontend
+    container_name: cotton-frontend
     ports:
       - 3000:3000
     networks:
       cotton-net:
-        ipv4_address: 172.24.0.4
+        ipv4_address: 172.24.0.2
+    volumes:
+      - ./frontend/:/root/frontend
     stdin_open: true
     tty: true
+
+  backend:
+    build: ./backend
+    container_name: cotton-backend
+    ports:
+      - 5000:5000
+    volumes:
+      - ./backend/:/root/backend
+    depends_on:
+      - database
+    networks:
+      cotton-net:
+        ipv4_address: 172.24.0.3
+
+  containers:
+    # image: docker:latest
+    build: ./proxy
+    container_name: cotton-containers
+    privileged: true
+    # volumes:
+    #   - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      DOCKER_TLS_CERTDIR: ""
+    ports:
+      - 80:80
+      - 2375:2375
+      - 8080:8080
+    networks:
+      cotton-net:
+        ipv4_address: 172.24.0.4
+    command: python3 app.py & dockerd -H tcp://0.0.0.0:2375
+
+  database:
+    image: mongo:6.0
+    container_name: cotton-db
+    restart: always
+    environment:
+      - MONGO_DATA_DIR=/data/db
+      - MONGO_LOG_DIR=/dev/null
+    ports:
+      - 27017:27017
+    networks:
+      cotton-net:
+        ipv4_address: 172.24.0.5
 
 networks:
   cotton-net:
@@ -39,3 +64,7 @@ networks:
     ipam:
       config:
         - subnet: 172.24.0.0/16
+
+volumes:
+  mongodb_data:
+    external: false
