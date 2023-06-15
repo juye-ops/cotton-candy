@@ -26,6 +26,7 @@ services:
     networks:
       cotton-net:
         ipv4_address: 172.24.0.3
+    command: python app.py
 
   containers:
     build: ./containers
@@ -40,7 +41,7 @@ services:
     networks:
       cotton-net:
         ipv4_address: 172.24.0.4
-    command: sh -c "python3 app.py & dockerd -H tcp://0.0.0.0:2375"
+    command: sh -c "nginx & python3 app.py & dockerd -H tcp://0.0.0.0:2375"
 
   database:
     image: mongo:6.0
