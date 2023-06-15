@@ -28,22 +28,19 @@ services:
         ipv4_address: 172.24.0.3
 
   containers:
-    # image: docker:latest
-    build: ./proxy
+    build: ./containers
     container_name: cotton-containers
     privileged: true
-    # volumes:
-    #   - /var/run/docker.sock:/var/run/docker.sock
     environment:
       DOCKER_TLS_CERTDIR: ""
     ports:
       - 80:80
       - 2375:2375
-      - 8080:8080
+      - 28001:28001
     networks:
       cotton-net:
         ipv4_address: 172.24.0.4
-    command: python3 app.py & dockerd -H tcp://0.0.0.0:2375
+    command: sh -c "python3 app.py & dockerd -H tcp://0.0.0.0:2375"
 
   database:
     image: mongo:6.0
