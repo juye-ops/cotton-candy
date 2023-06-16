@@ -9,7 +9,14 @@ pf_installer ={
 
 class Docker:
     def preprocess():
-        docker_cli = docker.DockerClient(base_url="tcp://containers:2375")
+        while True:
+            try:
+                docker_cli = docker.DockerClient(base_url="tcp://containers:2375")
+                break
+
+            except:
+                pass
+
         ipam_pool = docker.types.IPAMPool(
             subnet='172.24.1.0/24',
             gateway='172.24.1.254'

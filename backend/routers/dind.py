@@ -13,14 +13,7 @@ router = APIRouter(
     prefix="/docker",
 )
 
-global docker_cli
-
-while True:
-    try:
-        docker_cli = Docker.preprocess()
-        break
-    except:
-        pass
+docker_cli = Docker.preprocess()
 
 class Container(BaseModel):
     class Build(BaseModel):
@@ -80,6 +73,7 @@ def build(config: Container):
         ports=ports, 
         environment=project_environments, 
         detach=True)
+
     next_ip = f"172.24.1.{len(database.read('Containers', 'infos'))+1}"
     database.push("Containers", "infos", {"name": project_name, "ip": "next_ip"})
 
