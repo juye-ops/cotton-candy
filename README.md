@@ -15,7 +15,7 @@ Cloud fits you
 ## Container
 - Docker
 
-# Requirements [Recommand]
+# Requirements [Recommend]
 - Docker [23.04]
 - kubernetes [1.27]
   - cri-dockerd [0.3.1]
