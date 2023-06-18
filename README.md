@@ -5,7 +5,7 @@ Cotton candy is a web-based private cloud service designed for easy and universa
 If host PC running cotton candy exposes only the web port, you can create development environments with its own docker virtual IP and access the IDE through a proxy.  
 Cotton candy supports network between containers, so you can develop an app for each service.
 
-The host PC can be run as CSP for you.
+The host PC can be run as CSP for you.  
 Develop an app(or apps) remotely.
 
 # Architecture
