@@ -1,145 +1,154 @@
-import React from 'react'
-import styled from 'styled-components'
+import { useEffect, useRef, useState } from 'react';
 
-import IROnly from 'styles/IROnly'
-
-const ManagePageHeader = styled.header`
-    display: flex;
-    justify-content: center;
-`
-
-const ContainerSection = styled.main`
-    max-width: 1140px;
-    margin: 0 auto;
-`
-
-const ContainerSectionHeader = styled.header`
-    display: flex;
-    justify-content: space-between;
-`
-
-const UtilityArticle = styled.article`
-    display: flex;
-    justify-content: space-between;
-`
-
-const UtilityArticleHeader = styled.header`
-    ${IROnly}
-`
-
-const UtilityArticleSearchLabel = styled.label`
-    ${IROnly}
-`
-
-const UtilityArticleFilterList = styled.ul`
-    display: flex;
-`
-
-const ContainerList = styled.ul`
-    display: flex;
-    flex-direction: column;
-`
-
-const ContainerListItem = styled.li`
-    display: flex;
-    justify-content: space-between;
-
-    background-color: #ccc;
-
-    &:hover > div {
-        display: block;
-    }
-`
-
-const ContainerMenu = styled.div`
-    display: flex;
-    justify-content: space-between;
-`
-
-const ContainerHoverMenu = styled.div`
-    display: none;
-`
+import * as S from './style';
+import PreventDefault from 'utils/PreventDefault';
+import StopPropagation from 'utils/StopPropagation';
+import { getContainerList } from 'apis/ManagePageAPIs';
 
 export default function ManagePage() {
-    const generate = () => {
+    // 모달
+    const [clicked, setClicked] = useState(false);
+    
+    const onClickButton = (e) => {
+        PreventDefault(e);
+        StopPropagation(e);
+        
+        setClicked(!clicked);
+    }
 
-        // 데이터 읽어서 json 만들기
+    window.addEventListener("click", () => {
+        setClicked(false);
+    });
 
-        // 애니메이션 띄우기
+    // 컨테이너 리스트
+    const [containerList, setContainerList] = useState([]);
+    const [showList, setShowList] = useState([]);
 
-        // axios, fetch
+    useEffect(() => {
+        // 컨테이너 리스트 받아오기
+        setContainerList(getContainerList());
+    }, []);
 
-        // 애니메이션 지우기
+    useEffect(() => {
+        if (containerList.length === 0) {
+            return;
+        }
 
+        setShowList(containerList);
+    }, [containerList]);
+
+    // 검색 관련
+    const [searchInput, setSearchInput] = useState("");
+    const searchInputRef = useRef();
+
+    const onChangeSearchInput = (e) => {
+        setSearchInput(e.target.value);
+    }
+
+    useEffect(() => {
+        setShowList([...containerList].filter(container => container.name.indexOf(searchInput) !== -1));
+    }, [searchInput, containerList]);
+
+    // const generate = () => {
+
+    //     // 데이터 읽어서 json 만들기
+
+    //     // 애니메이션 띄우기
+
+    //     // axios, fetch
+
+    //     // 애니메이션 지우기
+
+    // }
+
+    // 정렬 관련
+    const onClickSortByDate = () => {
+        
     }
 
     return (
-        <>
-            <ManagePageHeader>
+        <S.Wrapper>
+            <S.Header>
                 <h1>COTTON CANDY</h1>
-            </ManagePageHeader>
+            </S.Header>
             <main>
-                <ContainerSection>
-                    <ContainerSectionHeader>
+                <S.Section>
+                    <S.SectionHeader>
                         <h2>All Containers</h2>
-                        <a href='/setting'>New Container</a>
-                    </ContainerSectionHeader>
-                    <UtilityArticle>
-                        <UtilityArticleHeader>
+                        <S.GenerateLink to='/setting'>+ New Container</S.GenerateLink>
+                    </S.SectionHeader>
+                    <S.Article>
+                        <header>
                             <h3>Utility Article</h3>
-                        </UtilityArticleHeader>
-                        <form action="">
-                            <UtilityArticleSearchLabel htmlFor="searchInput">Search Container</UtilityArticleSearchLabel>
-                            <input type="text" id="searchInput" />
-                        </form>
-                        <UtilityArticleFilterList>
+                        </header>
+                        <S.Form action="">
+                            <i className="fas fa-search"></i>
+                            <label htmlFor="searchInput">Search Container</label>
+                            <input type="text" id="searchInput" placeholder='컨테이너 이름'
+                            ref={((element) => searchInputRef.current = element)}
+                            onChange={onChangeSearchInput}
+                            value={searchInput} />
+                        </S.Form>
+                        <S.ArticleList>
                             <li>
-                                <button>
-                                    필터 추가
-                                </button>
+                                <S.ArticleButton>
+                                    <i className="fas fa-sort"></i>
+                                    <span>최근 수정 순</span>
+                                </S.ArticleButton>
                             </li>
-                            <li>
-                                <button>
-                                    최근 수정 순
-                                </button>
-                            </li>
-                            <li>
-                                <button>
-                                    보기
-                                </button>
-                            </li>
-                            <li>
-                                <button>
-                                    리스트
-                                </button>
-                            </li>
-                        </UtilityArticleFilterList>
-                    </UtilityArticle>
-                    <div>
-                        <ContainerMenu>
-                            <span>Title</span>
-                            <span>Stack</span>
-                        </ContainerMenu>
-                        <ContainerList>
-                            <ContainerListItem>
-                                <span>제목</span>
-                                <ContainerHoverMenu>
-                                    <button>실행</button>
-                                </ContainerHoverMenu>
-                                <span>기술 스택</span>
-                            </ContainerListItem>
-                            <ContainerListItem>
-                                <span>제목</span>
-                                <ContainerHoverMenu>
-                                    <button>실행</button>
-                                </ContainerHoverMenu>
-                                <span>기술 스택</span>
-                            </ContainerListItem>
-                        </ContainerList>
-                    </div>
-                </ContainerSection>
+                        </S.ArticleList>
+                    </S.Article>
+                    <S.ContainerList>
+                        {
+                            showList.map(() => {
+                                return (
+                                    <>
+                                    </>
+                                );
+                            })
+                        }
+                        <li>
+                            <S.Container>
+                                <S.ContainerHeader>
+                                    <S.ConatinerState>
+                                    </S.ConatinerState>
+                                    <h3>Sample Container</h3>
+                                    <S.MoreButtonWrapper>
+                                        <S.MoreButton onClick={onClickButton}>
+                                            <i className="fas fa-ellipsis-h"></i>
+                                            <span>more</span>
+                                        </S.MoreButton>
+                                        <S.MoreList clicked={clicked}>
+                                            <li>
+                                                <S.MoreListButton>
+                                                    <i className="fas fa-cog"></i>
+                                                    <span>컨테이너 설정</span>
+                                                </S.MoreListButton>
+                                            </li>
+                                            <li>
+                                                <S.MoreListButton>
+                                                    <i className="fas fa-trash-alt"></i>
+                                                    <span>컨테이너 삭제하기</span>
+                                                </S.MoreListButton>
+                                            </li>
+                                        </S.MoreList>
+                                    </S.MoreButtonWrapper>  
+                                </S.ContainerHeader>
+                                <S.SoftwareWrapper>
+                                    <p>Ubuntu</p>
+                                    <p>Python</p>
+                                </S.SoftwareWrapper>
+                                <p>test desc</p>
+                                <S.ExecuteButton>
+                                    <i className="fa-solid fa-play"></i>
+                                    <span>실행</span>
+                                </S.ExecuteButton>
+                            </S.Container>
+                        </li>
+                    </S.ContainerList>
+                </S.Section>
             </main>
             <footer></footer>
-        </>
+        </S.Wrapper>
     )
 }
