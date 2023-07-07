@@ -18,7 +18,7 @@ def access(app):
     return PlatformDB.read({"name": app})
 
 
-class Container(BaseModel):
+class ContainerInfo(BaseModel):
     class Build(BaseModel):
         class OperSys(BaseModel):
             name: str
@@ -42,34 +42,34 @@ class Container(BaseModel):
     settings: Settings
 
 @router.post("/build")
-def build(config: Container):
+def build(config: ContainerInfo):
     config = config.dict()
 
-    project_name = config['project']
+    container_name = config['project']
 
     build_config = config['build']
     settings_config = config['settings']
 
-    project_os = build_config['os']
-    project_platforms = build_config['platforms']
+    container_os = build_config['os']
+    container_platforms = build_config['platforms']
 
-    project_ports = settings_config['ports']
-    project_environments = settings_config['environments']
+    container_ports = settings_config['ports']
+    container_envs = settings_config['environments']
 
+    container_ports = {p: p for p in container_ports}
 
     # create dockerfile
-    iac.create(project_name, project_os, project_platforms)
-    dind.build(project_name)
-    dind.run(project_name, project_ports, project_environments)
+    iac.create(container_name, container_os, container_platforms)
+    dind.build(container_name)
+    dind.run(container_name, container_ports, container_envs)
 
-    next_ip = f"172.24.1.{len(ContainerDB.read('Containers', 'infos'))+1}"
-    ContainerDB.push({"name": project_name, "ip": "next_ip"})
-
+    next_ip = f"172.24.1.{len(ContainerDB.read())+1}"
     container_info = {
-        "name": "webserver",
-        "url": f"http://{next_ip}/"
+        "name": container_name,
+        "ip": next_ip
     }
 
-    requests.post("http://containers:28001/api/proxies", json=container_info)
+    ContainerDB.push(container_info.copy())
+    requests.post("http://container:28001/api/proxies", json=container_info)
 
     return 200
