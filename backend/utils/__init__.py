@@ -3,7 +3,7 @@ import docker
 def connect_docker():
     while True:
         try:
-            docker_cli = docker.DockerClient(base_url="tcp://container:2375")
+            docker_cli = docker.DockerClient(base_url="tcp://container:2375", timeout=None)
             break
         except:
             pass
