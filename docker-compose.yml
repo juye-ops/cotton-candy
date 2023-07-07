@@ -6,11 +6,11 @@ services:
     container_name: cotton-frontend
     ports:
       - 3000:3000
+    volumes:
+      - ./frontend/:/root/frontend
     networks:
       cotton-net:
         ipv4_address: 172.24.0.2
-    volumes:
-      - ./frontend/:/root/frontend
     stdin_open: true
     tty: true
 
@@ -30,17 +30,19 @@ services:
 
   container:
     build: ./container
-    container_name: cotton-containers
-    privileged: true
+    container_name: cotton-container
     environment:
       DOCKER_TLS_CERTDIR: ""
     ports:
       - 80:80
       - 2375:2375
       - 28001:28001
+    volumes:
+      - ./container/:/root/container
     networks:
       cotton-net:
         ipv4_address: 172.24.0.4
+    privileged: true
     command: sh -c "nginx & python3 app.py & dockerd -H tcp://0.0.0.0:2375"
 
   database:
