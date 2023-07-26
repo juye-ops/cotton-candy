@@ -46,7 +46,7 @@ services:
     command: sh -c "nginx & python3 app.py & dockerd -H tcp://0.0.0.0:2375"
 
   database:
-    image: mongo:6.0
+    image: mongo:4.2
     container_name: cotton-database
     restart: always
     environment:
