@@ -143,11 +143,10 @@ export const ScopeList = styled.div`
     }
 `
 
-export const SoftwareStackList = styled.ul`
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-    grid-gap: 13px;
-    margin-bottom: 20px;
+export const PlatformList = styled.ul`
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
 `
 
 export const SettingList = styled.ul`
@@ -169,14 +168,6 @@ export const SettingListItem = styled.li`
     }
 `
 
-export const SettingTitle = styled.p`
-    margin: 30px 0 20px;
-
-    &:nth-child(1) {
-        margin-top: 0;
-    }
-`
-
 export const SettingListItemPort = styled(SettingListItem)`
     margin-bottom: 20px;
 
@@ -184,8 +175,6 @@ export const SettingListItemPort = styled(SettingListItem)`
         width: 17%;
         padding-top: 7px;
     }
-
-    
 `
 
 export const PortInputWarpper = styled.div`
