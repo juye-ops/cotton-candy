@@ -1,152 +1,28 @@
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 
 import ConfirmButton from 'components/buttons/confirmbutton/ConfirmButton';
-import SoftwareButton from 'components/buttons/softwarebutton/SoftwareButton';
-import SettingDropBox from 'components/dropbox/settingdropbox/SettingDropBox';
 
 import PreventDefault from 'utils/PreventDefault';
 import * as API from 'apis/SettingPageAPIs';
 
 import * as S from './style'
-import react_logo from 'assets/react_logo.svg'
 import { useLocation } from 'react-router';
 
-// 나중에 받아오던가 처리
-const infraList = [
-    {
-        image: react_logo,
-        name: "React",
-    },
-    {
-        image: react_logo,
-        name: "React2",
-    },
-    {
-        image: react_logo,
-        name: "React3",
-    }
-];
 
-const frameworkList = [
-    {
-        image: react_logo,
-        name: "React",
-    },
-    {
-        image: react_logo,
-        name: "React2",
-    },
-    {
-        image: react_logo,
-        name: "React3",
-    }
-];
+export default function ModifyPage() {
+    const location = useLocation();
 
-const dbList = [
-    {
-        image: react_logo,
-        name: "React4",
-    },
-    {
-        image: react_logo,
-        name: "React5",
-    },
-    {
-        image: react_logo,
-        name: "React6",
-    }
-];
-
-export default function SettingPage() {
     // 사용자 입력 관련
-    const [inputs, setInputs] = useState({
-        name: "",
-        desc: "",
-    });
+    const [inputs, setInputs] = useState(location.state.container.description);
     const inputsRef = useRef([]);
 
     const onChangeInput = (e) => {
-        setInputs({
-            ...inputs,
-            [e.target.name]: e.target.value,
-        })
-    }
-
-    // infra 관련
-    const [infra, setInfra] = useState("");
-    const [infraVersionList, setInfraVersionList] = useState([]);
-    const [infraVersion, setInfraVersion] = useState("버전을 선택해주세요.");
-
-    useEffect(() => {
-        // setInfra(infraList[0].name);
-    }, []);
-
-    useEffect(() => {
-        if (infra === "") {
-            return;
-        }
-
-        setInfraVersionList(API.getInfraVersion(infra));
-    }, [infra]);
-
-    useEffect(() => {
-        if (infraVersionList.length === 0) {
-            return;
-        }
-
-        setInfraVersion(infraVersionList[0]);
-    }, [infraVersionList]);
-
-    const onClickInfraButton = (e) => {
-        const target = e.currentTarget;
-        const name = target.querySelector("span").innerText;
-
-        if (name === infra) {
-            return;
-        }
-
-        setInfra(name);
-    }
-
-    // platform 관련
-    const [platform, setPlatorm] = useState("");
-    const [platformVersionList, setPlatformVersionList] = useState([]);
-    const [platformVersion, setPlatformVersion] = useState("버전을 선택해주세요.");
-
-    useEffect(() => {
-        // setPlatorm(frameworkList[0].name);
-    }, []);
-
-    useEffect(() => {
-        if (platform === "") {
-            return;
-        }
-
-        setPlatformVersionList(API.getPlatformVersion(platform));
-    }, [platform]);
-
-    useEffect(() => {
-        if (platformVersionList.length === 0) {
-            return;
-        }
-
-        setPlatformVersion(platformVersionList[0]);
-    }, [platformVersionList]);
-
-    const onClickPlatformButton = (e) => {
-        const target = e.currentTarget;
-        const name = target.querySelector("span").innerText;
-
-        if (name === platform) {
-            return;
-        }
-
-        setPlatorm(name);
+        setInputs(e.target.value);
     }
 
     // 포트 관련
     const [portInput, setPortInput] = useState("");
-    const [ports, setPorts] = useState([]);
+    const [ports, setPorts] = useState(location.state.container.settings.ports);
     const portRef = useRef();
 
     const onChangePortInput = (e) => {
@@ -168,7 +44,7 @@ export default function SettingPage() {
     }
 
     // 환경 변수 관련
-    const [envs, setEnvs] = useState([{ key: '', value: '' }]);
+    const [envs, setEnvs] = useState(Object.keys(location.state.container.settings.environments).map(key => { return { "key": key, "value": location.state.container.settings.environments[key] } }));
     const envsRef = useRef([]);
 
     const handleAddEnv = () => {
@@ -198,10 +74,7 @@ export default function SettingPage() {
         setEnvs(values);
     }
 
-    // 데이터 수신
-    const location = useLocation();
-
-    // 생성 버튼
+    // 수정 버튼
     const onClickGenerateButton = () => {
         const envRst = {};
 
@@ -214,22 +87,11 @@ export default function SettingPage() {
         })
 
         const generate = {
-            "name": inputs.name,
             "project": location.state.project,
+            "name": inputs.name,
             "description": inputs.desc,
             "gpu": "false",
-            "build": {
-                "os": {
-                    "name": infra,
-                    "version": infraVersion,
-                },
-                "platfroms": [
-                    {
-                        "name": platform,
-                        "version": platformVersion,
-                    }
-                ]
-            },
+            "build": location.state.container.bulid,
             "settings": {
                 "ports": ports,
                 "environments": envRst,
@@ -251,24 +113,24 @@ export default function SettingPage() {
                             <span>Back</span>
                             <i className="fas fa-arrow-left"></i>
                         </S.SectionHeaderBackLink>
-                        <h2>Create New Container</h2>
+                        <h2>Update {location.state.container.name}</h2>
                         <ConfirmButton props={{ content: "Generate", callback: onClickGenerateButton }} />
                     </S.SectionHeader>
                     <S.Form action="" onClick={PreventDefault}>
                         <S.DivideFieldSet>
                             <S.IROnlyFieldSetLegend>이름 설정 영역</S.IROnlyFieldSetLegend>
-                            <label htmlFor="nameInput">이름</label>
-                            <input type="text" id='nameInput' name='name' ref={(element) => (inputsRef.current[0] = element)} onChange={onChangeInput} placeholder='프로젝트 이름을 입력해주세요.' value={inputs.name} />
+                            <p>이름</p>
+                            <p>{location.state.container.name}</p>
                         </S.DivideFieldSet>
                         <S.DivideFieldSet>
                             <S.IROnlyFieldSetLegend>설명 설정 영역</S.IROnlyFieldSetLegend>
                             <label htmlFor="descInput">설명<span>(선택 영역)</span></label>
-                            <S.DescTextArea id='descInput' name='desc' ref={(element) => (inputsRef.current[1] = element)} onChange={onChangeInput} placeholder='컨테이너 설명을 입력해주세요.' value={inputs.desc} />
+                            <S.DescTextArea id='descInput' name='desc' ref={(element) => (inputsRef.current[0] = element)} onChange={onChangeInput} placeholder='컨테이너 설명을 입력해주세요.' value={inputs} />
                         </S.DivideFieldSet>
                         <S.DivideFieldSet>
                             <S.IROnlyFieldSetLegend>설명 설정 영역</S.IROnlyFieldSetLegend>
                             <p>프로젝트</p>
-                            <p>{location.state.project}</p>
+                            <p>{location.state.container.project}</p>
                         </S.DivideFieldSet>
                         <S.DivideFieldSet>
                             <S.IROnlyFieldSetLegend>GPU 설정 영역</S.IROnlyFieldSetLegend>
@@ -283,61 +145,20 @@ export default function SettingPage() {
                         <S.DivideFieldSet>
                             <S.IROnlyFieldSetLegend>OS 설정 영역</S.IROnlyFieldSetLegend>
                             <p>OS</p>
-                            <div>
-                                <S.SoftwareStackList>
-                                    {
-                                        infraList.map(infraItem => {
-                                            return (
-                                                <li key={infraItem.name}>
-                                                    <SoftwareButton props={{ image: infraItem.image, name: infraItem.name, callback: onClickInfraButton, selected: infra }} />
-                                                </li>
-                                            )
-                                        })
-                                    }
-                                </S.SoftwareStackList>
-                                <S.SettingList>
-                                    <S.SettingListItem>
-                                        <p>Version</p>
-                                        <SettingDropBox props={{ list: infraVersionList, target: infraVersion, callback: setInfraVersion }} />
-                                    </S.SettingListItem>
-                                </S.SettingList>
-                            </div>
+                            <p>{location.state.container.build.os.name} - {location.state.container.build.os.version}</p>
                         </S.DivideFieldSet>
                         <S.DivideFieldSet>
                             <S.IROnlyFieldSetLegend>Platform 설정 영역</S.IROnlyFieldSetLegend>
                             <p>Platform <span>(Optional)</span></p>
-                            <div>
-                                <S.SettingTitle>Frameworks & Libraries</S.SettingTitle>
-                                <S.SoftwareStackList>
-                                    {
-                                        frameworkList.map(infraItem => {
-                                            return (
-                                                <li key={infraItem.name}>
-                                                    <SoftwareButton props={{ image: infraItem.image, name: infraItem.name, callback: onClickPlatformButton, selected: platform }} />
-                                                </li>
-                                            )
-                                        })
-                                    }
-                                </S.SoftwareStackList>
-                                <S.SettingTitle>Databases</S.SettingTitle>
-                                <S.SoftwareStackList>
-                                    {
-                                        dbList.map(infraItem => {
-                                            return (
-                                                <li key={infraItem.name}>
-                                                    <SoftwareButton props={{ image: infraItem.image, name: infraItem.name, callback: onClickPlatformButton, selected: platform }} />
-                                                </li>
-                                            )
-                                        })
-                                    }
-                                </S.SoftwareStackList>
-                                <S.SettingList>
-                                    <S.SettingListItem>
-                                        <p>Version</p>
-                                        <SettingDropBox props={{ list: platformVersionList, target: platformVersion, callback: setPlatformVersion }} />
-                                    </S.SettingListItem>
-                                </S.SettingList>
-                            </div>
+                            <S.PlatformList>
+                                {
+                                    location.state.container.build.platforms.map((platform, index) => {
+                                        return (
+                                            <p key={"" + index + platform}>{platform.name} - {platform.version}</p>
+                                        )
+                                    })
+                                }
+                            </S.PlatformList>
                         </S.DivideFieldSet>
                         <S.DivideFieldSet>
                             <S.IROnlyFieldSetLegend>환경 설정 영역</S.IROnlyFieldSetLegend>
