@@ -1,13 +1,11 @@
-from database import cotton_db
-
-collection = cotton_db.container
+from database import cursor
 
 class ContainerDB:
-    def push(key: dict = {}) -> dict:    
-        return collection.insert_one(key)
+    # def push(key: dict = {}) -> dict:
+    #     return collection.insert_one(key)
 
 
-    def read(key: dict = {}) -> dict:
+    def read(key: str) -> dict:
         '''
         Read collection's data with any key
 
@@ -16,4 +14,6 @@ class ContainerDB:
         :param key: to get specific data that matches
         '''
         
-        return list(collection.find(key, {'_id': False}))
+        # query = "SELECT * FROM container where "
+
+        # return list(collection.find(key, {'_id': False}))
