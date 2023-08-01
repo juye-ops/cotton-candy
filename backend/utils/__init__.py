@@ -1,12 +1,10 @@
 import docker
 
 def connect_docker():
-    while True:
-        try:
-            docker_cli = docker.DockerClient(base_url="tcp://container:2375", timeout=None)
-            break
-        except:
-            pass
+    docker_cli = docker.DockerClient(
+        base_url="tcp://container:2375",
+        timeout=None
+    )
     
     ipam_pool = docker.types.IPAMPool(
         subnet='172.24.1.0/24',
