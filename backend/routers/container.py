@@ -13,11 +13,6 @@ router = APIRouter(
     prefix="/container",
 )
 
-@router.get("/platform/version/{app}")
-def access(app):
-    return PlatformDB.read({"name": app})
-
-
 class ContainerInfo(BaseModel):
     class Build(BaseModel):
         class OperSys(BaseModel):
@@ -69,7 +64,7 @@ def build(config: ContainerInfo):
         "ip": next_ip
     }
 
-    ContainerDB.push(container_info.copy())
+    # ContainerDB.push(container_info.copy())
     requests.post("http://container:28001/api/proxies", json=container_info)
 
     return 200
