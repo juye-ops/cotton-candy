@@ -12,11 +12,11 @@ class ProjectDB:
     
         return len(ret)
 
-    def create(info, subnet):
+    def create(name, description, subnet):
         query = f"""
         INSERT INTO project(user_id, name) VALUES (1, %s);
         """
-        cursor.execute(query, (info['name']))
+        cursor.execute(query, (name))
         mysql_cli.commit()
 
         query = f"""
@@ -27,7 +27,7 @@ class ProjectDB:
             %s
         );
         """
-        cursor.execute(query, (info['name'], info['description'], subnet))
+        cursor.execute(query, (name, description, subnet))
         mysql_cli.commit()
 
         return
