@@ -1,13 +1,7 @@
-import os
-import requests
-import json
 
 from fastapi import APIRouter
-from pydantic import BaseModel
-from typing import List, Dict, Any
 
 from database import *
-from utils import iac, dind
 
 router = APIRouter(
     prefix="/version",
