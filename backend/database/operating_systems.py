@@ -1,4 +1,4 @@
-from database import cursor
+from database import mysql_cli, cursor
 
 class OSDB:
     def get_list():
@@ -9,7 +9,7 @@ class OSDB:
         cursor.execute(query)
         ret = cursor.fetchall()
 
-        os_list = [x ["name"] for x in ret]
+        os_list = [x["name"] for x in ret]
 
         return os_list
 
@@ -31,6 +31,6 @@ class OSDB:
         cursor.execute(query)
         ret = cursor.fetchall()
 
-        os_versions = [x ["version"] for x in ret]
+        os_versions = [x["version"] for x in ret]
         
         return os_versions

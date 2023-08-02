@@ -1,17 +1,15 @@
-from database import cursor
+from database import mysql_cli, cursor
 
 class FrameworkDB:
     def get_list():
         query = f"""
-        SELECT name from framework
+        SELECT name, type from framework
         """
 
         cursor.execute(query)
         ret = cursor.fetchall()
 
-        framework_list = [x ["version"] for x in ret]
-
-        return framework_list
+        return ret
 
 
     def get_version(key: str) -> dict:
@@ -30,6 +28,6 @@ class FrameworkDB:
         cursor.execute(query)
         ret = cursor.fetchall()
 
-        framework_versions = [x ["version"] for x in ret]
+        framework_versions = [x["version"] for x in ret]
 
         return framework_versions

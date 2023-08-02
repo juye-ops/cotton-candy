@@ -1,7 +1,7 @@
-from database import cursor
+from database import mysql_cli, cursor
 
 class ContainerDB:
-    # def push(key: dict = {}) -> dict:
+    # def create_container(info) -> dict:
     #     return collection.insert_one(key)
 
 
