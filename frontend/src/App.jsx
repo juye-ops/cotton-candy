@@ -7,6 +7,7 @@ import { theme } from "styles/Theme";
 import HomePage from "pages/homepage/HomePage";
 import ManagePage from "pages/managepage/ManagePage";
 import SettingPage from "pages/settingpage/SettingPage";
+import ModifyPage from "pages/modifypage/ModifyPage";
 import ContainerPage from "pages/containerpage/ContainerPage";
 
 const GlobalStyle = createGlobalStyle`
@@ -44,6 +45,7 @@ function App() {
                     <Route path="/" element={<HomePage />} />
                     <Route path="/manage" element={<ManagePage />} />
                     <Route path="/setting" element={<SettingPage />} />
+                    <Route path="/modify" element={<ModifyPage />} />
                     <Route path="/container/:id" element={<ContainerPage />} />
                 </Routes>
             </BrowserRouter>

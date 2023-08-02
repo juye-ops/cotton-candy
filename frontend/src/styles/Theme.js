@@ -39,6 +39,7 @@ export const theme = {
     fontSize: {
         title: "64px",
         pageMain: "22px",
+        pageSub: "18px",
         button: "14px",
         content: "13px",
         desc: "12px",

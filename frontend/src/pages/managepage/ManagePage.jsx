@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import * as S from './style';
 import PreventDefault from 'utils/PreventDefault';
@@ -6,48 +6,103 @@ import StopPropagation from 'utils/StopPropagation';
 import { getContainerList } from 'apis/ManagePageAPIs';
 
 export default function ManagePage() {
-    // 모달
-    const [clicked, setClicked] = useState(false);
-    
-    const onClickButton = (e) => {
-        PreventDefault(e);
-        StopPropagation(e);
-        
-        setClicked(!clicked);
-    }
-
-    window.addEventListener("click", () => {
-        setClicked(false);
-    });
-
     // 컨테이너 리스트
     const [containerList, setContainerList] = useState([]);
-    const [showList, setShowList] = useState([]);
 
     useEffect(() => {
         // 컨테이너 리스트 받아오기
         setContainerList(getContainerList());
     }, []);
 
+
+    // 프로젝트 리스트
+    const [projectList, setProjectList] = useState([]);
+
     useEffect(() => {
         if (containerList.length === 0) {
             return;
         }
 
-        setShowList(containerList);
+        const rst = [];
+
+        containerList.forEach(container => {
+            if (!rst.includes(container.project)) {
+                rst.push(container.project);
+            }
+        })
+
+        setProjectList(rst);
     }, [containerList]);
 
-    // 검색 관련
-    const [searchInput, setSearchInput] = useState("");
-    const searchInputRef = useRef();
 
-    const onChangeSearchInput = (e) => {
-        setSearchInput(e.target.value);
-    }
+    // 현재 선택된 프로젝트
+    const [selectedProject, setSelectedProject] = useState("");
 
     useEffect(() => {
-        setShowList([...containerList].filter(container => container.name.indexOf(searchInput) !== -1));
-    }, [searchInput, containerList]);
+        if (projectList.length === 0) {
+            return;
+        }
+
+        setSelectedProject(projectList[0]);
+    }, [projectList]);
+
+    // 프로젝트 모달
+    const [addProject, setAddProject] = useState(false);
+    const [projectName, setProjectName] = useState("");
+
+    const onClickProjectModalWrapper = () => {
+        setAddProject(false);
+    }
+
+    const onClickProjectModalAdd = (e) => {
+        setAddProject(true);
+    }
+
+    const onClickModal = (e) => {
+        PreventDefault(e);
+        StopPropagation(e);
+    }
+
+    const onChangeProjectName = (e) => {
+        setProjectName(e.target.value);
+    }
+
+    const onClickProjectAdd = () => {
+        setProjectList([...projectList, projectName]);
+        setProjectName("");
+        setAddProject(false);
+    }
+
+    // 컨테이너 모달
+    const [clicked, setClicked] = useState({});
+
+    useEffect(() => {
+        const rst = {};
+
+        containerList.forEach(container => rst[container.name] = false);
+
+        window.addEventListener("click", () => {
+            setClicked(rst);
+        });
+
+        setClicked(rst);
+
+        return (() => {
+            window.addEventListener("click", () => { });
+        })
+    }, [containerList]);
+
+    const onClickButton = (e) => {
+        PreventDefault(e);
+        StopPropagation(e);
+
+        const rst = {};
+
+        containerList.forEach(container => rst[container.name] = false);
+        rst[e.currentTarget.querySelector('span:nth-child(2)').innerText] = true;
+
+        setClicked(rst);
+    }
 
     // const generate = () => {
 
@@ -61,11 +116,6 @@ export default function ManagePage() {
 
     // }
 
-    // 정렬 관련
-    const onClickSortByDate = () => {
-        
-    }
-
     return (
         <S.Wrapper>
             <S.Header>
@@ -74,78 +124,107 @@ export default function ManagePage() {
             <main>
                 <S.Section>
                     <S.SectionHeader>
-                        <h2>All Containers</h2>
-                        <S.GenerateLink to='/setting'>+ New Container</S.GenerateLink>
+                        <h2>All Projects</h2>
                     </S.SectionHeader>
-                    <S.Article>
-                        <header>
-                            <h3>Utility Article</h3>
-                        </header>
-                        <S.Form action="">
-                            <i className="fas fa-search"></i>
-                            <label htmlFor="searchInput">Search Container</label>
-                            <input type="text" id="searchInput" placeholder='컨테이너 이름'
-                            ref={((element) => searchInputRef.current = element)}
-                            onChange={onChangeSearchInput}
-                            value={searchInput} />
-                        </S.Form>
-                        <S.ArticleList>
+                    <S.ProjectModalWrapper selected={addProject} onClick={onClickProjectModalWrapper}>
+                        <S.ProjectModalForm action='' onClick={onClickModal}>
+                            <label htmlFor="projectName">Insert Your Project Name</label>
+                            <input type="text" name="projectName" id="projectName" onChange={onChangeProjectName} value={projectName} />
+                            <button onClick={onClickProjectAdd}>Add Project</button>
+                        </S.ProjectModalForm>
+                    </S.ProjectModalWrapper>
+                    {/* <S.ArticleList>
                             <li>
                                 <S.ArticleButton>
                                     <i className="fas fa-sort"></i>
                                     <span>최근 수정 순</span>
                                 </S.ArticleButton>
                             </li>
-                        </S.ArticleList>
-                    </S.Article>
-                    <S.ContainerList>
-                        {
-                            showList.map(() => {
-                                return (
-                                    <>
-                                    </>
-                                );
-                            })
-                        }
-                        <li>
-                            <S.Container>
-                                <S.ContainerHeader>
-                                    <S.ConatinerState>
-                                    </S.ConatinerState>
-                                    <h3>Sample Container</h3>
-                                    <S.MoreButtonWrapper>
-                                        <S.MoreButton onClick={onClickButton}>
-                                            <i className="fas fa-ellipsis-h"></i>
-                                            <span>more</span>
-                                        </S.MoreButton>
-                                        <S.MoreList clicked={clicked}>
-                                            <li>
-                                                <S.MoreListButton>
-                                                    <i className="fas fa-cog"></i>
-                                                    <span>컨테이너 설정</span>
-                                                </S.MoreListButton>
-                                            </li>
-                                            <li>
-                                                <S.MoreListButton>
-                                                    <i className="fas fa-trash-alt"></i>
-                                                    <span>컨테이너 삭제하기</span>
-                                                </S.MoreListButton>
-                                            </li>
-                                        </S.MoreList>
-                                    </S.MoreButtonWrapper>  
-                                </S.ContainerHeader>
-                                <S.SoftwareWrapper>
-                                    <p>Ubuntu</p>
-                                    <p>Python</p>
-                                </S.SoftwareWrapper>
-                                <p>test desc</p>
-                                <S.ExecuteButton>
-                                    <i className="fa-solid fa-play"></i>
-                                    <span>실행</span>
-                                </S.ExecuteButton>
-                            </S.Container>
-                        </li>
-                    </S.ContainerList>
+                        </S.ArticleList> */}
+
+                    {
+                        projectList.length !== 0
+                            ?
+                            <>
+                                <S.ProjectList>
+                                    {
+                                        projectList.map((project, index) => {
+                                            return (
+                                                <li key={"" + index + project}>
+                                                    <S.ProjectListButton selectedProject={project === selectedProject} onClick={() => setSelectedProject(project)}>
+                                                        {project}
+                                                    </S.ProjectListButton>
+                                                </li>
+                                            );
+                                        })
+                                    }
+                                    <li>
+                                        <S.ProjectAddButton onClick={onClickProjectModalAdd}>
+                                            <i className="fas fa-plus"></i>
+                                            <span>add project</span>
+                                        </S.ProjectAddButton>
+                                    </li>
+                                </S.ProjectList>
+                                <S.ContainerList>
+                                    {
+                                        containerList.filter(container => container.project === selectedProject).map((container, index) => {
+                                            return (
+                                                <li key={"" + index + container}>
+                                                    <S.Container>
+                                                        <S.ContainerHeader>
+                                                            <S.ConatinerState>
+                                                            </S.ConatinerState>
+                                                            <h3>{container.name}</h3>
+                                                            <S.MoreButtonWrapper>
+                                                                <S.MoreButton onClick={onClickButton}>
+                                                                    <i className="fas fa-ellipsis-h"></i>
+                                                                    <span>{container.name}</span>
+                                                                    <span>more</span>
+                                                                </S.MoreButton>
+                                                                <S.MoreList clicked={clicked[container.name]}>
+                                                                    <li>
+                                                                        <S.MoreListLink to="/modify" state={{ container: container }}>
+                                                                            <i className="fas fa-cog"></i>
+                                                                            <span>컨테이너 설정</span>
+                                                                        </S.MoreListLink>
+                                                                    </li>
+                                                                    <li>
+                                                                        <S.MoreListButton>
+                                                                            <i className="fas fa-trash-alt"></i>
+                                                                            <span>컨테이너 삭제하기</span>
+                                                                        </S.MoreListButton>
+                                                                    </li>
+                                                                </S.MoreList>
+                                                            </S.MoreButtonWrapper>
+                                                        </S.ContainerHeader>
+                                                        <S.SoftwareWrapper>
+                                                            <p>{container.build.os.name}</p>
+                                                            <p>{container.build.platforms[0].name}</p>
+                                                        </S.SoftwareWrapper>
+                                                        <p>test desc</p>
+                                                        <S.ExecuteLink to={'/container/' + container.name} state={{containerName: container.name}} >
+                                                            <i className="fa-solid fa-play"></i>
+                                                            <span>실행</span>
+                                                        </S.ExecuteLink>
+                                                    </S.Container>
+                                                </li>
+                                            )
+                                        })
+                                    }
+                                    <li>
+                                        <S.CreateContainerLink to="/setting" state={{ project: selectedProject }}>
+                                            <i className="fas fa-plus"></i>
+                                            <span>New Container</span>
+                                        </S.CreateContainerLink>
+                                    </li>
+                                </S.ContainerList>
+                            </>
+                            :
+                            <S.ProjectEmptyButton onClick={onClickProjectModalAdd}>
+                                <i className="fas fa-plus"></i>
+                                <span>There is no project. Click here to create new project!</span>
+                            </S.ProjectEmptyButton>
+                    }
                 </S.Section>
             </main>
             <footer></footer>

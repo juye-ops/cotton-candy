@@ -1,21 +1,21 @@
 import os
 
 pf_installer ={
-    "python": lambda ver: [f"RUN apt install python{ver} -y"],
-    "node": lambda ver: [f"RUN curl -fsSL https://deb.nodesource.com/setup_{ver}.x | bash -", "RUN apt install -y nodejs"]
+    "python": lambda ver: [f"RUN apt-get install python{ver} -y"],
+    "node": lambda ver: [f"RUN curl -fsSL https://deb.nodesource.com/setup_{ver}.x | bash -", "RUN apt-get install -y nodejs"]
 }
 
 def create(project_name: str, project_os: str, project_pfs: str) -> None:
-    os.makedirs(f"projects/{project_name}", exist_ok=True)
+    os.makedirs(f"client/{project_name}", exist_ok=True)
 
 
     # Create Dockerfile
-    f = open(f"projects/{project_name}/Dockerfile", "w")
+    f = open(f"client/{project_name}/Dockerfile", "w")
 
     f.write(f"FROM {project_os['name']}:{project_os['version']}\n")
     f.write("\n")
-    f.write("RUN apt update\n")
-    f.write("RUN apt install curl  -y\n")
+    f.write("RUN apt-get update\n")
+    f.write("RUN apt-get install curl apt-transport-https -y\n")
     f.write("RUN curl -fsSL https://code-server.dev/install.sh | sh\n")
     f.write("\n")
     for app in project_pfs:

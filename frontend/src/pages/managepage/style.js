@@ -20,7 +20,7 @@ export const SectionHeader = styled.header`
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 30px;
+    margin-bottom: 40px;
 
     & > h2 {
         font-size: ${props => props.theme.fontSize.pageMain};
@@ -37,63 +37,110 @@ export const GenerateLink = styled(Link)`
     font-size: ${props => props.theme.fontSize.button};
 `
 
-export const Article = styled.article`
+export const ProjectList = styled.ul`
     margin-bottom: 20px;
     display: flex;
-    align-items: center;
-    justify-content: space-between;
+    gap: 5px;
+`
 
-    & > header {
+export const ProjectListButton = styled.button`
+    height: 32px;
+    padding: 0 10px;
+    background-color: ${props => props.selectedProject ? props.theme.color.theme.main : "inherit"};
+    border-radius: ${props => props.theme.borderRadius.lv2};
+    color: ${props => props.selectedProject ? props.theme.color.font.reverse : props.theme.color.theme.main};
+`
+
+export const ProjectAddButton = styled.button`
+    height: 32px;
+    margin-left: 3px;
+    background-color: inherit;
+    color: ${props => props.theme.color.theme.main};
+
+    & > i {
+        vertical-align: -1px;
+    }
+
+    & > span {
         ${IROnly}
     }
 `
 
-export const Form = styled.form`
-    position: relative;
+export const ProjectModalWrapper = styled.div`
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background-color: rgba(150, 150, 150, 0.5);
+    display: ${props => props.selected ? 'block' : 'none'};
+`
 
-    & > i {
-        position: absolute;
-        top: 9px;
-        left: 12px;
-        font-size: ${props => props.theme.fontSize.button};
-        color: ${props => props.theme.color.font.main};
-    }
+export const ProjectModalForm = styled.form`
+    width: 480px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    padding: 40px 30px;
+    background-color: ${props => props.theme.color.background.content};
+    border-radius: ${props => props.theme.borderRadius.lv2};
+    color: ${props => props.theme.color.font.main};
 
-    &  > label {
-        ${IROnly}
+    & > label {
+        margin-bottom: 10px;
     }
 
     & > input {
-        width: 280px;
-        height: 32px;
-        padding-left: 35px;
-        background-color: ${props => props.theme.color.background.content};
-        border: 1px solid ${props => props.theme.color.border.normal};
-        border-radius: ${props => props.theme.borderRadius.lv2};
+        border: 1px solid ${(props) => props.theme.color.border.normal};
+        border-radius: ${(props) => props.theme.borderRadius.lv2};
+        padding: 8px 13px;
+        margin-bottom: 15px;
+    }
+
+    & > input::placeholder {
+        color: ${(props) => props.theme.color.font.desc};
     }
 
     & > input:focus {
         outline: 0;
+        border: 1px solid ${(props) => props.theme.color.theme.main};
+    }
+
+    & > button {
+        padding: 5px;
+        transition: all 0.2s;
+        font-size: ${props => props.theme.fontSize.button};        
+        background-color: ${props => props.theme.color.theme.main};
         border: 1px solid ${props => props.theme.color.theme.main};
+        border-radius: ${props => props.theme.borderRadius.lv2};
+        color: ${props => props.theme.color.font.reverse};
+    }
+
+    & > button:hover {
+        background-color: ${props => props.theme.color.theme.dark};
     }
 `
 
-export const ArticleList = styled.ul`
-    display: flex;
-`
-
-export const ArticleButton = styled.button`
-    padding: 8px 15px;
-    display: flex;
-    align-items: center;
-    font-size: ${props => props.theme.fontSize.button};
-    background-color: ${props => props.theme.color.background.dark};
+export const ProjectEmptyButton = styled.button`
+    width: 100%;
+    background-color: inherit;
+    padding: 30px;
+    transition: all 0.2s;
+    border: 3px dashed ${props => props.theme.color.theme.main};
     border-radius: ${props => props.theme.borderRadius.lv2};
+    color: ${props => props.theme.color.theme.main};
+    font-size: ${props => props.theme.fontSize.pageSub};
+
+    &:hover {
+        background-color: ${props => props.theme.color.background.dark};
+    }
 
     & > i {
-        font-size: 11px;
-        margin-top: 2px;
-        margin-right: 8px;
+        margin-right: 10px;
     }
 `
 
@@ -101,6 +148,7 @@ export const ContainerList = styled.ul`
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
     grid-gap: 20px;
+    margin-bottom: 50px;
 `
 
 export const Container = styled.section`
@@ -174,6 +222,25 @@ export const MoreList = styled.ul`
     }
 `
 
+export const MoreListLink = styled(Link)`
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 32px;
+    padding: 5px 16px;
+    background-color: ${props => props.theme.color.background.content};
+    color: ${props => props.theme.color.font.main};
+    font-size: ${props => props.theme.fontSize.desc};
+
+    & > i {
+        margin-right: 8px;
+    }
+
+    &:hover {
+        background-color: ${props => props.theme.color.background.dark};
+    }
+`
+
 export const MoreListButton = styled.button`
     display: flex;
     align-items: center;
@@ -216,7 +283,7 @@ export const SoftwareWrapper = styled.div`
     }
 `
 
-export const ExecuteButton = styled.button`
+export const ExecuteLink = styled(Link)`
     width: 100%;
     height: 32px;
     display: flex;
@@ -228,6 +295,7 @@ export const ExecuteButton = styled.button`
     border: 1px solid ${props => props.theme.color.theme.main};
     border-radius: ${props => props.theme.borderRadius.lv2};
     color: ${props => props.theme.color.theme.main};
+    font-size: ${props => props.theme.fontSize.desc};
 
     &:hover {
         background-color: ${props => props.theme.color.background.hover3};
@@ -236,5 +304,28 @@ export const ExecuteButton = styled.button`
     & > i {
         font-size: 11px;
         margin-right: 8px;
+    }
+`
+
+export const CreateContainerLink = styled(Link)`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 280px;
+    transition: all 0.2s;
+    font-family: 'Ubuntu', sans-serif;
+    font-weight: 700;
+    border: 3px dashed ${props => props.theme.color.theme.main};
+    border-radius: ${props => props.theme.borderRadius.lv2};
+    color: ${props => props.theme.color.theme.main};
+    font-size: ${props => props.theme.fontSize.pageSub};
+    
+
+    &:hover {
+        background-color: ${props => props.theme.color.background.dark};
+    }
+
+    & > span {
+        margin-left: 10px;
     }
 `

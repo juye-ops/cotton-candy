@@ -1,17 +1,15 @@
 from database import mysql_cli, cursor
 
-class OSDB:
+class FrameworkDB:
     def get_list():
         query = f"""
-        SELECT name from os
+        SELECT name, type from framework
         """
 
         cursor.execute(query)
         ret = cursor.fetchall()
 
-        os_list = [x["name"] for x in ret]
-
-        return os_list
+        return ret
 
 
     def get_version(key: str) -> dict:
@@ -21,16 +19,15 @@ class OSDB:
         :param key: to get specific data that matches
         '''
         query = f"""
-        SELECT version FROM os_version 
-        WHERE os_id=(
-            SELECT id from os
+        SELECT version FROM framework_version 
+        WHERE framework_id=(
+            SELECT id from framework
             WHERE name="{key}"
         );
         """
-        
         cursor.execute(query)
         ret = cursor.fetchall()
 
-        os_versions = [x["version"] for x in ret]
-        
-        return os_versions
+        framework_versions = [x["version"] for x in ret]
+
+        return framework_versions
