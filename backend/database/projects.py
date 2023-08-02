@@ -2,6 +2,19 @@ from database import mysql_cli, cursor
 
 
 class ProjectDB:
+    def get_subnet(project):
+        query = f"""
+        SELECT subnet FROM project_info 
+        WHERE project_id=(
+            SELECT id FROM project WHERE name=%s
+        );
+        """
+
+        cursor.execute(query, (project))
+        ret = cursor.fetchone()
+
+        return ret['subnet']
+
     def get_len():
         query = f"""
         SELECT * from project
