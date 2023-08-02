@@ -16,11 +16,14 @@ class ProjectInfo(BaseModel):
 def create_project(info: ProjectInfo):
     info = info.dict()
 
+    project_name = info['name']
+    project_desc = info['description']
+
     ip_range = ProjectDB.get_len() + 1
     subnet = f'172.16.{ip_range}.0/24'
     gateway = f'172.16.{ip_range}.254'
 
-    ProjectDB.create(info, subnet)
+    ProjectDB.create(project_name, project_desc, subnet)
     dind.create_network(info['name'], subnet, gateway)
     
     
