@@ -1,10 +1,11 @@
 import uvicorn
 from fastapi import FastAPI
 
-from routers import container, version
+from routers import container, project, version
 
 app = FastAPI()
 app.include_router(container.router)
+app.include_router(project.router)
 app.include_router(version.router)
 
 if __name__ == "__main__":
