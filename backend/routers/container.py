@@ -33,7 +33,12 @@ class ContainerInfo(BaseModel):
     build: Build
     settings: Settings
 
-@router.post("/build")
+@router.get("/list/")
+def container_list(project: str):
+    container_list = ContainerDB.get_list(project)
+    return container_list
+
+@router.post("/create")
 def build(config: ContainerInfo):
     config = config.dict()
 

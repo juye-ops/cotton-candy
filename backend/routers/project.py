@@ -12,6 +12,11 @@ class ProjectInfo(BaseModel):
     name: str
     description: str
 
+@router.get("/list/")
+def project_list():
+    project_list = ProjectDB.get_list()
+    return project_list
+
 @router.post("/create/")
 def create_project(info: ProjectInfo):
     info = info.dict()
@@ -25,6 +30,5 @@ def create_project(info: ProjectInfo):
 
     ProjectDB.create(project_name, project_desc, subnet)
     dind.create_network(info['name'], subnet, gateway)
-    
     
     return 200
