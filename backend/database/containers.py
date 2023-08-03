@@ -11,6 +11,22 @@ class ContainerDB:
     
         return len(ret)
 
+    def get_list(project):
+        query = f"""
+        SELECT name, description FROM (
+            container INNER JOIN container_info 
+            ON container.id=container_info.container_id
+        ) WHERE project_id = (
+            SELECT id FROM project
+            WHERE name=%s
+        );
+        """
+        cursor.execute(query, (project))
+        ret = cursor.fetchall()
+
+        return ret
+
+
     def create(name, project, description, gpu, ports, envs, os, frameworks):
         # Add container
         query = f"""

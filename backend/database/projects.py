@@ -25,6 +25,18 @@ class ProjectDB:
     
         return len(ret)
 
+    def get_list():
+        query = f"""
+        SELECT name, description FROM (
+            project INNER JOIN project_info 
+            ON project.id=project_info.project_id
+        );
+        """
+        cursor.execute(query)
+        ret = cursor.fetchall()
+
+        return ret
+
     def create(name, description, subnet):
         query = f"""
         INSERT INTO project(user_id, name) VALUES (1, %s);
