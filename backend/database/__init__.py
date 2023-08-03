@@ -1,11 +1,7 @@
 import pymysql
 
 mysql_cli = pymysql.connect(
-    user="root",
-    passwd="password",
-    host='database',
-    db='cotton_db',
-    charset='utf8'
+    user="root", passwd="password", host="database", db="cotton_db", charset="utf8"
 )
 
 cursor = mysql_cli.cursor(pymysql.cursors.DictCursor)

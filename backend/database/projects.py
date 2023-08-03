@@ -13,7 +13,7 @@ class ProjectDB:
         cursor.execute(query, (project))
         ret = cursor.fetchone()
 
-        return ret['subnet']
+        return ret["subnet"]
 
     def get_len():
         query = f"""
@@ -22,7 +22,7 @@ class ProjectDB:
 
         cursor.execute(query)
         ret = cursor.fetchall()
-    
+
         return len(ret)
 
     def get_list():
