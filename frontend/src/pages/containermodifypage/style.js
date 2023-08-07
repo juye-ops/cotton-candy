@@ -6,20 +6,29 @@ export const Header = styled.header`
     ${IROnly}
 `
 
-export const Main = styled.main`
-    padding: 50px 0;
-`
-
-export const Section = styled.main`
+export const Section = styled.section`
     font-family: 'Rubik', sans-serif;
     max-width: ${(props) => props.theme.width.wrapperWidth};
     margin: 0 auto;
+    padding-top: 112px;
 `
 
 export const SectionHeader = styled.header`
+    width: 100%;
+    background-color: rgba(247, 247, 250, 0.6);
+    backdrop-filter: blur(10px);
+    position: fixed;
+    top: 0;
+    left: 0;
+    padding: 50px 0 30px;
+    z-index: 200;
+`
+
+export const SectionHeaderWrapper = styled.div`
     display: flex;
     align-items: center;
-    margin-bottom: 30px;
+    margin: 0 auto;
+    max-width: ${(props) => props.theme.width.wrapperWidth};
 
     & i {
         vertical-align: -2px;
@@ -41,6 +50,7 @@ export const SectionHeaderBackLink = styled(Link)`
 `
 
 export const Form = styled.form`
+    /* margin-top: 112px; */
     border: 1px solid ${(props) => props.theme.color.border.normal};
     border-radius: ${(props) => props.theme.borderRadius.lv3};
     background-color: ${(props) => props.theme.color.background.content};

@@ -6,10 +6,15 @@ import PreventDefault from 'utils/PreventDefault';
 import * as API from 'apis/SettingPageAPIs';
 
 import * as S from './style'
-import { useLocation } from 'react-router';
+import { useLocation, useParams } from 'react-router';
+import PortHashTag from 'components/hashtags/porthashtags/PortHashTag';
+import DeleteButton from 'components/buttons/deletebutton/DeleteButton';
 
 
-export default function ModifyPage() {
+export default function ContainerModifyPage() {
+    const { projectName } = useParams();
+
+    // 이거 말고 서버에서 데이터 받아와서 처리하기
     const location = useLocation();
 
     // 사용자 입력 관련
@@ -101,20 +106,26 @@ export default function ModifyPage() {
         API.generateContainer(JSON.stringify(generate));
     }
 
+    const onDeleteContainer = () => {
+
+    }
+
     return (
         <>
             <S.Header>
                 <h1>COTTON CANDY</h1>
             </S.Header>
-            <S.Main>
+            <main>
                 <S.Section>
                     <S.SectionHeader>
-                        <S.SectionHeaderBackLink to='/manage'>
-                            <span>Back</span>
-                            <i className="fas fa-arrow-left"></i>
-                        </S.SectionHeaderBackLink>
-                        <h2>Update {location.state.container.name}</h2>
-                        <ConfirmButton props={{ content: "Generate", callback: onClickGenerateButton }} />
+                        <S.SectionHeaderWrapper>
+                            <S.SectionHeaderBackLink to='/manage'>
+                                <span>Back</span>
+                                <i className="fas fa-arrow-left"></i>
+                            </S.SectionHeaderBackLink>
+                            <h2>Update {location.state.container.name}</h2>
+                            <ConfirmButton props={{ content: "Generate", callback: onClickGenerateButton }} />
+                        </S.SectionHeaderWrapper>
                     </S.SectionHeader>
                     <S.Form action="" onClick={PreventDefault}>
                         <S.DivideFieldSet>
@@ -130,7 +141,7 @@ export default function ModifyPage() {
                         <S.DivideFieldSet>
                             <S.IROnlyFieldSetLegend>설명 설정 영역</S.IROnlyFieldSetLegend>
                             <p>프로젝트</p>
-                            <p>{location.state.container.project}</p>
+                            <p>{projectName}</p>
                         </S.DivideFieldSet>
                         <S.DivideFieldSet>
                             <S.IROnlyFieldSetLegend>GPU 설정 영역</S.IROnlyFieldSetLegend>
@@ -171,13 +182,7 @@ export default function ModifyPage() {
                                             {
                                                 ports.map((portNo, index) => {
                                                     return (
-                                                        <S.PortListItem key={index + ':' + portNo}>
-                                                            <span>{portNo}</span>
-                                                            <S.PortListItemButton onClick={onClickPortDelete}>
-                                                                <span>{portNo}</span>
-                                                                <i className="fas fa-times"></i>
-                                                            </S.PortListItemButton>
-                                                        </S.PortListItem>
+                                                        <PortHashTag props={{ index, portNo, onClickPortDelete }} key={index + ':' + portNo} />
                                                     )
                                                 })
                                             }
@@ -231,9 +236,14 @@ export default function ModifyPage() {
                                 </S.SettingListItemEnv>
                             </S.SettingList>
                         </S.DivideFieldSet>
+                        <S.DivideFieldSet>
+                            <S.IROnlyFieldSetLegend>삭제 선택 영역</S.IROnlyFieldSetLegend>
+                            <label htmlFor="">컨테이너 삭제하기</label>
+                            <DeleteButton props={{ content: "Delete", name: projectName, callback: onDeleteContainer }} />
+                        </S.DivideFieldSet>
                     </S.Form>
                 </S.Section>
-            </S.Main >
+            </main>
         </>
     )
 }

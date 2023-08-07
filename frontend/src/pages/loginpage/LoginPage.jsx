@@ -7,7 +7,7 @@ import * as S from './style';
 
 import * as API from 'apis/HomePageAPIs';
 
-export default function HomePage() {
+export default function LoginPage() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
@@ -43,10 +43,8 @@ export default function HomePage() {
         }));
 
         // 페이지 이동
-        navigate('/manage');
+        navigate('/');
     }
-
-    // const user = useSelector(state => state.user);
 
     return (
         <S.Wrapper>

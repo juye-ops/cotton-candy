@@ -7,7 +7,7 @@ export const SoftwareButton = styled.button`
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background-color: ${props => props.selected ? `${props.theme.color.background.hover}` : `${props.theme.color.background.main}`};
+    background-color: ${props => props.selected ? `${props.theme.color.background.hover}` : props.added ? props.theme.color.background.hover4 : `${props.theme.color.background.main}`};
     border-radius: ${props => props.theme.borderRadius.lv2};
     outline: ${props => props.selected ? `2px solid ${props.theme.color.theme.main}` : "none"};
 
@@ -20,6 +20,6 @@ export const SoftwareButton = styled.button`
     }
 
     &:hover {
-        background-color: ${props => props.theme.color.background.hover};
+        background-color: ${props => props.added ? props.theme.color.background.hover4 : props.theme.color.background.hover};
     }
 `
