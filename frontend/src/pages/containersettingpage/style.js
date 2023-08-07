@@ -6,10 +6,6 @@ export const Header = styled.header`
     ${IROnly}
 `
 
-export const Main = styled.main`
-    padding: 50px 0;
-`
-
 export const Section = styled.main`
     font-family: 'Rubik', sans-serif;
     max-width: ${(props) => props.theme.width.wrapperWidth};
@@ -17,9 +13,21 @@ export const Section = styled.main`
 `
 
 export const SectionHeader = styled.header`
+    width: 100%;
+    background-color: rgba(247, 247, 250, 0.6);
+    backdrop-filter: blur(10px);
+    position: fixed;
+    top: 0;
+    left: 0;
+    padding: 50px 0 30px;
+    z-index: 200;
+`
+
+export const SectionHeaderWrapper = styled.div`
     display: flex;
     align-items: center;
-    margin-bottom: 30px;
+    margin: 0 auto;
+    max-width: ${(props) => props.theme.width.wrapperWidth};
 
     & i {
         vertical-align: -2px;
@@ -45,6 +53,7 @@ export const Form = styled.form`
     border-radius: ${(props) => props.theme.borderRadius.lv3};
     background-color: ${(props) => props.theme.color.background.content};
     color: ${props => props.theme.color.font.main};
+    margin-top: 112px;
 
     & > fieldset + fieldset {
         border-top: 1px solid ${(props) => props.theme.color.border.normal};
@@ -162,10 +171,73 @@ export const SettingList = styled.ul`
 export const SettingListItem = styled.li`
     width: 100%;
     display: flex;
+    align-content: center;
 
     & > p {
         width: 17%;
         padding-top: 7px;
+    }
+`
+
+export const PlatformAddButton = styled.button`
+    width: 33px;
+    height: 30px;
+    margin: 1px 2px 0 10px;
+    transition: all 0.2s;
+    font-size: ${props => props.theme.fontSize.pageSub};
+    background-color: ${props => props.theme.color.theme.main};
+    border-radius: ${props => props.theme.borderRadius.lv1};
+    color: ${props => props.theme.color.background.content};
+
+    &:hover {
+        background-color: ${props => props.theme.color.theme.dark};
+    }
+`
+
+export const SelectedPlatformList = styled.ul`
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+`
+
+export const SelectedPlatformListItem = styled.li`
+    width: 100%;
+    height: 32px;
+    display: flex;
+
+    & > p {
+        display: flex;
+        align-items: center;
+        width: 100%;
+    }
+
+    & > p > span:first-child {
+        width: 9%;
+    }
+    
+    & > p > span:nth-child(2) {
+        margin-right: 20px;
+    }
+`
+
+export const SelectedPlatformRemoveButton = styled.button`
+    width: 30px;
+    height: 30px;
+    margin: 0 2px 0 auto;
+    transition: all 0.2s;
+    font-size: ${props => props.theme.fontSize.button};
+    border: 1px solid ${props => props.theme.color.font.disable};
+    background-color: ${props => props.theme.color.background.hover_red};
+    border-radius: ${props => props.theme.borderRadius.lv2};
+    color: ${props => props.theme.color.font.disable};
+
+    &:hover {
+        background-color: ${props => props.theme.color.background.hover_red_2};
+    }
+
+    & > span {
+        ${IROnly}
     }
 `
 
@@ -312,8 +384,13 @@ export const EnvAddButton = styled.button`
     width: fit-content;
     margin-top: 12px;
     padding: 8px 16px;
+    transition: all 0.2s;
     background-color: ${props => props.theme.color.theme.main};
     border-radius: ${props => props.theme.borderRadius.lv1};
     color: ${props => props.theme.color.background.content};
     font-size: ${props => props.theme.fontSize.button};
+
+    &:hover {
+        background-color: ${props => props.theme.color.theme.dark};
+    }
 `
