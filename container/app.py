@@ -12,18 +12,12 @@ proxies = {}
 
 class ProxyRequest(BaseModel):
     name: str
-    url: str
+    ip: str
 
 @app.post('/api/proxies')
 def add_proxy(proxy: ProxyRequest):
-    proxies[proxy.name] = proxy.url
+    proxies[proxy.name] = f"http://{proxy.ip}/"
 
-    # Nginx 설정 파일 업데이트 및 재로드
-    update_nginx_config()
-
-    return {'message': 'Proxy added successfully'} 
-
-def update_nginx_config():
     nginx_config_path = '/etc/nginx/nginx.conf'
     proxy_config = ''
 
@@ -51,9 +45,11 @@ def update_nginx_config():
     with open(nginx_config_path, 'w') as f:
         f.write(nginx_config)
 
-    # Nginx 서버 리로드
+    # Nginx server reload
     subprocess.run(['nginx', '-s', 'reload'])
+
+    return {'message': 'Proxy added successfully'} 
 
 # 서버 시작
 if __name__ == '__main__':
-    uvicorn.run(app, host='0.0.0.0', port=8080)
+    uvicorn.run(app, host='0.0.0.0', port=28001)
