@@ -1,71 +1,27 @@
 import { useEffect, useRef, useState } from 'react';
-import { useLocation } from 'react-router';
-
-import ConfirmButton from 'components/buttons/confirmbutton/ConfirmButton';
-import SoftwareButton from 'components/buttons/softwarebutton/SoftwareButton';
-import SettingDropBox from 'components/dropbox/settingdropbox/SettingDropBox';
-
-import PreventDefault from 'utils/PreventDefault';
-import * as API from 'apis/SettingPageAPIs';
+import { useParams, useNavigate } from 'react-router';
 
 import * as S from './style'
 import react_logo from 'assets/react_logo.svg'
 
+import ConfirmButton from 'components/buttons/confirmbutton/ConfirmButton';
+import SoftwareButton from 'components/buttons/softwarebutton/SoftwareButton';
+import SettingDropBox from 'components/dropbox/settingdropbox/SettingDropBox';
 import PortHashTag from 'components/hashtags/porthashtags/PortHashTag';
 
-// 나중에 받아오던가 처리
-const infraList = [
-    {
-        image: react_logo,
-        name: "React",
-    },
-    {
-        image: react_logo,
-        name: "React2",
-    },
-    {
-        image: react_logo,
-        name: "React3",
-    }
-];
+import PreventDefault from 'utils/PreventDefault';
 
-const frameworkList = [
-    {
-        image: react_logo,
-        name: "React",
-    },
-    {
-        image: react_logo,
-        name: "React2",
-    },
-    {
-        image: react_logo,
-        name: "React3",
-    }
-];
-
-const dbList = [
-    {
-        image: react_logo,
-        name: "React4",
-    },
-    {
-        image: react_logo,
-        name: "React5",
-    },
-    {
-        image: react_logo,
-        name: "React6",
-    }
-];
+import { GetOSList, GetOSVersionList, GetPlatformList, GetPlatformVersionList, GenerateContainer } from 'apis/ContainerAPIs';
 
 export default function ContainerSettingPage() {
+    const { projectName } = useParams();
+    const navigate = useNavigate();
+
     // 사용자 입력 관련
     const [inputs, setInputs] = useState({
         name: "",
         desc: "",
     });
-    const inputsRef = useRef([]);
 
     const onChangeInput = (e) => {
         if (e.target.name === "name") {
@@ -85,12 +41,19 @@ export default function ContainerSettingPage() {
     }
 
     // infra 관련
+    const [infraList, setInfraList] = useState([]);
     const [infra, setInfra] = useState("");
     const [infraVersionList, setInfraVersionList] = useState([]);
     const [infraVersion, setInfraVersion] = useState("버전을 선택해주세요.");
 
     useEffect(() => {
-        // setInfra(infraList[0].name);
+        const getOSList = async () => {
+            const result = await GetOSList();
+
+            setInfraList(result);
+        }
+
+        getOSList();
     }, []);
 
     useEffect(() => {
@@ -98,7 +61,13 @@ export default function ContainerSettingPage() {
             return;
         }
 
-        setInfraVersionList(API.getInfraVersion(infra));
+        const getOSVersionList = async () => {
+            const result = await GetOSVersionList(infra);
+
+            setInfraVersionList(result.sort().reverse());
+        }
+
+        getOSVersionList();
     }, [infra]);
 
     useEffect(() => {
@@ -121,17 +90,43 @@ export default function ContainerSettingPage() {
     }
 
     // platform 관련
+    const [platformList, setPlatformList] = useState([]);
     const [platform, setPlatorm] = useState("");
     const [platformVersionList, setPlatformVersionList] = useState([]);
     const [platformVersion, setPlatformVersion] = useState("버전을 선택해주세요.");
     const [selectedPlatforms, setSelectedPlatforms] = useState([]);
 
     useEffect(() => {
+        if (infraList.length === 0) {
+            return;
+        }
+
+        const getPlatformList = async () => {
+            const result = await GetPlatformList();
+
+            setPlatformList(result);
+        }
+
+        getPlatformList();
+    }, [infraList]);
+
+    console.log(platform);
+    console.log(platformVersionList);
+
+    useEffect(() => {
         if (platform === "") {
             return;
         }
 
-        setPlatformVersionList(API.getPlatformVersion(platform));
+        const getOSPlatformList = async () => {
+            const result = await GetPlatformVersionList(platform);
+
+            console.log(result);
+
+            setPlatformVersionList(result.sort().reverse());
+        }
+
+        getOSPlatformList();
     }, [platform]);
 
     useEffect(() => {
@@ -229,11 +224,8 @@ export default function ContainerSettingPage() {
         setEnvs(values);
     }
 
-    // 데이터 수신
-    const location = useLocation();
-
     // 생성 버튼
-    const onClickGenerateButton = () => {
+    const onClickGenerateButton = async () => {
         const envRst = {};
 
         envs.forEach(env => {
@@ -242,28 +234,36 @@ export default function ContainerSettingPage() {
             }
 
             envRst[env.key] = env.value;
-        })
+        });
 
-        const generate = {
+        const result = await GenerateContainer(JSON.stringify({
+            "project": projectName,
             "name": inputs.name,
-            "project": location.state.project,
             "description": inputs.desc,
-            "gpu": "false",
+            "gpu": false,
             "build": {
                 "os": {
-                    "name": infra,
-                    "version": infraVersion,
+                    "name": "ubuntu",
+                    "version": "20.04",
                 },
-                "platfroms": selectedPlatforms,
+                "frameworks": selectedPlatforms,
             },
             "settings": {
                 "ports": ports,
                 "environments": envRst,
             }
+        }));
+
+        console.log(result);
+
+        if (result === 200) {
+            navigate("/" + projectName);
+        } else {
+            alert("컨테이너 생성 실패");
         }
 
-        API.generateContainer(JSON.stringify(generate));
     }
+
 
     return (
         <>
@@ -286,17 +286,17 @@ export default function ContainerSettingPage() {
                         <S.DivideFieldSet>
                             <S.IROnlyFieldSetLegend>이름 설정 영역</S.IROnlyFieldSetLegend>
                             <label htmlFor="nameInput">이름</label>
-                            <input type="text" id='nameInput' name='name' ref={(element) => (inputsRef.current[0] = element)} onChange={onChangeInput} placeholder='프로젝트 이름을 입력해주세요. (알파벳, 숫자, 하이픈(-), 언더바(_)만 입력해야 합니다.)' value={inputs.name} />
+                            <input type="text" id='nameInput' name='name' onChange={onChangeInput} placeholder='프로젝트 이름을 입력해주세요. (알파벳, 숫자, 하이픈(-), 언더바(_)만 입력해야 합니다.)' value={inputs.name} />
                         </S.DivideFieldSet>
                         <S.DivideFieldSet>
                             <S.IROnlyFieldSetLegend>설명 설정 영역</S.IROnlyFieldSetLegend>
                             <label htmlFor="descInput">설명</label>
-                            <S.DescTextArea id='descInput' name='desc' ref={(element) => (inputsRef.current[1] = element)} onChange={onChangeInput} placeholder='컨테이너 설명을 입력해주세요.' value={inputs.desc} />
+                            <S.DescTextArea id='descInput' name='desc' onChange={onChangeInput} placeholder='컨테이너 설명을 입력해주세요.' value={inputs.desc} />
                         </S.DivideFieldSet>
                         <S.DivideFieldSet>
                             <S.IROnlyFieldSetLegend>설명 설정 영역</S.IROnlyFieldSetLegend>
                             <p>프로젝트</p>
-                            <p>{location.state.project}</p>
+                            <p>{projectName}</p>
                         </S.DivideFieldSet>
                         <S.DivideFieldSet>
                             <S.IROnlyFieldSetLegend>GPU 설정 영역</S.IROnlyFieldSetLegend>
@@ -314,10 +314,10 @@ export default function ContainerSettingPage() {
                             <div>
                                 <S.SoftwareStackList>
                                     {
-                                        infraList.map(infraItem => {
+                                        infraList.map((infraItem, index) => {
                                             return (
-                                                <li key={infraItem.name}>
-                                                    <SoftwareButton props={{ image: infraItem.image, name: infraItem.name, callback: onClickInfraButton, selected: infra }} />
+                                                <li key={"" + infraItem + index}>
+                                                    <SoftwareButton props={{ image: react_logo, name: infraItem, callback: onClickInfraButton, selected: infra }} />
                                                 </li>
                                             )
                                         })
@@ -338,7 +338,7 @@ export default function ContainerSettingPage() {
                                 <S.SettingTitle>Frameworks & Libraries</S.SettingTitle>
                                 <S.SoftwareStackList>
                                     {
-                                        frameworkList.map(framework => {
+                                        platformList.filter(platform => platform.type === 'framework').map(framework => {
                                             let added = false;
 
                                             selectedPlatforms.forEach((selectedPlatform => {
@@ -349,7 +349,7 @@ export default function ContainerSettingPage() {
 
                                             return (
                                                 <li key={framework.name}>
-                                                    <SoftwareButton props={{ image: framework.image, name: framework.name, callback: onClickPlatformButton, selected: platform, added: added }} />
+                                                    <SoftwareButton props={{ image: react_logo, name: framework.name, callback: onClickPlatformButton, selected: platform, added: added }} />
                                                 </li>
                                             )
                                         })
@@ -358,7 +358,7 @@ export default function ContainerSettingPage() {
                                 <S.SettingTitle>Databases</S.SettingTitle>
                                 <S.SoftwareStackList>
                                     {
-                                        dbList.map(db => {
+                                        platformList.filter(platform => platform.type === 'database').map(db => {
                                             let added = false;
 
                                             selectedPlatforms.forEach((selectedPlatform => {
@@ -369,7 +369,7 @@ export default function ContainerSettingPage() {
 
                                             return (
                                                 <li key={db.name}>
-                                                    <SoftwareButton props={{ image: db.image, name: db.name, callback: onClickPlatformButton, selected: platform, added: added }} />
+                                                    <SoftwareButton props={{ image: react_logo, name: db.name, callback: onClickPlatformButton, selected: platform, added: added }} />
                                                 </li>
                                             )
                                         })
@@ -386,7 +386,7 @@ export default function ContainerSettingPage() {
                                         <S.SelectedPlatformList>
                                             {
                                                 selectedPlatforms.map((selectedPlatform, index) => {
-                                                    return(
+                                                    return (
                                                         <S.SelectedPlatformListItem key={'' + selectedPlatform.name + index}>
                                                             <p><span>{selectedPlatform.name}</span><span>-</span><span>{selectedPlatform.version}</span></p>
                                                             <S.SelectedPlatformRemoveButton onClick={onClickPlatformRemoveButton}><span>{selectedPlatform.name}</span>x</S.SelectedPlatformRemoveButton>
@@ -410,7 +410,7 @@ export default function ContainerSettingPage() {
                                             {
                                                 ports.map((portNo, index) => {
                                                     return (
-                                                        <PortHashTag props={{ index, portNo, onClickPortDelete }} key={index + ':' + portNo}/>
+                                                        <PortHashTag props={{ index, portNo, onClickPortDelete }} key={index + ':' + portNo} />
                                                     )
                                                 })
                                             }

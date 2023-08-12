@@ -11,6 +11,8 @@ export default function ContainerCard({ props: { container, clickedContainerModa
     const { projectName } = useParams();
     const [clicked, setClicked] = useState(false);
 
+    console.log(container);
+
     useEffect(() => {
         window.addEventListener("click", () => {
             setClicked(false);
@@ -66,11 +68,12 @@ export default function ContainerCard({ props: { container, clickedContainerModa
                 </S.MoreButtonWrapper>
             </S.ContainerHeader>
             <S.SoftwareWrapper>
-                <p>{container.build.os.name}</p>
-                <p>{container.build.platforms[0].name}</p>
+                {/* <p>{container.build.os.name}</p> */}
+                {/* <p>{container.build.platforms[0].name}</p> */}
             </S.SoftwareWrapper>
             <p>test desc</p>
             <S.ExecuteLink to={'/container/' + container.name} state={{ containerName: container.name }} >
+            {/* <S.ExecuteLink to={'http://container/' + container.name + '/'} state={{ containerName: container.name }} > */}
                 <i className="fa-solid fa-play"></i>
                 <span>실행</span>
             </S.ExecuteLink>

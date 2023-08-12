@@ -35,9 +35,10 @@ export default function ProjectCard({ props: { project, clickedProjectModal, set
     }
 
     return (
-        <S.Project>
-            <S.ProjectHeader>
-                <h3>{project.name}</h3>
+        <S.Project to={'/' + project.name}>
+            <S.ModalWrapper>
+                {/* <S.ProjectState></S.ProjectState> */}
+                <S.ProjectName>{project.name}</S.ProjectName>
                 <S.MoreButtonWrapper>
                     <S.MoreButton onClick={onClickButton}>
                         <i className="fas fa-ellipsis-h"></i>
@@ -46,10 +47,10 @@ export default function ProjectCard({ props: { project, clickedProjectModal, set
                     </S.MoreButton>
                     <S.MoreList clicked={clicked}>
                         <li>
-                            <S.MoreListLink to={"/" + project.name + "/modify"}>
+                            {/* <S.MoreListLink to={"/" + project.name + "/modify"}>
                                 <i className="fas fa-cog"></i>
                                 <span>프로젝트 설정</span>
-                            </S.MoreListLink>
+                            </S.MoreListLink> */}
                         </li>
                         <li>
                             <S.MoreListButton>
@@ -59,11 +60,9 @@ export default function ProjectCard({ props: { project, clickedProjectModal, set
                         </li>
                     </S.MoreList>
                 </S.MoreButtonWrapper>
-            </S.ProjectHeader>
+            </S.ModalWrapper>
+            <S.DesignDiv></S.DesignDiv>
             <S.ProjectDescription>{project.description}</S.ProjectDescription>
-            <S.ExecuteLink to={'/' + project.name}>
-                <span>열기</span>
-            </S.ExecuteLink>
         </S.Project>
     )
 }

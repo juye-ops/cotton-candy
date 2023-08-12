@@ -5,7 +5,7 @@ from database import *
 
 def add_proxy(container_name, subnet):
     subnet = subnet.split(".")
-    subnet[-1] = str(ContainerDB.get_len() + 1)
+    subnet[-1] = str(ContainerDB.get_len())
 
     container_ip = ".".join(subnet)
 

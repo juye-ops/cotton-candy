@@ -1,12 +1,12 @@
-import { useLocation } from "react-router"
+import { useParams } from "react-router"
 
 export default function ContainerPage() {
-    const location = useLocation();
-    console.log(location.state);
+    const { id } = useParams();
+    console.log(id);
 
     return (
         <>
-            <iframe src={"http://container/" + location.state.containerName} title="codeserver" style={{ width: "100%", height: "100vh" }}></iframe>
+            <iframe src={"http://container/" + id} title="codeserver" style={{ width: "100%", height: "100vh" }}></iframe>
         </>
     )
 }
