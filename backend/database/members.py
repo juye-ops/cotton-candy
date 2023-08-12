@@ -1,1 +1,1 @@
-from database import mysql_cli, cursor
+from database import mysql_cli
