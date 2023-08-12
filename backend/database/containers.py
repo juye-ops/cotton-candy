@@ -1,8 +1,11 @@
-from database import mysql_cli, cursor
+from database import mysql_cli
 
 
 class ContainerDB:
     def get_len():
+        conn = mysql_cli.get_connection()
+        cursor = conn.cursor(dictionary=True)
+
         query = f"""
         SELECT * from container
         """
@@ -10,9 +13,14 @@ class ContainerDB:
         cursor.execute(query)
         ret = cursor.fetchall()
 
+        conn.close()
+
         return len(ret)
 
     def get_list(project):
+        conn = mysql_cli.get_connection()
+        cursor = conn.cursor(dictionary=True)
+
         query = f"""
         SELECT name, description FROM (
             container INNER JOIN container_info 
@@ -22,12 +30,17 @@ class ContainerDB:
             WHERE name=%s
         );
         """
-        cursor.execute(query, (project))
+        cursor.execute(query, (project, ))
         ret = cursor.fetchall()
+
+        conn.close()
 
         return ret
 
     def create(name, project, description, gpu, ports, envs, os, frameworks):
+        conn = mysql_cli.get_connection()
+        cursor = conn.cursor(dictionary=True)
+
         # Add container
         query = f"""
         INSERT INTO container(project_id, name)
@@ -37,7 +50,7 @@ class ContainerDB:
         );
         """
         cursor.execute(query, (project, name))
-        mysql_cli.commit()
+        conn.commit()
 
         # Add container info
         query = f"""
@@ -49,7 +62,7 @@ class ContainerDB:
         );
         """
         cursor.execute(query, (name, description, gpu))
-        mysql_cli.commit()
+        conn.commit()
 
         # Add ports of container
         for port in ports:
@@ -61,7 +74,7 @@ class ContainerDB:
             );
             """
             cursor.execute(query, (name, port))
-        mysql_cli.commit()
+        conn.commit()
 
         # Add envs of container
         for k, v in envs.items():
@@ -73,8 +86,9 @@ class ContainerDB:
                 %s
             );
             """
+
             cursor.execute(query, (name, k, v))
-        mysql_cli.commit()
+        conn.commit()
 
         # Add os of container
         query = f"""
@@ -85,7 +99,7 @@ class ContainerDB:
         );
         """
         cursor.execute(query, (name, os["name"], os["version"]))
-        mysql_cli.commit()
+        conn.commit()
 
         # Add envs of container
         for framework in frameworks:
@@ -97,6 +111,8 @@ class ContainerDB:
             );
             """
             cursor.execute(query, (name, framework["name"], framework["version"]))
-        mysql_cli.commit()
+        conn.commit()
+
+        conn.close()
 
         return

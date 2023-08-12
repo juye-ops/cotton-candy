@@ -1,4 +1,4 @@
-from database import mysql_cli, cursor
+from database import mysql_cli
 
 
 class FrameworkDB:
@@ -7,8 +7,13 @@ class FrameworkDB:
         SELECT name, type from framework
         """
 
+        conn = mysql_cli.get_connection()
+        cursor = conn.cursor(dictionary=True)
+
         cursor.execute(query)
         ret = cursor.fetchall()
+
+        conn.close()
 
         return ret
 
@@ -25,9 +30,15 @@ class FrameworkDB:
             WHERE name="{key}"
         );
         """
+
+        conn = mysql_cli.get_connection()
+        cursor = conn.cursor(dictionary=True)
+
         cursor.execute(query)
         ret = cursor.fetchall()
 
         framework_versions = [x["version"] for x in ret]
+
+        conn.close()
 
         return framework_versions

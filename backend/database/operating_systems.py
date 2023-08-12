@@ -1,8 +1,11 @@
-from database import mysql_cli, cursor
+from database import mysql_cli
 
 
 class OSDB:
     def get_list():
+        conn = mysql_cli.get_connection()
+        cursor = conn.cursor(dictionary=True)
+
         query = f"""
         SELECT name from os
         """
@@ -12,6 +15,8 @@ class OSDB:
 
         os_list = [x["name"] for x in ret]
 
+        conn.close()
+
         return os_list
 
     def get_version(key: str) -> dict:
@@ -20,6 +25,9 @@ class OSDB:
 
         :param key: to get specific data that matches
         """
+        conn = mysql_cli.get_connection()
+        cursor = conn.cursor(dictionary=True)
+
         query = f"""
         SELECT version FROM os_version 
         WHERE os_id=(
@@ -32,5 +40,7 @@ class OSDB:
         ret = cursor.fetchall()
 
         os_versions = [x["version"] for x in ret]
-
+        
+        conn.close()
+        
         return os_versions
