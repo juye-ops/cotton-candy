@@ -25,6 +25,10 @@ def add_proxy(proxy: ProxyRequest):
         proxy_config += f'''
         location /{name}/ {{
             proxy_pass {url};
+            proxy_set_header Host $host;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection upgrade;
+            proxy_set_header Accept-Encoding gzip;
         }}
         '''
 
@@ -33,7 +37,7 @@ def add_proxy(proxy: ProxyRequest):
     http {{
         server {{
             listen 80;
-            server_name localhost;
+            server_name container;
 
             {proxy_config}
 
