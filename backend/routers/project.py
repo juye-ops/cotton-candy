@@ -8,10 +8,15 @@ router = APIRouter(
 )
 
 
-class ProjectInfo(BaseModel):
+class Create(BaseModel):
     user_name: str
     name: str
     description: str
+
+class Edit(BaseModel):
+    old_name: str
+    new_name: str
+    desc: str
 
 
 @router.get("/list/")
@@ -21,17 +26,33 @@ def project_list():
 
 
 @router.post("/create/")
-def create_project(info: ProjectInfo):
+def create_project(info: Create):
     info = info.dict()
 
     project_name = info["name"]
     project_desc = info["description"]
 
-    ip_range = ProjectDB.get_len() + 1
-    subnet = f"172.16.{ip_range}.0/24"
-    gateway = f"172.16.{ip_range}.254"
+    net_info = dind.Network.create(info["name"])
 
-    ProjectDB.create(project_name, project_desc, subnet)
-    dind.create_network(info["name"], subnet, gateway)
+    ProjectDB.create(project_name, project_desc, net_info['subnet'])
+
+    return 200
+
+@router.post("/edit/")
+def create_project(res: Edit):
+    res = res.dict()
+
+    old_name = res["old_name"]
+    new_name = res["new_name"]
+    project_desc = res["desc"]
+    
+    container_list = ProjectDB.get_containers(old_name)
+
+    dind.Network.disconnect_all(res["old_name"])
+    dind.Network.remove(res["old_name"])
+    net_info = dind.Network.create(res["new_name"])
+    dind.Network.connect_containers(new_name, container_list)
+
+    ProjectDB.update(old_name, new_name, project_desc, net_info['subnet'])
 
     return 200

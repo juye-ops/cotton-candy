@@ -9,8 +9,12 @@ router = APIRouter(
     prefix="/container",
 )
 
+@router.get("/list/")
+def container_list(project: str):
+    container_list = ContainerDB.get_list(project)
+    return container_list
 
-class ContainerInfo(BaseModel):
+class Create(BaseModel):
     class Build(BaseModel):
         class OperSys(BaseModel):
             name: str
@@ -34,15 +38,8 @@ class ContainerInfo(BaseModel):
     build: Build
     settings: Settings
 
-
-@router.get("/list/")
-def container_list(project: str):
-    container_list = ContainerDB.get_list(project)
-    return container_list
-
-
 @router.post("/create")
-def build(config: ContainerInfo):
+def container_build(config: Create):
     config = config.dict()
 
     container_name = config["name"]
@@ -63,8 +60,10 @@ def build(config: ContainerInfo):
 
     # create dockerfile
     iac.create(container_name, container_os, container_frameworks)
-    dind.build(container_name)
-    dind.run(container_name, container_project, container_ports, container_envs)
+    dind.Container.build(container_name)
+    dind.Container.run(container_name, container_project, container_ports, container_envs)
+
+    container_ip = dind.Container.get_info(container_name)["NetworkSettings"]["Networks"][container_project]["IPAddress"] # Get IP Address
 
     # Insert database
     ContainerDB.create(
@@ -76,10 +75,52 @@ def build(config: ContainerInfo):
         container_envs,
         container_os,
         container_frameworks,
+        container_ip
     )
 
     # add ide proxy
-    subnet = ProjectDB.get_subnet(container_project)
-    ide.add_proxy(container_name, subnet)
+    ide.add_proxy(container_name, container_ip)
+
+    return 200
+
+class Edit(BaseModel):
+    class Settings(BaseModel):
+        ports: list
+        environments: Dict[str, str]
+    old_name: str
+    new_name: str
+    project: str
+    description: str
+    gpu: bool
+    settings: Settings
+
+@router.post("/edit")
+def container_edit(config: Edit):
+    config = config.dict()
+
+    old_name = config["old_name"]
+    new_name = config["new_name"]
+    container_project = config["project"]
+    container_desc = config["description"]
+    container_gpu = config["gpu"]
+
+    settings_config = config["settings"]
+
+    container_ports = settings_config["ports"]
+    container_envs = settings_config["environments"]
+
+    container_ports = {p: p for p in container_ports}
+
+    dind.Container.edit(old_name, new_name, container_project, container_ports, container_envs)
+
+    # Insert database
+    ContainerDB.update(
+        old_name,
+        new_name,
+        container_desc,
+        container_gpu,
+        container_ports,
+        container_envs,
+    )
 
     return 200
