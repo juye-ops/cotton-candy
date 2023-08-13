@@ -3,7 +3,7 @@ from database import mysql_cli
 
 class FrameworkDB:
     def get_list():
-        query = f"""
+        query = """
         SELECT name, type from framework
         """
 
@@ -23,7 +23,7 @@ class FrameworkDB:
 
         :param key: to get specific data that matches
         """
-        query = f"""
+        query = """
         SELECT version FROM framework_version 
         WHERE framework_id=(
             SELECT id from framework

@@ -6,7 +6,7 @@ class OSDB:
         conn = mysql_cli.get_connection()
         cursor = conn.cursor(dictionary=True)
 
-        query = f"""
+        query = """
         SELECT name from os
         """
 
@@ -28,7 +28,7 @@ class OSDB:
         conn = mysql_cli.get_connection()
         cursor = conn.cursor(dictionary=True)
 
-        query = f"""
+        query = """
         SELECT version FROM os_version 
         WHERE os_id=(
             SELECT id from os
