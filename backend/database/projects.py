@@ -2,29 +2,11 @@ from database import mysql_cli
 
 
 class ProjectDB:
-    def get_subnet(project):
-        conn = mysql_cli.get_connection()
-        cursor = conn.cursor(dictionary=True)
-
-        query = f"""
-        SELECT subnet FROM project_info 
-        WHERE project_id=(
-            SELECT id FROM project WHERE name=%s
-        );
-        """
-
-        cursor.execute(query, (project, ))
-        ret = cursor.fetchone()
-        
-        conn.close()
-        
-        return ret["subnet"]
-
     def get_len():
         conn = mysql_cli.get_connection()
         cursor = conn.cursor(dictionary=True)
 
-        query = f"""
+        query = """
         SELECT * from project
         """
 
@@ -39,7 +21,7 @@ class ProjectDB:
         conn = mysql_cli.get_connection()
         cursor = conn.cursor(dictionary=True)
 
-        query = f"""
+        query = """
         SELECT name, description FROM (
             project INNER JOIN project_info 
             ON project.id=project_info.project_id
@@ -52,17 +34,35 @@ class ProjectDB:
 
         return ret
 
+    def get_containers(project_name):
+        conn = mysql_cli.get_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        query = """
+        SELECT name FROM container
+        WHERE project_id=(
+            SELECT id FROM project
+            WHERE name=%s
+        )
+        """
+        cursor.execute(query, (project_name,))
+        ret = cursor.fetchall()
+
+        conn.close()
+
+        return ret
+
     def create(name, description, subnet):
         conn = mysql_cli.get_connection()
         cursor = conn.cursor(dictionary=True)
 
-        query = f"""
+        query = """
         INSERT INTO project(user_id, name) VALUES (1, %s);
         """
         cursor.execute(query, (name, ))
         conn.commit()
 
-        query = f"""
+        query = """
         INSERT INTO project_info (project_id, description, subnet) 
         VALUES (
             (SELECT id FROM project WHERE name=%s),
@@ -71,6 +71,32 @@ class ProjectDB:
         );
         """
         cursor.execute(query, (name, description, subnet))
+        conn.commit()
+
+        conn.close()
+
+        return
+
+    def update(old_name, new_name, description, subnet):
+        conn = mysql_cli.get_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        query = """
+        UPDATE project
+        SET name=%s
+        WHERE name=%s;
+        """
+        cursor.execute(query, (old_name, new_name))
+        conn.commit()
+
+        query = """
+        UPDATE project_info
+        SET
+            description=%s,
+            subnet=%s
+        WHERE project_id=(SELECT id FROM project WHERE name=%s)
+        """
+        cursor.execute(query, (description, subnet, new_name))
         conn.commit()
 
         conn.close()
