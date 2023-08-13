@@ -2,9 +2,9 @@ import { Link } from "react-router-dom";
 import styled from "styled-components";
 import IROnly from "styles/IROnly";
 
-export const Project = styled.section`
+export const Project = styled(Link)`
     height: 180px;
-    padding: 16px 20px 20px 20px;
+    padding: 30px 25px;
     display: flex;
     flex-direction: column;
     background-color: ${props => props.theme.color.background.content};
@@ -12,15 +12,46 @@ export const Project = styled.section`
     border-radius: ${props => props.theme.borderRadius.lv2};
 `
 
-export const ProjectHeader = styled.header`
+export const ModalWrapper = styled.div`
     display: flex;
     align-items: center;
-    margin-bottom: 16px;
+    padding-left: 2px;
+`
+
+export const ProjectState = styled.div`
+    width: 8px;
+    height: 8px;
+    margin-right: 12px;
+    border-radius: 50%;
+    background-color: ${props => props.theme.color.theme.main};
+`
+
+export const ProjectName = styled.p`
+    font-size: 16px;
+`
+
+export const ProjectDescription = styled.p`
+    margin-top: 15px;
+    line-height: 16px;
+    white-space: normal;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;  
+    padding-left: 2px;
+    font-size: ${props => props.theme.fontSize.content};
+    color: ${props => props.theme.color.font.desc};
+`
+
+export const DesignDiv = styled.div`
+    /* margin-right: 10px; */
+    margin-top: 15px;
+    border-bottom: 1px solid ${props => props.theme.color.theme.main};
 `
 
 export const MoreButtonWrapper = styled.div`
-    margin-left: auto;
     position: relative;
+    margin-left: auto;
 `
 
 export const MoreButton = styled.button`
@@ -100,35 +131,5 @@ export const MoreListButton = styled.button`
 
     &:hover {
         background-color: ${props => props.theme.color.background.dark};
-    }
-`
-
-export const ProjectDescription = styled.p`
-    margin-top: 10px;
-    font-size: ${props => props.theme.fontSize.button};
-    color: ${props => props.theme.color.font.desc};
-`
-
-export const ExecuteLink = styled(Link)`
-    width: 100%;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-top: auto;
-    transition: all 0.2s;
-    background-color: ${props => props.theme.color.background.hover};
-    border: 1px solid ${props => props.theme.color.theme.main};
-    border-radius: ${props => props.theme.borderRadius.lv2};
-    color: ${props => props.theme.color.theme.main};
-    font-size: ${props => props.theme.fontSize.desc};
-
-    &:hover {
-        background-color: ${props => props.theme.color.background.hover3};
-    }
-
-    & > i {
-        font-size: 11px;
-        margin-right: 8px;
     }
 `

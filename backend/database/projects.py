@@ -1,8 +1,11 @@
-from database import mysql_cli, cursor
+from database import mysql_cli
 
 
 class ProjectDB:
     def get_subnet(project):
+        conn = mysql_cli.get_connection()
+        cursor = conn.cursor(dictionary=True)
+
         query = f"""
         SELECT subnet FROM project_info 
         WHERE project_id=(
@@ -10,12 +13,17 @@ class ProjectDB:
         );
         """
 
-        cursor.execute(query, (project))
+        cursor.execute(query, (project, ))
         ret = cursor.fetchone()
-
+        
+        conn.close()
+        
         return ret["subnet"]
 
     def get_len():
+        conn = mysql_cli.get_connection()
+        cursor = conn.cursor(dictionary=True)
+
         query = f"""
         SELECT * from project
         """
@@ -23,9 +31,14 @@ class ProjectDB:
         cursor.execute(query)
         ret = cursor.fetchall()
 
+        conn.close()
+
         return len(ret)
 
     def get_list():
+        conn = mysql_cli.get_connection()
+        cursor = conn.cursor(dictionary=True)
+
         query = f"""
         SELECT name, description FROM (
             project INNER JOIN project_info 
@@ -35,14 +48,19 @@ class ProjectDB:
         cursor.execute(query)
         ret = cursor.fetchall()
 
+        conn.close()
+
         return ret
 
     def create(name, description, subnet):
+        conn = mysql_cli.get_connection()
+        cursor = conn.cursor(dictionary=True)
+
         query = f"""
         INSERT INTO project(user_id, name) VALUES (1, %s);
         """
-        cursor.execute(query, (name))
-        mysql_cli.commit()
+        cursor.execute(query, (name, ))
+        conn.commit()
 
         query = f"""
         INSERT INTO project_info (project_id, description, subnet) 
@@ -53,6 +71,8 @@ class ProjectDB:
         );
         """
         cursor.execute(query, (name, description, subnet))
-        mysql_cli.commit()
+        conn.commit()
+
+        conn.close()
 
         return

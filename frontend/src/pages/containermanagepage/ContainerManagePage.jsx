@@ -2,9 +2,10 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 
 import * as S from './style';
-import { getContainerList } from 'apis/ManagePageAPIs';
 
 import ContainerCard from 'components/cards/containercard/ContainerCard';
+
+import { GetContainerList } from 'apis/ContainerAPIs';
 
 export default function ContainerManagePage() {
     const { projectName } = useParams();
@@ -13,8 +14,13 @@ export default function ContainerManagePage() {
     const [containerList, setContainerList] = useState([]);
 
     useEffect(() => {
-        // 프로젝트 이름 통해서 컨테이너 리스트 받아오기
-        setContainerList(getContainerList());
+        const getContainerList = async () => {
+            const result = await GetContainerList(projectName);
+
+            setContainerList(result);
+        }
+
+        getContainerList();
     }, []);
 
     // 컨테이너 모달
