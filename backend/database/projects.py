@@ -86,7 +86,7 @@ class ProjectDB:
         SET name=%s
         WHERE name=%s;
         """
-        cursor.execute(query, (old_name, new_name))
+        cursor.execute(query, (new_name, old_name))
         conn.commit()
 
         query = """

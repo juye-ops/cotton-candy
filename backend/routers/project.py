@@ -52,7 +52,12 @@ def create_project(res: Edit):
     dind.Network.remove(res["old_name"])
     net_info = dind.Network.create(res["new_name"])
     dind.Network.connect_containers(new_name, container_list)
-
+    print(net_info, flush=True)
     ProjectDB.update(old_name, new_name, project_desc, net_info['subnet'])
+    for c in container_list:
+        container_ip = dind.Container.get_info(c['name'])["NetworkSettings"]["Networks"][new_name]["IPAddress"]
+        print(container_ip, flush=True)
+        ContainerDB.update_ip(c["name"], container_ip)
+
 
     return 200

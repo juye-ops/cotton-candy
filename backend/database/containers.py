@@ -168,3 +168,19 @@ class ContainerDB:
 
         return
 
+    def update_ip(name, ip_addr):
+        conn = mysql_cli.get_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        query = """
+        UPDATE container_info
+        SET ip=%s
+        WHERE container_id=(
+            SELECT id FROM container
+            WHERE name=%s
+        );
+        """
+        cursor.execute(query, (ip_addr, name))
+        conn.commit()
+        return
+
