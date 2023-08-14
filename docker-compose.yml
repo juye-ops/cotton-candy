@@ -6,17 +6,18 @@ services:
     container_name: cotton-frontend
     ports:
       - 3000:3000
+    volumes:
+      - ./frontend/:/root/frontend
     networks:
       cotton-net:
         ipv4_address: 172.24.0.2
-    volumes:
-      - ./frontend/:/root/frontend
     stdin_open: true
     tty: true
 
   backend:
     build: ./backend
     container_name: cotton-backend
+    restart: always
     ports:
       - 5000:5000
     volumes:
@@ -28,33 +29,37 @@ services:
         ipv4_address: 172.24.0.3
     command: python app.py
 
-  containers:
-    build: ./containers
-    container_name: cotton-containers
-    privileged: true
+  container:
+    build: ./container
+    container_name: cotton-container
     environment:
       DOCKER_TLS_CERTDIR: ""
     ports:
       - 80:80
       - 2375:2375
       - 28001:28001
+    volumes:
+      - ./container/:/root/container
     networks:
       cotton-net:
         ipv4_address: 172.24.0.4
+    privileged: true
     command: sh -c "nginx & python3 app.py & dockerd -H tcp://0.0.0.0:2375"
 
   database:
-    image: mongo:6.0
-    container_name: cotton-db
+    image: mysql:8.0.22
+    container_name: cotton-database
     restart: always
     environment:
-      - MONGO_DATA_DIR=/data/db
-      - MONGO_LOG_DIR=/dev/null
+      - MYSQL_PORT=3306
+      - MYSQL_ROOT_PASSWORD=password
     ports:
-      - 27017:27017
+      - 3306:3306
     networks:
       cotton-net:
         ipv4_address: 172.24.0.5
+    volumes:
+      - ./db/:/docker-entrypoint-initdb.d/
 
 networks:
   cotton-net:
@@ -62,7 +67,3 @@ networks:
     ipam:
       config:
         - subnet: 172.24.0.0/16
-
-volumes:
-  mongodb_data:
-    external: false

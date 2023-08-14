@@ -1,10 +1,12 @@
-import React from 'react'
+import { useParams } from "react-router"
 
 export default function ContainerPage() {
+    const { id } = useParams();
+    console.log(id);
+
     return (
         <>
-            {/* ContainerPage */}
-            <iframe src="http://172.24.0.2:8080/" title="codeserver" style={{ width: "100%", height: "100vh" }}></iframe>
+        <iframe src={"http://172.24.0.4/"+ id + "/"} title="codeserver" style={{ width: "100%", height: "100vh" }}></iframe>
         </>
     )
 }
