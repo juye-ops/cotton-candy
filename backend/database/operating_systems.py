@@ -1,46 +1,25 @@
-from database import mysql_cli
+from database import mysql_cli, select
 
 
 class OSDB:
+    @select
     def get_list():
-        conn = mysql_cli.get_connection()
-        cursor = conn.cursor(dictionary=True)
-
         query = """
         SELECT name from os
         """
+        arg = ()
 
-        cursor.execute(query)
-        ret = cursor.fetchall()
-
-        os_list = [x["name"] for x in ret]
-
-        conn.close()
-
-        return os_list
-
-    def get_version(key: str) -> dict:
-        """
-        Read collection's data with any key
-
-        :param key: to get specific data that matches
-        """
-        conn = mysql_cli.get_connection()
-        cursor = conn.cursor(dictionary=True)
-
+        return query, arg
+    
+    @select
+    def get_version(name) -> dict:
         query = """
         SELECT version FROM os_version 
         WHERE os_id=(
             SELECT id from os
-            WHERE name="{key}"
+            WHERE name=%s
         );
         """
+        arg = (name, )
 
-        cursor.execute(query)
-        ret = cursor.fetchall()
-
-        os_versions = [x["version"] for x in ret]
-        
-        conn.close()
-        
-        return os_versions
+        return query, arg
