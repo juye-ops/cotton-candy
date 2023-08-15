@@ -1,43 +1,21 @@
-from database import mysql_cli
+from database import mysql_cli, select, insert, update
 
 
 class ProjectDB:
-    def get_len():
-        conn = mysql_cli.get_connection()
-        cursor = conn.cursor(dictionary=True)
-
-        query = """
-        SELECT * from project
-        """
-
-        cursor.execute(query)
-        ret = cursor.fetchall()
-
-        conn.close()
-
-        return len(ret)
-
+    @select
     def get_list():
-        conn = mysql_cli.get_connection()
-        cursor = conn.cursor(dictionary=True)
-
         query = """
         SELECT name, description FROM (
             project INNER JOIN project_info 
             ON project.id=project_info.project_id
         );
         """
-        cursor.execute(query)
-        ret = cursor.fetchall()
+        arg = ()
 
-        conn.close()
-
-        return ret
-
-    def get_containers(project_name):
-        conn = mysql_cli.get_connection()
-        cursor = conn.cursor(dictionary=True)
-
+        return query, arg
+    
+    @select
+    def get_containers(name):
         query = """
         SELECT name FROM container
         WHERE project_id=(
@@ -45,60 +23,61 @@ class ProjectDB:
             WHERE name=%s
         )
         """
-        cursor.execute(query, (project_name,))
-        ret = cursor.fetchall()
+        arg = (name,)
 
-        conn.close()
-
-        return ret
-
+        return query, arg
+    
     def create(name, description, subnet):
-        conn = mysql_cli.get_connection()
-        cursor = conn.cursor(dictionary=True)
+        @insert
+        def q1(name):
+            query = """
+            INSERT INTO project(user_id, name) VALUES (1, %s);
+            """
+            arg = (name,)
 
-        query = """
-        INSERT INTO project(user_id, name) VALUES (1, %s);
-        """
-        cursor.execute(query, (name, ))
-        conn.commit()
+            return query, arg
+        
+        @insert
+        def q2(name, description, subnet):
+            query = """
+            INSERT INTO project_info (project_id, description, subnet) 
+            VALUES (
+                (SELECT id FROM project WHERE name=%s),
+                %s,
+                %s
+            );
+            """
+            arg = (name, description, subnet)
 
-        query = """
-        INSERT INTO project_info (project_id, description, subnet) 
-        VALUES (
-            (SELECT id FROM project WHERE name=%s),
-            %s,
-            %s
-        );
-        """
-        cursor.execute(query, (name, description, subnet))
-        conn.commit()
+            return query, arg
 
-        conn.close()
-
-        return
+        q1(name)
+        q2(name, description, subnet)
 
     def update(old_name, new_name, description, subnet):
-        conn = mysql_cli.get_connection()
-        cursor = conn.cursor(dictionary=True)
+        @update
+        def q1(old_name, new_name):
+            query = """
+            UPDATE project
+            SET name=%s
+            WHERE name=%s;
+            """
+            arg = (new_name, old_name)
 
-        query = """
-        UPDATE project
-        SET name=%s
-        WHERE name=%s;
-        """
-        cursor.execute(query, (new_name, old_name))
-        conn.commit()
+            return query, arg
 
-        query = """
-        UPDATE project_info
-        SET
-            description=%s,
-            subnet=%s
-        WHERE project_id=(SELECT id FROM project WHERE name=%s)
-        """
-        cursor.execute(query, (description, subnet, new_name))
-        conn.commit()
+        @update
+        def q2(new_name, description, subnet):
+            query = """
+            UPDATE project_info
+            SET
+                description=%s,
+                subnet=%s
+            WHERE project_id=(SELECT id FROM project WHERE name=%s)
+            """
+            arg = (description, subnet, new_name)
+            
+            return query, arg
 
-        conn.close()
-
-        return
+        q1(old_name, new_name)
+        q2(new_name, description, subnet)
