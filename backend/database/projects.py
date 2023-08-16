@@ -1,4 +1,4 @@
-from database import mysql_cli, select, insert, update
+from database import mysql_cli, select, insert, update, delete
 
 
 class ProjectDB:
@@ -54,7 +54,7 @@ class ProjectDB:
         q1(name)
         q2(name, description, subnet)
 
-    def update(old_name, new_name, description, subnet):
+    def edit(old_name, new_name, description, subnet):
         @update
         def q1(old_name, new_name):
             query = """
@@ -81,3 +81,12 @@ class ProjectDB:
 
         q1(old_name, new_name)
         q2(new_name, description, subnet)
+
+    @delete
+    def remove(name):
+        query = """
+        DELETE FROM project
+        WHERE name = %s
+        """
+        arg = (name,)
+        return query, arg
