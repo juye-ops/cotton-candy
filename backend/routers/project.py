@@ -7,7 +7,6 @@ router = APIRouter(
     prefix="/project",
 )
 
-
 class Create(BaseModel):
     user_name: str
     name: str
@@ -19,14 +18,14 @@ class Edit(BaseModel):
     desc: str
 
 
-@router.get("/list/")
-def project_list():
+@router.get("/list")
+def _list():
     project_list = ProjectDB.get_list()
     return project_list
 
 
-@router.post("/create/")
-def create_project(info: Create):
+@router.post("/create")
+def _create(info: Create):
     info = info.dict()
 
     project_name = info["name"]
@@ -38,8 +37,8 @@ def create_project(info: Create):
 
     return 200
 
-@router.post("/edit/")
-def create_project(res: Edit):
+@router.post("/edit")
+def _edit(res: Edit):
     res = res.dict()
 
     old_name = res["old_name"]
@@ -62,8 +61,8 @@ def create_project(res: Edit):
 
     return 200
 
-@router.delete("/remove/")
-def remove_project(name: str):
+@router.delete("/remove")
+def _remove(name: str):
     container_list = ProjectDB.get_containers(name)
 
     for c in container_list:
