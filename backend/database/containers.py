@@ -1,4 +1,4 @@
-from database import mysql_cli, select, insert, update, delete
+from database import select, insert, update, delete
 
 
 class ContainerDB:
@@ -73,7 +73,6 @@ class ContainerDB:
         # Add os of container
         @insert
         def q5(*args):
-
             query = """
             INSERT INTO container_os(container_id, version_id)
             VALUES (
@@ -81,7 +80,6 @@ class ContainerDB:
                 (SELECT os_version.id from os_version INNER JOIN os ON os_version.os_id=os.id where name=%s AND version=%s)
             );
             """
-            formatter = args
             return query, args
 
         # Add envs of container
