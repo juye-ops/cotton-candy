@@ -53,7 +53,7 @@ def create_project(res: Edit):
     net_info = dind.Network.create(res["new_name"])
     dind.Network.connect_containers(new_name, container_list)
     print(net_info, flush=True)
-    ProjectDB.update(old_name, new_name, project_desc, net_info['subnet'])
+    ProjectDB.edit(old_name, new_name, project_desc, net_info['subnet'])
     for c in container_list:
         container_ip = dind.Container.get_info(c['name'])["NetworkSettings"]["Networks"][new_name]["IPAddress"]
         print(container_ip, flush=True)
@@ -61,3 +61,14 @@ def create_project(res: Edit):
 
 
     return 200
+
+@router.delete("/remove/")
+def remove_project(name: str):
+    container_list = ProjectDB.get_containers(name)
+
+    for c in container_list:
+        dind.Container.remove(c["name"])
+    
+    dind.Network.remove(name)
+
+    ProjectDB.remove(name)
