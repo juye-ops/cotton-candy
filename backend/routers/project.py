@@ -15,7 +15,7 @@ class Create(BaseModel):
 class Edit(BaseModel):
     old_name: str
     new_name: str
-    desc: str
+    description: str
 
 
 @router.get("/list")
