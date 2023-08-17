@@ -114,7 +114,7 @@ def container_edit(config: Edit):
     dind.Container.edit(old_name, new_name, container_project, container_ports, container_envs)
 
     # Insert database
-    ContainerDB.update(
+    ContainerDB.edit(
         old_name,
         new_name,
         container_desc,
@@ -123,4 +123,10 @@ def container_edit(config: Edit):
         container_envs,
     )
 
+    return 200
+
+@router.delete("/remove")
+def container_remove(name: str):
+    dind.Container.remove(name)
+    ContainerDB.remove(name)
     return 200

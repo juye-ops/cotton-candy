@@ -39,6 +39,11 @@ class Container:
             detach=True,
         )
 
+    def remove(container_name):
+        container = docker_cli.containers.get(container_name)
+        container.stop()
+        container.remove()
+
 class Network:
     def create(network_name):
         net_info = docker_cli.networks.create(name=network_name, driver="bridge")
