@@ -114,7 +114,7 @@ def container_edit(config: Edit):
     dind.Container.edit(old_name, new_name, container_project, container_ports, container_envs)
 
     # Insert database
-    ContainerDB.update(
+    ContainerDB.edit(
         old_name,
         new_name,
         container_desc,

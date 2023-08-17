@@ -110,7 +110,7 @@ class ContainerDB:
         for framework in frameworks:
             q6(name, framework["name"], framework["version"])
 
-    def edit_container(old_name, new_name, description, gpu, ports, envs):
+    def edit(old_name, new_name, description, gpu, ports, envs):
         # Modify container
         @update
         def q1(*args):
