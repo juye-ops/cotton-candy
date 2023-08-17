@@ -1,4 +1,4 @@
-from database import mysql_cli, select, insert, update
+from database import mysql_cli, select, insert, update, delete
 
 
 class ContainerDB:
@@ -176,4 +176,13 @@ class ContainerDB:
         );
         """
         arg = (ip_addr, name)
+        return query, arg
+
+    @delete
+    def remove(name):
+        query = """
+        DELETE FROM container
+        WHERE name=%s
+        """
+        arg = (name, )
         return query, arg

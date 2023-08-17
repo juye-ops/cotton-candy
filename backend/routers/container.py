@@ -124,3 +124,9 @@ def container_edit(config: Edit):
     )
 
     return 200
+
+@router.delete("/remove")
+def container_remove(name: str):
+    dind.Container.remove(name)
+    ContainerDB.remove(name)
+    return 200
