@@ -31,7 +31,7 @@ def insert(func):
         query, arg = func(*args)
 
         conn = mysql_cli.get_connection()
-        cursor = conn.cursor(dictionary=True)
+        cursor = conn.cursor()
 
         cursor.execute(query, arg)
         conn.commit()
@@ -45,7 +45,7 @@ def update(func):
         query, arg = func(*args)
 
         conn = mysql_cli.get_connection()
-        cursor = conn.cursor(dictionary=True)
+        cursor = conn.cursor()
 
         cursor.execute(query, arg)
         conn.commit()
@@ -53,6 +53,22 @@ def update(func):
         conn.close()
 
     return _update
+
+
+def delete(func):
+    def _delete(*args):
+        query, arg = func(*args)
+
+        conn = mysql_cli.get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute(query, arg)
+        conn.commit()
+        
+        conn.close()
+
+    return _delete
+
 
 from .containers import *
 from .operating_systems import *
