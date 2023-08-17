@@ -30,5 +30,5 @@ def get_os_version(app):
 def get_os_list():
     data = OSDB.get_list()
     ret = [x["name"] for x in data]
-    
+
     return ret

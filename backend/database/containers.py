@@ -13,10 +13,9 @@ class ContainerDB:
             WHERE name=%s
         );
         """
-        arg = (project, )
+        arg = (project,)
 
         return query, arg
-
 
     def create(name, project, description, gpu, ports, envs, os, frameworks, ip_addr):
         # Add container
@@ -57,7 +56,6 @@ class ContainerDB:
             """
             return query, args
 
-
         # Add envs of container
         @insert
         def q4(*args):
@@ -70,6 +68,7 @@ class ContainerDB:
             );
             """
             return query, args
+
         # Add os of container
         @insert
         def q5(*args):
@@ -102,7 +101,7 @@ class ContainerDB:
 
         for k, v in envs.items():
             q4(name, k, v)
-    
+
         q5(name, os["name"], os["version"])
 
         for framework in frameworks:
@@ -156,7 +155,7 @@ class ContainerDB:
 
         q1(new_name, old_name)
         q2(description, gpu, new_name)
-        
+
         for port in ports:
             q3(new_name, port)
 
@@ -182,5 +181,5 @@ class ContainerDB:
         DELETE FROM container
         WHERE name=%s
         """
-        arg = (name, )
+        arg = (name,)
         return query, arg

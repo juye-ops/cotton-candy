@@ -9,6 +9,7 @@ router = APIRouter(
     prefix="/container",
 )
 
+
 class Create(BaseModel):
     class Build(BaseModel):
         class OperSys(BaseModel):
@@ -33,10 +34,12 @@ class Create(BaseModel):
     build: Build
     settings: Settings
 
+
 class Edit(BaseModel):
     class Settings(BaseModel):
         ports: list
         environments: Dict[str, str]
+
     old_name: str
     new_name: str
     project: str
@@ -44,10 +47,12 @@ class Edit(BaseModel):
     gpu: bool
     settings: Settings
 
+
 @router.get("/list")
 def _list(project: str):
     container_list = ContainerDB.get_list(project)
     return container_list
+
 
 @router.post("/create")
 def _create(config: Create):
@@ -72,9 +77,11 @@ def _create(config: Create):
     # create dockerfile
     iac.create(container_name, container_os, container_frameworks)
     dind.Container.build(container_name)
-    dind.Container.run(container_name, container_project, container_ports, container_envs)
+    dind.Container.run(
+        container_name, container_project, container_ports, container_envs
+    )
 
-    container_ip = dind.Container.get_info(container_name)["NetworkSettings"]["Networks"][container_project]["IPAddress"] # Get IP Address
+    container_ip = dind.Container.get_info(container_name)["NetworkSettings"]["Networks"][container_project]["IPAddress"]  # Get IP Address
 
     # Insert database
     ContainerDB.create(
@@ -86,13 +93,14 @@ def _create(config: Create):
         container_envs,
         container_os,
         container_frameworks,
-        container_ip
+        container_ip,
     )
 
     # add ide proxy
     ide.add_proxy(container_name, container_ip)
 
     return 200
+
 
 @router.post("/edit")
 def _edit(config: Edit):
@@ -111,7 +119,9 @@ def _edit(config: Edit):
 
     container_ports = {p: p for p in container_ports}
 
-    dind.Container.edit(old_name, new_name, container_project, container_ports, container_envs)
+    dind.Container.edit(
+        old_name, new_name, container_project, container_ports, container_envs
+    )
 
     # Insert database
     ContainerDB.edit(
@@ -124,6 +134,7 @@ def _edit(config: Edit):
     )
 
     return 200
+
 
 @router.delete("/remove")
 def _remove(name: str):

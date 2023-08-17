@@ -13,7 +13,7 @@ class ProjectDB:
         arg = ()
 
         return query, arg
-    
+
     @select
     def get_containers(name):
         query = """
@@ -26,7 +26,7 @@ class ProjectDB:
         arg = (name,)
 
         return query, arg
-    
+
     def create(name, description, subnet):
         @insert
         def q1(*args):
@@ -34,7 +34,7 @@ class ProjectDB:
             INSERT INTO project(user_id, name) VALUES (1, %s);
             """
             return query, args
-        
+
         @insert
         def q2(*args):
             query = """

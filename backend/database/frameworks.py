@@ -1,5 +1,6 @@
 from database import select
 
+
 class FrameworkDB:
     @select
     def get_list():
@@ -18,5 +19,5 @@ class FrameworkDB:
             WHERE name=%s
         );
         """
-        arg = (name, )
+        arg = (name,)
         return query, arg
