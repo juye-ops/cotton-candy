@@ -9,11 +9,6 @@ router = APIRouter(
     prefix="/container",
 )
 
-@router.get("/list/")
-def container_list(project: str):
-    container_list = ContainerDB.get_list(project)
-    return container_list
-
 class Create(BaseModel):
     class Build(BaseModel):
         class OperSys(BaseModel):
@@ -38,8 +33,24 @@ class Create(BaseModel):
     build: Build
     settings: Settings
 
+class Edit(BaseModel):
+    class Settings(BaseModel):
+        ports: list
+        environments: Dict[str, str]
+    old_name: str
+    new_name: str
+    project: str
+    description: str
+    gpu: bool
+    settings: Settings
+
+@router.get("/list")
+def _list(project: str):
+    container_list = ContainerDB.get_list(project)
+    return container_list
+
 @router.post("/create")
-def container_build(config: Create):
+def _create(config: Create):
     config = config.dict()
 
     container_name = config["name"]
@@ -83,19 +94,8 @@ def container_build(config: Create):
 
     return 200
 
-class Edit(BaseModel):
-    class Settings(BaseModel):
-        ports: list
-        environments: Dict[str, str]
-    old_name: str
-    new_name: str
-    project: str
-    description: str
-    gpu: bool
-    settings: Settings
-
 @router.post("/edit")
-def container_edit(config: Edit):
+def _edit(config: Edit):
     config = config.dict()
 
     old_name = config["old_name"]
@@ -126,7 +126,7 @@ def container_edit(config: Edit):
     return 200
 
 @router.delete("/remove")
-def container_remove(name: str):
+def _remove(name: str):
     dind.Container.remove(name)
     ContainerDB.remove(name)
     return 200
