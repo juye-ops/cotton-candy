@@ -1,118 +1,118 @@
-import { useRef, useState } from 'react';
+// import { useRef, useState } from 'react';
 
-import ConfirmButton from 'components/buttons/confirmbutton/ConfirmButton';
+// import ConfirmButton from 'components/buttons/confirmbutton/ConfirmButton';
 
-import PreventDefault from 'utils/PreventDefault';
-import * as API from 'apis/SettingPageAPIs';
+// import PreventDefault from 'utils/PreventDefault';
+// import * as API from 'apis/SettingPageAPIs';
 
-import * as S from './style'
-import { useLocation, useParams } from 'react-router';
-import PortHashTag from 'components/hashtags/porthashtags/PortHashTag';
-import DeleteButton from 'components/buttons/deletebutton/DeleteButton';
+// import * as S from './style'
+// import { useLocation, useParams } from 'react-router';
+// import PortHashTag from 'components/hashtags/porthashtags/PortHashTag';
+// import DeleteButton from 'components/buttons/deletebutton/DeleteButton';
 
 
 export default function ContainerModifyPage() {
-    const { projectName } = useParams();
+    // const { projectName } = useParams();
 
-    // 이거 말고 서버에서 데이터 받아와서 처리하기
-    const location = useLocation();
+    // // 이거 말고 서버에서 데이터 받아와서 처리하기
+    // const location = useLocation();
 
-    // 사용자 입력 관련
-    const [inputs, setInputs] = useState(location.state.container.description);
-    const inputsRef = useRef([]);
+    // // 사용자 입력 관련
+    // const [inputs, setInputs] = useState(location.state.container.description);
+    // const inputsRef = useRef([]);
 
-    const onChangeInput = (e) => {
-        setInputs(e.target.value);
-    }
+    // const onChangeInput = (e) => {
+    //     setInputs(e.target.value);
+    // }
 
-    // 포트 관련
-    const [portInput, setPortInput] = useState("");
-    const [ports, setPorts] = useState(location.state.container.settings.ports);
-    const portRef = useRef();
+    // // 포트 관련
+    // const [portInput, setPortInput] = useState("");
+    // const [ports, setPorts] = useState(location.state.container.settings.ports);
+    // const portRef = useRef();
 
-    const onChangePortInput = (e) => {
-        const reg = /[^0-9,\s]/g;
-        const value = e.target.value.replace(reg, '');
+    // const onChangePortInput = (e) => {
+    //     const reg = /[^0-9,\s]/g;
+    //     const value = e.target.value.replace(reg, '');
 
-        if (value.slice(-1) === ' ') {
-            setPorts([...ports, value.slice(0, -1)]);
-            setPortInput("");
-        } else {
-            setPortInput(value);
-        }
-    }
+    //     if (value.slice(-1) === ' ') {
+    //         setPorts([...ports, value.slice(0, -1)]);
+    //         setPortInput("");
+    //     } else {
+    //         setPortInput(value);
+    //     }
+    // }
 
-    const onClickPortDelete = (e) => {
-        const value = e.currentTarget.querySelector('span').innerText;
+    // const onClickPortDelete = (e) => {
+    //     const value = e.currentTarget.querySelector('span').innerText;
 
-        setPorts(ports.filter(port => "" + port !== value));
-    }
+    //     setPorts(ports.filter(port => "" + port !== value));
+    // }
 
-    // 환경 변수 관련
-    const [envs, setEnvs] = useState(Object.keys(location.state.container.settings.environments).map(key => { return { "key": key, "value": location.state.container.settings.environments[key] } }));
-    const envsRef = useRef([]);
+    // // 환경 변수 관련
+    // const [envs, setEnvs] = useState(Object.keys(location.state.container.settings.environments).map(key => { return { "key": key, "value": location.state.container.settings.environments[key] } }));
+    // const envsRef = useRef([]);
 
-    const handleAddEnv = () => {
-        setEnvs([...envs, { key: '', value: '' }]);
-    }
+    // const handleAddEnv = () => {
+    //     setEnvs([...envs, { key: '', value: '' }]);
+    // }
 
-    const handleReomveEnv = (index) => {
-        if (envs.length === 1) {
-            return;
-        }
+    // const handleReomveEnv = (index) => {
+    //     if (envs.length === 1) {
+    //         return;
+    //     }
 
-        const values = [...envs];
+    //     const values = [...envs];
 
-        values.splice(index, 1);
-        setEnvs(values);
-    }
+    //     values.splice(index, 1);
+    //     setEnvs(values);
+    // }
 
-    const handleInputChange = (index, e) => {
-        const values = [...envs];
+    // const handleInputChange = (index, e) => {
+    //     const values = [...envs];
 
-        if (e.target.name === 'key') {
-            values[index].key = e.target.value;
-        } else {
-            values[index].value = e.target.value;
-        }
+    //     if (e.target.name === 'key') {
+    //         values[index].key = e.target.value;
+    //     } else {
+    //         values[index].value = e.target.value;
+    //     }
 
-        setEnvs(values);
-    }
+    //     setEnvs(values);
+    // }
 
-    // 수정 버튼
-    const onClickGenerateButton = () => {
-        const envRst = {};
+    // // 수정 버튼
+    // const onClickGenerateButton = () => {
+    //     const envRst = {};
 
-        envs.forEach(env => {
-            if (env.key === '' || env.value === '') {
-                return;
-            }
+    //     envs.forEach(env => {
+    //         if (env.key === '' || env.value === '') {
+    //             return;
+    //         }
 
-            envRst[env.key] = env.value;
-        })
+    //         envRst[env.key] = env.value;
+    //     })
 
-        const generate = {
-            "project": location.state.project,
-            "name": inputs.name,
-            "description": inputs.desc,
-            "gpu": "false",
-            "build": location.state.container.bulid,
-            "settings": {
-                "ports": ports,
-                "environments": envRst,
-            }
-        }
+    //     const generate = {
+    //         "project": location.state.project,
+    //         "name": inputs.name,
+    //         "description": inputs.desc,
+    //         "gpu": "false",
+    //         "build": location.state.container.bulid,
+    //         "settings": {
+    //             "ports": ports,
+    //             "environments": envRst,
+    //         }
+    //     }
 
-        API.generateContainer(JSON.stringify(generate));
-    }
+    //     API.generateContainer(JSON.stringify(generate));
+    // }
 
-    const onDeleteContainer = () => {
+    // const onDeleteContainer = () => {
 
-    }
+    // }
 
     return (
         <>
-            <S.Header>
+            {/* <S.Header>
                 <h1>COTTON CANDY</h1>
             </S.Header>
             <main>
@@ -243,7 +243,7 @@ export default function ContainerModifyPage() {
                         </S.DivideFieldSet>
                     </S.Form>
                 </S.Section>
-            </main>
+            </main> */}
         </>
     )
 }
