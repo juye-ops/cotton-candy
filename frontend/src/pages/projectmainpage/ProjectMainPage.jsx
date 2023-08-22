@@ -99,10 +99,10 @@ export default function ProjectMainPage() {
         })
     };
 
-    const onClickModifyModalOn = (projectName) => {
+    const onClickModifyModalOn = (projectName, projectDescription) => {
         setEditInput({
-            ...editInput,
             modifyName: projectName,
+            modifyDescription: projectDescription,
         })
         setModify(true);
     };

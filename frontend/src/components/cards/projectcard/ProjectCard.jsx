@@ -56,7 +56,7 @@ export default function ProjectCard({ props: { project, clickedProjectModal, set
                     </S.MoreButton>
                     <S.MoreList clicked={clicked}>
                         <li>
-                            <S.MoreListButton onClick={() => {onClickModifyModalOn(project.name)}}>
+                            <S.MoreListButton onClick={() => {onClickModifyModalOn(project.name, project.description)}}>
                                 <i className="fas fa-cog"></i>
                                 <span>프로젝트 설정</span>
                             </S.MoreListButton>
