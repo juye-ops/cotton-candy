@@ -3,6 +3,8 @@ export const theme = {
         theme: {
             main: "#0284FE",
             dark: "#00418C",
+            main_light: "rgba(2, 132, 254, 0.3)",
+            main_hover: "rgba(2, 132, 254, 0.5)",
             sub: "rgb(245, 83, 94)",
             sub_dark: "rgb(245, 83, 94)",
         },
@@ -20,6 +22,7 @@ export const theme = {
             hover4: "rgba(55, 104, 208, 0.25)",
             hover_red: "rgba(245, 83, 94, 0.08)",
             hover_red_2: "rgba(245, 83, 94, 0.15)",
+            wrapper: "rgba(150, 150, 150, 0.7)",
         },
         font: {
             main: "rgb(82, 84, 99)",

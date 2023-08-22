@@ -119,7 +119,7 @@ export default function ContainerModifyPage() {
                 <S.Section>
                     <S.SectionHeader>
                         <S.SectionHeaderWrapper>
-                            <S.SectionHeaderBackLink to='/manage'>
+                            <S.SectionHeaderBackLink to={'/' + location.state.project}>
                                 <span>Back</span>
                                 <i className="fas fa-arrow-left"></i>
                             </S.SectionHeaderBackLink>
