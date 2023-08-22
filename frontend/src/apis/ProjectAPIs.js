@@ -36,3 +36,42 @@ export const GenerateProject = async ({ user_name, name, description }) => {
         console.log(e);
     }
 }
+
+export const ModifyProject = async ({ user_name, name, description }) => {
+    try {
+        const response = await fetch("/api/project/edit/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                user_name,
+                name,
+                description,
+            }),
+        });
+
+        const result = response.json();
+
+        return result;
+    } catch (e) {
+        console.log(e);
+    }
+}
+
+export const DeleteProject = async (name) => {
+    try {
+        const response = await fetch("/api/project/remove?name=" + name, {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+
+        const result = response.json();
+
+        return result;
+    } catch (e) {
+        console.log(e);
+    }
+}
