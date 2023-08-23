@@ -5,13 +5,11 @@ import * as S from './style';
 
 import ContainerCard from 'components/cards/containercard/ContainerCard';
 
-import { GetContainerList } from 'apis/ContainerAPIs';
+import { GetContainerList, DeleteContainer } from 'apis/ContainerAPIs';
 import ConfirmButton from 'components/buttons/confirmbutton/ConfirmButton';
 
 export default function ContainerManagePage() {
     const { projectName } = useParams();
-
-    console.log(projectName);
 
     // 컨테이너 리스트
     const [containerList, setContainerList] = useState([]);
@@ -42,17 +40,12 @@ export default function ContainerManagePage() {
     }
 
     const onClickRemove = () => {
-        const removeProject = async () => {
-            // const result = await DeleteProject(removeTarget);
-
-            // if (result === 200) {
-            //     window.location.replace("/")
-            // } else {
-            //     alert("컨테이너 삭제 중 문제 발생!");
-            // }
+        const removeContainer = async () => {
+            await DeleteContainer(removeTarget);
+            window.location.replace("/" + projectName);
         }
 
-        removeProject();
+        removeContainer();
     }
 
     const onClickModalForm = (e) => {
@@ -93,8 +86,8 @@ export default function ContainerManagePage() {
                     <S.DeleteModal onClick={onClickModalForm}>
                         <p>{removeTarget}을(를) 삭제하시겠습니까?</p>
                         <S.DeleteButtonWrapper>
-                            <ConfirmButton props={{ content: "Confirm", callback: onClickRemove }} />
-                            <S.DeleteButton onClick={onClickRemoveModalOff}>Reject</S.DeleteButton>
+                            <S.DeleteButton onClick={onClickRemove}>Delete</S.DeleteButton>
+                            <ConfirmButton props={{ content: "Cancel", callback: onClickRemoveModalOff  }} />
                         </S.DeleteButtonWrapper>
                     </S.DeleteModal>
                 </S.ModalWrapper>

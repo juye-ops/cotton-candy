@@ -91,6 +91,7 @@ export default function ProjectMainPage() {
         modifyDescription: "",
     });
     const [modify, setModify] = useState(false);
+    const [modifyTarget, setModifyTarget] = useState("");
 
     const onChangeModifyInput = (e) => {
         setEditInput({
@@ -104,6 +105,7 @@ export default function ProjectMainPage() {
             modifyName: projectName,
             modifyDescription: projectDescription,
         })
+        setModifyTarget(projectName);
         setModify(true);
     };
 
@@ -119,9 +121,9 @@ export default function ProjectMainPage() {
     const onClickModify = () => {
         const modifyProject = async () => {
             const result = await ModifyProject({
-                user_name: user.id,
-                name: inputs.generateName,
-                description: inputs.generateDesc,
+                old_name: modifyTarget,
+                new_name: editInput.modifyName,
+                description: editInput.modifyDescription,
             });
 
             if (result === 200) {
@@ -148,13 +150,8 @@ export default function ProjectMainPage() {
 
     const onClickRemove = () => {
         const removeProject = async () => {
-            const result = await DeleteProject(removeTarget);
-
-            if (result === 200) {
-                window.location.replace("/")
-            } else {
-                alert("프로젝트 삭제 중 문제 발생!");
-            }
+            await DeleteProject(removeTarget);
+            window.location.replace("/");
         }
 
         removeProject();
@@ -188,7 +185,7 @@ export default function ProjectMainPage() {
                 <S.ModalWrapper visible={modify} onClick={onClickModifyModalOff}>
                     <S.ModalForm onClick={onClickModalForm}>
                         <label htmlFor="modifyName">Project Name</label>
-                        <input type="text" id="modifyName" placeholder="프로젝트 이름을 입력해주세요." onChange={onChangeModifyInput} value={editInput.modifyName} readOnly={true} />
+                        <input type="text" id="modifyName" placeholder="프로젝트 이름을 입력해주세요." onChange={onChangeModifyInput} value={editInput.modifyName}/>
                         <label htmlFor="modifyDescription">Project Description</label>
                         <input type="text" id="modifyDescription" placeholder="프로젝트 설명을 입력해주세요." onChange={onChangeModifyInput} value={editInput.modifyDescription} />
                         <S.ButtonWrapper>

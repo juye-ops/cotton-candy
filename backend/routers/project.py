@@ -46,7 +46,7 @@ def _edit(res: Edit):
 
     old_name = res["old_name"]
     new_name = res["new_name"]
-    project_desc = res["desc"]
+    project_desc = res["description"]
 
     container_list = ProjectDB.get_containers(old_name)
 

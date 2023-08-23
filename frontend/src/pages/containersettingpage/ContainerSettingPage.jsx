@@ -97,7 +97,7 @@ export default function ContainerSettingPage() {
 
     // platform 관련
     const [platformList, setPlatformList] = useState([]);
-    const [platform, setPlatorm] = useState("");
+    const [platform, setPlatform] = useState("");
     const [platformVersionList, setPlatformVersionList] = useState([]);
     const [platformVersion, setPlatformVersion] = useState("버전을 선택해주세요.");
     const [selectedPlatforms, setSelectedPlatforms] = useState([]);
@@ -142,7 +142,7 @@ export default function ContainerSettingPage() {
             return;
         }
 
-        setPlatorm(name);
+        setPlatform(name);
     }
 
     const onClickPlatformAddButton = () => {
@@ -157,7 +157,7 @@ export default function ContainerSettingPage() {
                 version: platformVersion,
             }
         ]);
-        setPlatorm("");
+        setPlatform("");
         setPlatformVersion("버전을 선택해주세요.");
     }
 
@@ -223,6 +223,24 @@ export default function ContainerSettingPage() {
 
     // 생성 버튼
     const onClickGenerateButton = async () => {
+        if (!inputs.name) {
+            alert('이름을 입력해주세요.');
+
+            return;
+        }
+
+        if (validState) {
+            alert('이름에는 알파벳, 숫자, 하이픈(-), 언더바(_)만 입력해야 합니다!');
+
+            return;
+        }
+
+        if (!infra) {
+            alert('os를 선택해주세요.');
+
+            return;
+        }
+
         const envRst = {};
 
         envs.forEach(env => {
@@ -250,8 +268,6 @@ export default function ContainerSettingPage() {
                 "environments": envRst,
             }
         }));
-
-        console.log(result);
 
         if (result === 200) {
             navigate("/" + projectName);
@@ -317,7 +333,7 @@ export default function ContainerSettingPage() {
                                     })
                                 }
                             </S.SoftwareStackList>
-                            <S.SettingList visible={infra !== osSelectText}>
+                            <S.SettingList visible={infra !== ""}>
                                 <S.SettingListItem>
                                     <p>Version</p>
                                     <SettingDropBox props={{ list: infraVersionList, target: infraVersion, callback: setInfraVersion }} />
@@ -369,7 +385,7 @@ export default function ContainerSettingPage() {
                                     })
                                 }
                             </S.SoftwareStackList>
-                            <S.SettingList>
+                            <S.SettingList visible={platform !== ""}>
                                 <S.SettingListItem>
                                     <p>Version</p>
                                     <SettingDropBox props={{ list: platformVersionList, target: platformVersion, callback: setPlatformVersion }} />
@@ -396,7 +412,7 @@ export default function ContainerSettingPage() {
                     <S.DivideFieldSet onClick={PreventDefault}>
                         <S.IROnlyFieldSetLegend>환경 설정 영역</S.IROnlyFieldSetLegend>
                         <p>환경설정</p>
-                        <S.SettingList>
+                        <S.SettingList visible={true}>
                             <S.SettingListItemPort>
                                 <label htmlFor='port'>Port</label>
                                 <S.PortInputWarpper>

@@ -178,8 +178,7 @@ export const SoftwareStackList = styled.ul`
 `
 
 export const SettingList = styled.ul`
-    /* display: ${props => props.visible ? 'flex' : 'none'}; */
-    display: flex;
+    display: ${props => props.visible ? 'flex' : 'none'};
     flex-direction: column;
     margin-top: 20px;
     gap: 20px;
