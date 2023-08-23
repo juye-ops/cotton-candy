@@ -9,10 +9,13 @@ import SoftwareButton from 'components/buttons/softwarebutton/SoftwareButton';
 import SettingDropBox from 'components/dropbox/settingdropbox/SettingDropBox';
 import PortHashTag from 'components/hashtags/porthashtags/PortHashTag';
 import LongInput1 from 'components/inputs/longinput1';
+import LongTextarea1 from 'components/textareas/longtextarea1';
 
 import PreventDefault from 'utils/PreventDefault';
 
 import { GetOSList, GetOSVersionList, GetPlatformList, GetPlatformVersionList, GenerateContainer } from 'apis/ContainerAPIs';
+
+import { Images } from 'utils/Images';
 
 const osSelectText = "Select your Operating-System";
 
@@ -38,8 +41,8 @@ export default function ContainerSettingPage() {
             const rst = e.target.value.replace(reg, '');
 
             setValidState(!!rst ? "알파벳, 숫자, 하이픈(-), 언더바(_)만 입력해야 합니다!" : "");
-        } 
-        
+        }
+
         setInputs({
             ...inputs,
             [e.target.name]: e.target.value,
@@ -178,10 +181,19 @@ export default function ContainerSettingPage() {
         const value = e.target.value.replace(reg, '');
 
         if (value.slice(-1) === ' ') {
-            setPorts([...ports, value.slice(0, -1)]);
+            if (parseInt(value.slice(0, -1)) <= 65535 && parseInt(value.slice(0, -1)) >= 1024 && !ports.includes(parseInt(value.slice(0, -1)))) {
+                setPorts([...ports, parseInt(value.slice(0, -1))]);
+            }
+
             setPortInput("");
-        } else {
+        }  else {
             setPortInput(value);
+        }
+    }
+
+    const onKeyDownInput = (e) => {
+        if (!portInput && e.keyCode === 8) {
+            setPorts(ports => ports.slice(0, -1));
         }
     }
 
@@ -300,13 +312,8 @@ export default function ContainerSettingPage() {
                     <S.InputFieldset>
                         <S.IROnlyFieldSetLegend>설명 설정 영역</S.IROnlyFieldSetLegend>
                         {/* { id, placeholder, value, callback } */}
-                        <LongInput1 props={{ id: "descInput", name: "desc", placeholder: "Container Description", value: inputs.desc, callback: onChangeInput }} />
+                        <LongTextarea1 props={{ id: "descInput", name: "desc", placeholder: "Container Description", value: inputs.desc, callback: onChangeInput }} />
                     </S.InputFieldset>
-                    <S.DivideFieldSet>
-                        <S.IROnlyFieldSetLegend>설명 설정 영역</S.IROnlyFieldSetLegend>
-                        <p>프로젝트</p>
-                        <p>{projectName}</p>
-                    </S.DivideFieldSet>
                     <S.DivideFieldSet onClick={PreventDefault}>
                         <S.IROnlyFieldSetLegend>GPU 설정 영역</S.IROnlyFieldSetLegend>
                         <p>GPU</p>
@@ -327,7 +334,7 @@ export default function ContainerSettingPage() {
                                     infraList.map((infraItem, index) => {
                                         return (
                                             <li key={"" + infraItem + index}>
-                                                <SoftwareButton props={{ image: react_logo, name: infraItem, callback: onClickInfraButton, selected: infra }} />
+                                                <SoftwareButton props={{ image: Images[infraItem], name: infraItem, callback: onClickInfraButton, selected: infra }} />
                                             </li>
                                         )
                                     })
@@ -359,7 +366,7 @@ export default function ContainerSettingPage() {
 
                                         return (
                                             <li key={framework.name}>
-                                                <SoftwareButton props={{ image: react_logo, name: framework.name, callback: onClickPlatformButton, selected: platform, added: added }} />
+                                                <SoftwareButton props={{ image: Images[framework.name], name: framework.name, callback: onClickPlatformButton, selected: platform, added: added }} />
                                             </li>
                                         )
                                     })
@@ -379,13 +386,13 @@ export default function ContainerSettingPage() {
 
                                         return (
                                             <li key={db.name}>
-                                                <SoftwareButton props={{ image: react_logo, name: db.name, callback: onClickPlatformButton, selected: platform, added: added }} />
+                                                <SoftwareButton props={{ image: Images[db.name], name: db.name, callback: onClickPlatformButton, selected: platform, added: added }} />
                                             </li>
                                         )
                                     })
                                 }
                             </S.SoftwareStackList>
-                            <S.SettingList visible={platform !== ""}>
+                            <S.SettingList visible={platform !== "" || selectedPlatforms.length !== 0}>
                                 <S.SettingListItem>
                                     <p>Version</p>
                                     <SettingDropBox props={{ list: platformVersionList, target: platformVersion, callback: setPlatformVersion }} />
@@ -425,7 +432,7 @@ export default function ContainerSettingPage() {
                                             })
                                         }
                                     </S.PortList>
-                                    <input type="text" name="port" id="port" placeholder='포트 번호를 입력해주세요. (스페이스 키를 눌러 입력을 완료하세요)' ref={(element) => portRef.current = element} value={portInput} onChange={onChangePortInput} />
+                                    <input type="text" name="port" id="port" placeholder='포트 번호를 입력해주세요. (스페이스 키를 눌러 입력을 완료하세요)' ref={(element) => portRef.current = element} value={portInput} onChange={onChangePortInput} onKeyDown={onKeyDownInput} />
                                 </S.PortInputWarpper>
                             </S.SettingListItemPort>
                             <S.SettingListItemEnv>

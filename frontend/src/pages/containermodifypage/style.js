@@ -54,7 +54,8 @@ export const Form = styled.form`
     border-radius: ${(props) => props.theme.borderRadius.lv3};
     background-color: ${(props) => props.theme.color.background.content};
     color: ${props => props.theme.color.font.main};
-    margin: 137px 40px 0;
+    width: 800px;
+    margin: 137px auto 0;
 
     & > fieldset + fieldset {
         border-top: 1px solid ${(props) => props.theme.color.border.normal};

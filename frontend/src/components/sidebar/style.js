@@ -65,7 +65,7 @@ export const ContainerButton = styled.button`
     display: flex;
     align-items: center;
     padding: 6px 0 6px 70px;
-    gap: 10px;
+    gap: 6px;
     background-color: inherit;
     font-size: ${props => props.theme.fontSize.button};
 

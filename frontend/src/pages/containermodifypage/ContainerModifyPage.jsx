@@ -10,6 +10,7 @@ import LongInput1 from 'components/inputs/longinput1';
 import PreventDefault from 'utils/PreventDefault';
 
 import { UpdateContainer } from 'apis/ContainerAPIs';
+import LongTextarea1 from 'components/textareas/longtextarea1';
 
 export default function ContainerModifyPage() {
     const { projectName, containerName } = useParams();
@@ -93,10 +94,19 @@ export default function ContainerModifyPage() {
         const value = e.target.value.replace(reg, '');
 
         if (value.slice(-1) === ' ') {
-            setPorts([...ports, value.slice(0, -1)]);
+            if (parseInt(value.slice(0, -1)) <= 65535 && parseInt(value.slice(0, -1)) > 0 && !ports.includes(parseInt(value.slice(0, -1)))) {
+                setPorts([...ports, parseInt(value.slice(0, -1))]);
+            }
+
             setPortInput("");
-        } else {
+        }  else {
             setPortInput(value);
+        }
+    }
+
+    const onKeyDownInput = (e) => {
+        if (!portInput && e.keyCode === 8) {
+            setPorts(ports => ports.slice(0, -1));
         }
     }
 
@@ -231,13 +241,8 @@ export default function ContainerModifyPage() {
                     <S.InputFieldset>
                         <S.IROnlyFieldSetLegend>설명 설정 영역</S.IROnlyFieldSetLegend>
                         {/* { id, placeholder, value, callback } */}
-                        <LongInput1 props={{ id: "descInput", name: "desc", placeholder: "Container Description", value: inputs.desc, callback: onChangeInput }} />
+                        <LongTextarea1 props={{ id: "descInput", name: "desc", placeholder: "Container Description", value: inputs.desc, callback: onChangeInput }} />
                     </S.InputFieldset>
-                    <S.DivideFieldSet>
-                        <S.IROnlyFieldSetLegend>프로젝트 이름 설정 영역</S.IROnlyFieldSetLegend>
-                        <p>프로젝트</p>
-                        <p>{projectName}</p>
-                    </S.DivideFieldSet>
                     <S.DivideFieldSet onClick={PreventDefault}>
                         <S.IROnlyFieldSetLegend>GPU 설정 영역</S.IROnlyFieldSetLegend>
                         <p>GPU</p>
@@ -284,7 +289,7 @@ export default function ContainerModifyPage() {
                                             })
                                         }
                                     </S.PortList>
-                                    <input type="text" name="port" id="port" placeholder='포트 번호를 입력해주세요. (스페이스 키를 눌러 입력을 완료하세요)' ref={(element) => portRef.current = element} value={portInput} onChange={onChangePortInput} />
+                                    <input type="text" name="port" id="port" placeholder='포트 번호를 입력해주세요. (스페이스 키를 눌러 입력을 완료하세요)' ref={(element) => portRef.current = element} value={portInput} onChange={onChangePortInput} onKeyDown={onKeyDownInput} />
                                 </S.PortInputWarpper>
                             </S.SettingListItemPort>
                             <S.SettingListItemEnv>

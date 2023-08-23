@@ -103,6 +103,7 @@ export const ModalForm = styled.form`
         border-radius: ${(props) => props.theme.borderRadius.lv2};
         padding: 8px 13px;
         margin-bottom: 30px;
+        resize: vertical;
     }
 
     & > textarea {

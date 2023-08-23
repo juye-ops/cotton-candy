@@ -80,7 +80,8 @@ export default function Sidebar() {
                                                 return (
                                                     <li key={container.name}>
                                                         <S.ContainerButton onClick={() => onDoubleClickConatiner(container.name)}>
-                                                            <i className="far fa-file"></i>
+                                                            {/* <i className="far fa-file"></i> */}
+                                                            <i className="fab fa-docker"></i>
                                                             <span>{container.name}</span>
                                                         </S.ContainerButton>
                                                     </li>

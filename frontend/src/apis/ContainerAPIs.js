@@ -1,7 +1,6 @@
 export const GetContainerList = async (projectName) => {
     try {
         const response = await fetch("/api/container/list/?project=" + projectName, {
-        // const response = await fetch("http://192.168.56.1:5000/container/list/?project=" + projectName, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -19,7 +18,6 @@ export const GetContainerList = async (projectName) => {
 export const GetOSList = async () => {
     try {
         const response = await fetch("/api/version/os/", {
-        // const response = await fetch("http://192.168.56.1:5000/version/os/", {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -35,8 +33,7 @@ export const GetOSList = async () => {
 
 export const GetOSVersionList = async (os) => {
     try {
-        const response = await fetch("/api/version/os/" + os, {
-        // const response = await fetch("http://192.168.56.1:5000/version/os/" + os, {
+        const response = await fetch("/api/version/os/" + os + "/", {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -54,7 +51,6 @@ export const GetOSVersionList = async (os) => {
 export const GetPlatformList = async () => {
     try {
         const response = await fetch("/api/version/framework/", {
-        // const response = await fetch("http://192.168.56.1:5000/version/framework/", {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -71,8 +67,7 @@ export const GetPlatformList = async () => {
 
 export const GetPlatformVersionList = async (framework) => {
     try {
-        const response = await fetch("/api/version/framework/" + framework, {
-        // const response = await fetch("http://192.168.56.1:5000/version/framework/" + framework, {
+        const response = await fetch("/api/version/framework/" + framework + "/", {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -89,8 +84,7 @@ export const GetPlatformVersionList = async (framework) => {
 
 export const GenerateContainer = async (body) => {
     try {
-        const response = await fetch("/api/container/create", {
-        // const response = await fetch("http://192.168.56.1:5000/container/create", {
+        const response = await fetch("/api/container/create/", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -109,7 +103,6 @@ export const GenerateContainer = async (body) => {
 export const UpdateContainer = async (body) => {
     try {
         const response = await fetch("/api/container/edit", {
-        // const response = await fetch("http://192.168.56.1:5000/container/edit", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -129,8 +122,7 @@ export const UpdateContainer = async (body) => {
 
 export const DeleteContainer = async (name) => {
     try {
-        const response = await fetch("/api/project/remove?name=" + name, {
-        // const response = await fetch("http://192.168.56.1:5000/container/remove?name=" + name, {
+        const response = await fetch("/api/container/remove?name=" + name + '/', {
             method: "DELETE",
             headers: {
                 "Content-Type": "application/json",
