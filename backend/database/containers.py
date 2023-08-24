@@ -5,9 +5,9 @@ class ContainerDB:
     @select
     def get_list(project):
         query = """
-        SELECT name, description FROM (
-            container INNER JOIN container_info 
-            ON container.id=container_info.container_id
+        SELECT name, description FROM (container AS c
+            INNER JOIN container_info AS ci
+            ON c.id=ci.container_id
         ) WHERE project_id = (
             SELECT id FROM project
             WHERE name=%s
@@ -16,6 +16,43 @@ class ContainerDB:
         arg = (project,)
 
         return query, arg
+
+    def get_info(name):
+        @select
+        def q1(*args):
+            query = """
+            SELECT name, description, gpu FROM (container AS c
+                INNER JOIN container_info AS ci
+                ON c.id=ci.container_id
+            ) WHERE name=%s
+            """
+            return query, args
+        @select
+        def q2(*args):
+            query = """
+            SELECT port FROM container_ports
+            WHERE container_id=(
+                SELECT id FROM container
+                WHERE name=%s
+            )
+            """
+            return query, args
+        @select
+        def q3(*args):
+            query = """
+            SELECT k, v FROM container_envs
+            WHERE container_id=(
+                SELECT id FROM container
+                WHERE name=%s
+            )
+            """
+            return query, args
+        
+        info = q1(name)[0]
+        info["ports"] = [x["port"] for x in q2(name)]
+        info["envs"] = {x["k"]: x["v"] for x in q3(name)}
+
+        return info
 
     def create(name, project, description, gpu, ports, envs, os, frameworks, ip_addr):
         # Add container
@@ -76,7 +113,11 @@ class ContainerDB:
             INSERT INTO container_os(container_id, version_id)
             VALUES (
                 (SELECT id FROM container WHERE name=%s),
-                (SELECT os_version.id from os_version INNER JOIN os ON os_version.os_id=os.id where name=%s AND version=%s)
+                (SELECT os_version.id FROM os_version AS ov
+                    INNER JOIN os AS o
+                    ON ov.os_id=o.id 
+                    WHERE name=%s AND version=%s
+                )
             );
             """
             return query, args
@@ -88,7 +129,11 @@ class ContainerDB:
             INSERT INTO container_framework(container_id, version_id)
             VALUES (
                 (SELECT id FROM container WHERE name=%s),
-                (SELECT framework_version.id from framework_version INNER JOIN framework ON framework_version.framework_id=framework.id where name=%s AND version=%s)
+                (SELECT framework_version.id FROM framework_version AS fv
+                    INNER JOIN framework AS f
+                    ON fv.framework_id=f.id 
+                    WHERE name=%s AND version=%s
+                )
             );
             """
             return query, args
