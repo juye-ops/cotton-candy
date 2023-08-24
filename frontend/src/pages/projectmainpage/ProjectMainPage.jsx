@@ -245,7 +245,7 @@ export default function ProjectMainPage() {
                         <input type="text" id="modifyName" placeholder="프로젝트 이름을 입력해주세요." onChange={onChangeModifyInput} value={editInput.modifyName}/>
                         <S.ValidText visible={!!modifyValid}>{modifyValid}</S.ValidText>
                         <label htmlFor="modifyDescription">Project Description</label>
-                        <input type="text" id="modifyDescription" placeholder="프로젝트 설명을 입력해주세요." onChange={onChangeModifyInput} value={editInput.modifyDescription} />
+                        <textarea id="modifyDescription" placeholder="프로젝트 설명을 입력해주세요." onChange={onChangeModifyInput} value={editInput.modifyDescription} />
                         <S.ButtonWrapper>
                             <S.ConfirmButton onClick={onClickModify}>Edit</S.ConfirmButton>
                             <S.CancelButton onClick={onClickModifyModalOff}>Cancel</S.CancelButton>
