@@ -29,35 +29,16 @@ export default function ContainerModifyPage() {
 
         setNowContainer(
             {
-                "project": "test",
                 "name": "test_container",
                 "description": "test description",
                 "gpu": false,
-                "build": {
-                    "os": {
-                        "name": "ubuntu",
-                        "version": "20.04"
-                    },
-                    "frameworks": [
-                        {
-                            "name": "python",
-                            "version": "3.9"
-                        },
-                        {
-                            "name": "node",
-                            "version": "20"
-                        }
-                    ]
-                },
-                "settings": {
-                    "ports": [
-                        "8080",
-                        "8081",
-                        "8082"
-                    ],
-                    "environments": {
-                        "key01": "value01"
-                    }
+                "ports": [
+                    "8080",
+                    "8081",
+                    "8082"
+                ],
+                "envs": {
+                    "key01": "value01"
                 }
             }
         )
@@ -166,14 +147,14 @@ export default function ContainerModifyPage() {
             desc: nowContainer.description,
         });
 
-        setPorts(nowContainer.settings.ports);
+        setPorts(nowContainer.ports);
 
         const nowEnvs = [];
 
-        Object.keys(nowContainer.settings.environments).forEach(key => {
+        Object.keys(nowContainer.envs).forEach(key => {
             nowEnvs.push({
                 key: key,
-                value: nowContainer.settings.environments[key],
+                value: nowContainer.envs[key],
             })
         });
 
