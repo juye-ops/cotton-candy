@@ -1,6 +1,6 @@
 export const GetContainerList = async (projectName) => {
     try {
-        const response = await fetch("/api/container/list/?project=" + projectName, {
+        const response = await fetch("/api/container/list?project=" + projectName, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
