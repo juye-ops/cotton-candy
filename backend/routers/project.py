@@ -20,13 +20,13 @@ class Edit(BaseModel):
     description: str
 
 
-@router.get("/list/")
+@router.get("/list")
 def _list():
     project_list = ProjectDB.get_list()
     return project_list
 
 
-@router.post("/create/")
+@router.post("/create")
 def _create(info: Create):
     info = info.dict()
 
@@ -39,7 +39,7 @@ def _create(info: Create):
 
     return 200
 
-@router.post("/edit/")
+@router.post("/edit")
 def _edit(res: Edit):
     res = res.dict()
 
@@ -62,7 +62,7 @@ def _edit(res: Edit):
 
     return 200
 
-@router.delete("/remove/")
+@router.delete("/remove")
 def _remove(name: str):
     container_list = ProjectDB.get_containers(name)
 
