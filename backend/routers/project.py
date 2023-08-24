@@ -64,7 +64,6 @@ def _edit(res: Edit):
     ProjectDB.edit(old_name, new_name, project_desc, net_info["subnet"])
     for c in container_list:
         container_ip = dind.Container.get_info(c["name"])["NetworkSettings"]["Networks"][new_name]["IPAddress"]
-        print(container_ip, flush=True)
         ContainerDB.update_ip(c["name"], container_ip)
 
     return 200

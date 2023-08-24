@@ -96,8 +96,8 @@ class ProjectDB:
             """
             return query, args
 
-        q1(old_name, new_name)
-        q2(new_name, description, subnet)
+        q1(new_name, old_name)
+        q2(description, subnet, new_name)
 
     @delete
     def remove(name):
