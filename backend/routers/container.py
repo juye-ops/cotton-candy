@@ -3,7 +3,7 @@ from pydantic import BaseModel
 from typing import List, Dict, Any
 
 from database import *
-from utils import iac, dind, ide
+from utils import dind, iac, ide
 
 router = APIRouter(
     prefix="/container",
@@ -49,8 +49,11 @@ class Edit(BaseModel):
 
 @router.get("/list")
 def _list(project: str):
-    container_list = ContainerDB.get_list(project)
-    return container_list
+    return ContainerDB.get_list(project)
+
+@router.get("/info")
+def _info(name: str):
+    return ContainerDB.get_info(name)
 
 @router.post("/create")
 def _create(config: Create):
@@ -136,4 +139,5 @@ def _edit(config: Edit):
 def _remove(name: str):
     dind.Container.remove(name)
     ContainerDB.remove(name)
+    ide.rm_proxy(name)
     return 200
