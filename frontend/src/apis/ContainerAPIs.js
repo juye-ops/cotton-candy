@@ -1,6 +1,6 @@
 export const GetContainerList = async (projectName) => {
     try {
-        const response = await fetch("/api/container/list/?project=" + projectName, {
+        const response = await fetch("/api/container/list?project=" + projectName, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -17,7 +17,7 @@ export const GetContainerList = async (projectName) => {
 
 export const GetOSList = async () => {
     try {
-        const response = await fetch("/api/version/os/", {
+        const response = await fetch("/api/version/os", {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -50,7 +50,7 @@ export const GetOSVersionList = async (os) => {
 
 export const GetPlatformList = async () => {
     try {
-        const response = await fetch("/api/version/framework/", {
+        const response = await fetch("/api/version/framework", {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -83,8 +83,6 @@ export const GetPlatformVersionList = async (framework) => {
 }
 
 export const GenerateContainer = async (body) => {
-    console.log(body);
-
     try {
         const response = await fetch("/api/container/create", {
             method: "POST",
@@ -94,7 +92,42 @@ export const GenerateContainer = async (body) => {
             body,
         });
 
+        const result = response.json();
+
+        return result;
+    } catch (e) {
+        console.log(e);
+    }
+}
+
+export const UpdateContainer = async (body) => {
+    try {
+        const response = await fetch("/api/container/edit", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body,
+        });
+
         console.log(response);
+
+        const result = response.json();
+
+        return result;
+    } catch (e) {
+        console.log(e);
+    }
+}
+
+export const DeleteContainer = async (name) => {
+    try {
+        const response = await fetch("/api/container/remove?name=" + name, {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
 
         const result = response.json();
 
