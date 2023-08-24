@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router';
 
 import * as S from './style'
@@ -76,8 +76,8 @@ export default function ContainerModifyPage() {
             const rst = e.target.value.replace(reg, '');
 
             setValidState(!!rst ? "알파벳, 숫자, 하이픈(-), 언더바(_)만 입력해야 합니다!" : "");
-        } 
-        
+        }
+
         setInputs({
             ...inputs,
             [e.target.name]: e.target.value,
@@ -87,19 +87,28 @@ export default function ContainerModifyPage() {
     // 포트 관련
     const [portInput, setPortInput] = useState("");
     const [ports, setPorts] = useState([]);
-    const portRef = useRef();
+    const [portValidState, setPortValidState] = useState("");
 
     const onChangePortInput = (e) => {
         const reg = /[^0-9,\s]/g;
         const value = e.target.value.replace(reg, '');
 
         if (value.slice(-1) === ' ') {
-            if (parseInt(value.slice(0, -1)) <= 65535 && parseInt(value.slice(0, -1)) > 0 && !ports.includes(parseInt(value.slice(0, -1)))) {
+            if (parseInt(value.slice(0, -1)) > 65535 || parseInt(value.slice(0, -1)) < 1024) {
+                setPortValidState("포트 번호는 1024 ~ 65535 사이에 존재해야 합니다.");
+            } else if (ports.includes(parseInt(value.slice(0, -1)))) {
+                setPortValidState("이미 설정된 포트 번호입니다.");
+            } else {
+                setPortValidState("");
                 setPorts([...ports, parseInt(value.slice(0, -1))]);
             }
 
+            // if (parseInt(value.slice(0, -1)) <= 65535 && parseInt(value.slice(0, -1)) >= 1024 && !ports.includes(parseInt(value.slice(0, -1)))) {
+            //     setPorts([...ports, parseInt(value.slice(0, -1))]);
+            // }
+
             setPortInput("");
-        }  else {
+        } else {
             setPortInput(value);
         }
     }
@@ -279,18 +288,21 @@ export default function ContainerModifyPage() {
                         <S.SettingList>
                             <S.SettingListItemPort>
                                 <label htmlFor='port'>Port</label>
-                                <S.PortInputWarpper>
-                                    <S.PortList>
-                                        {
-                                            ports.map((portNo, index) => {
-                                                return (
-                                                    <PortHashTag props={{ index, portNo, onClickPortDelete }} key={index + ':' + portNo} />
-                                                )
-                                            })
-                                        }
-                                    </S.PortList>
-                                    <input type="text" name="port" id="port" placeholder='포트 번호를 입력해주세요. (스페이스 키를 눌러 입력을 완료하세요)' ref={(element) => portRef.current = element} value={portInput} onChange={onChangePortInput} onKeyDown={onKeyDownInput} />
-                                </S.PortInputWarpper>
+                                <S.PortValidWrapper>
+                                    <S.PortInputWarpper>
+                                        <S.PortList>
+                                            {
+                                                ports.map((portNo, index) => {
+                                                    return (
+                                                        <PortHashTag props={{ index, portNo, onClickPortDelete }} key={index + ':' + portNo} />
+                                                    )
+                                                })
+                                            }
+                                        </S.PortList>
+                                        <input type="text" name="port" id="port" placeholder='포트 번호를 입력해주세요. (스페이스 키를 눌러 입력을 완료하세요)' value={portInput} onChange={onChangePortInput} onKeyDown={onKeyDownInput} />
+                                    </S.PortInputWarpper>
+                                    <S.ValidText visible={!!portValidState}>{portValidState}</S.ValidText>
+                                </S.PortValidWrapper>
                             </S.SettingListItemPort>
                             <S.SettingListItemEnv>
                                 <p>Envs</p>

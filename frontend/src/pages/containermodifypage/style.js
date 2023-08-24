@@ -280,6 +280,13 @@ export const SettingListItemPort = styled(SettingListItem)`
     
 `
 
+export const PortValidWrapper = styled.div`
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+`
+
+
 export const PortInputWarpper = styled.div`
     width: 100%;
     overflow: hidden;
