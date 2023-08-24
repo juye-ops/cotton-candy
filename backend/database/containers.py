@@ -113,7 +113,7 @@ class ContainerDB:
             INSERT INTO container_os(container_id, version_id)
             VALUES (
                 (SELECT id FROM container WHERE name=%s),
-                (SELECT os_version.id FROM os_version AS ov
+                (SELECT ov.id FROM os_version AS ov
                     INNER JOIN os AS o
                     ON ov.os_id=o.id 
                     WHERE name=%s AND version=%s
@@ -129,7 +129,7 @@ class ContainerDB:
             INSERT INTO container_framework(container_id, version_id)
             VALUES (
                 (SELECT id FROM container WHERE name=%s),
-                (SELECT framework_version.id FROM framework_version AS fv
+                (SELECT fv.id FROM framework_version AS fv
                     INNER JOIN framework AS f
                     ON fv.framework_id=f.id 
                     WHERE name=%s AND version=%s
