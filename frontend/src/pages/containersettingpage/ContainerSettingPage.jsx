@@ -20,7 +20,6 @@ const osSelectText = "Select your Operating-System";
 
 export default function ContainerSettingPage() {
     const { projectName } = useParams();
-    // const projectName = "test"
     const navigate = useNavigate();
 
     const onClickBack = () => {
@@ -128,14 +127,6 @@ export default function ContainerSettingPage() {
         getOSPlatformList();
     }, [platform]);
 
-    useEffect(() => {
-        if (platformVersionList.length === 0) {
-            return;
-        }
-
-        setPlatformVersion(platformVersionList[0]);
-    }, [platformVersionList]);
-
     const onClickPlatformButton = (e) => {
         const target = e.currentTarget;
         const name = target.querySelector("span").innerText;
@@ -148,6 +139,10 @@ export default function ContainerSettingPage() {
     }
 
     const onClickPlatformAddButton = () => {
+        if (platform === "") {
+            return;
+        }
+
         if (platformVersion === '버전을 선택해주세요.') {
             return;
         }
@@ -160,8 +155,17 @@ export default function ContainerSettingPage() {
             }
         ]);
         setPlatform("");
+        setPlatformVersionList([]);
         setPlatformVersion("버전을 선택해주세요.");
     }
+
+    useEffect(() => {
+        if (platformVersion === '버전을 선택해주세요.') {
+            return;
+        }
+
+        onClickPlatformAddButton();
+    }, [platformVersion]);
 
     const onClickPlatformRemoveButton = (e) => {
         const target = e.currentTarget.querySelector('span').innerText;
@@ -188,10 +192,6 @@ export default function ContainerSettingPage() {
                 setPortValidState("");
                 setPorts([...ports, parseInt(value.slice(0, -1))]);
             }
-
-            // if (parseInt(value.slice(0, -1)) <= 65535 && parseInt(value.slice(0, -1)) >= 1024 && !ports.includes(parseInt(value.slice(0, -1)))) {
-            //     setPorts([...ports, parseInt(value.slice(0, -1))]);
-            // }
 
             setPortInput("");
         } else {
@@ -231,11 +231,13 @@ export default function ContainerSettingPage() {
 
     const handleInputChange = (index, e) => {
         const values = [...envs];
+        const reg = /[^a-z,A-Z,_]/g;
+        const value = e.target.value.replace(reg, '');
 
         if (e.target.name === 'key') {
-            values[index].key = e.target.value;
+            values[index].key = value;
         } else {
-            values[index].value = e.target.value;
+            values[index].value = value;
         }
 
         setEnvs(values);
@@ -313,13 +315,11 @@ export default function ContainerSettingPage() {
                 <S.Form action="">
                     <S.InputFieldset>
                         <S.IROnlyFieldSetLegend>이름 설정 영역</S.IROnlyFieldSetLegend>
-                        {/* { id, placeholder, value, callback } */}
                         <LongInput1 props={{ id: "nameInput", name: "name", placeholder: "Container Name", value: inputs.name, callback: onChangeInput }} />
                         <S.ValidText visible={!!validState}>{validState}</S.ValidText>
                     </S.InputFieldset>
                     <S.InputFieldset>
                         <S.IROnlyFieldSetLegend>설명 설정 영역</S.IROnlyFieldSetLegend>
-                        {/* { id, placeholder, value, callback } */}
                         <LongTextarea1 props={{ id: "descInput", name: "desc", placeholder: "Container Description", value: inputs.desc, callback: onChangeInput }} />
                     </S.InputFieldset>
                     <S.DivideFieldSet onClick={PreventDefault}>
@@ -336,7 +336,6 @@ export default function ContainerSettingPage() {
                         <S.IROnlyFieldSetLegend>OS 설정 영역</S.IROnlyFieldSetLegend>
                         <p>OS</p>
                         <div>
-                            {/* <SettingDropBox props={{ list: infraList, target: infra, callback: setInfra }} /> */}
                             <S.SoftwareStackList>
                                 {
                                     infraList.map((infraItem, index) => {
@@ -374,7 +373,7 @@ export default function ContainerSettingPage() {
 
                                         return (
                                             <li key={framework.name}>
-                                                <SoftwareButton props={{ image: Images[framework.name], name: framework.name, callback: onClickPlatformButton, selected: platform, added: added }} />
+                                                <SoftwareButton props={{ image: Images[framework.name], name: framework.name, callback: added ? onClickPlatformRemoveButton : onClickPlatformButton, selected: platform, added: added }} />
                                             </li>
                                         )
                                     })
@@ -394,7 +393,7 @@ export default function ContainerSettingPage() {
 
                                         return (
                                             <li key={db.name}>
-                                                <SoftwareButton props={{ image: Images[db.name], name: db.name, callback: onClickPlatformButton, selected: platform, added: added }} />
+                                                <SoftwareButton props={{ image: Images[db.name], name: db.name, callback: added ? onClickPlatformRemoveButton : onClickPlatformButton, selected: platform, added: added }} />
                                             </li>
                                         )
                                     })
@@ -404,7 +403,6 @@ export default function ContainerSettingPage() {
                                 <S.SettingListItem>
                                     <p>Version</p>
                                     <SettingDropBox props={{ list: platformVersionList, target: platformVersion, callback: setPlatformVersion }} />
-                                    <S.PlatformAddButton onClick={onClickPlatformAddButton}>+</S.PlatformAddButton>
                                 </S.SettingListItem>
                                 <S.SettingListItem>
                                     <p>Selected</p>
@@ -413,8 +411,8 @@ export default function ContainerSettingPage() {
                                             selectedPlatforms.map((selectedPlatform, index) => {
                                                 return (
                                                     <S.SelectedPlatformListItem key={'' + selectedPlatform.name + index}>
+                                                        <S.SelectedPlatformRemoveButton onClick={onClickPlatformRemoveButton}><span>{selectedPlatform.name}</span><i className="fas fa-minus"></i></S.SelectedPlatformRemoveButton>
                                                         <p><span>{selectedPlatform.name}</span><span>-</span><span>{selectedPlatform.version}</span></p>
-                                                        <S.SelectedPlatformRemoveButton onClick={onClickPlatformRemoveButton}><span>{selectedPlatform.name}</span>x</S.SelectedPlatformRemoveButton>
                                                     </S.SelectedPlatformListItem>
                                                 )
                                             })
