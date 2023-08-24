@@ -9,6 +9,7 @@ import ImportFonts from "utils/ImportFonts";
 
 const container = document.getElementById("root");
 const root = createRoot(container);
+
 ImportFonts();
 
 root.render(

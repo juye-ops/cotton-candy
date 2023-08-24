@@ -47,12 +47,10 @@ class Edit(BaseModel):
     gpu: bool
     settings: Settings
 
-
 @router.get("/list")
 def _list(project: str):
     container_list = ContainerDB.get_list(project)
     return container_list
-
 
 @router.post("/create")
 def _create(config: Create):
@@ -101,7 +99,6 @@ def _create(config: Create):
 
     return 200
 
-
 @router.post("/edit")
 def _edit(config: Edit):
     config = config.dict()
@@ -134,7 +131,6 @@ def _edit(config: Edit):
     )
 
     return 200
-
 
 @router.delete("/remove")
 def _remove(name: str):

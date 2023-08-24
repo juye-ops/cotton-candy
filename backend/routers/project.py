@@ -17,7 +17,7 @@ class Create(BaseModel):
 class Edit(BaseModel):
     old_name: str
     new_name: str
-    desc: str
+    description: str
 
 
 @router.get("/list")
@@ -39,15 +39,14 @@ def _create(info: Create):
 
     return 200
 
-
 @router.post("/edit")
 def _edit(res: Edit):
     res = res.dict()
 
     old_name = res["old_name"]
     new_name = res["new_name"]
-    project_desc = res["desc"]
-
+    project_desc = res["description"]
+    
     container_list = ProjectDB.get_containers(old_name)
 
     dind.Network.disconnect_all(res["old_name"])
@@ -62,7 +61,6 @@ def _edit(res: Edit):
         ContainerDB.update_ip(c["name"], container_ip)
 
     return 200
-
 
 @router.delete("/remove")
 def _remove(name: str):
