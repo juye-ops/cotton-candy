@@ -10,7 +10,7 @@ class OSDB:
         arg = ()
 
         return query, arg
-    
+
     @select
     def get_version(name) -> dict:
         query = """
@@ -20,6 +20,6 @@ class OSDB:
             WHERE name=%s
         );
         """
-        arg = (name, )
+        arg = (name,)
 
         return query, arg

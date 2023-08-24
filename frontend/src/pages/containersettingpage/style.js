@@ -2,32 +2,33 @@ import styled from "styled-components";
 import IROnly from "styles/IROnly";
 import { Link } from "react-router-dom";
 
-export const Header = styled.header`
-    ${IROnly}
+export const Wrapper = styled.div`
+    width: calc(100vw - 280px);
 `
 
-export const Section = styled.main`
+export const Section = styled.section`
+    height: calc(100vh - 92px);
+    padding: 0 0 55px;
     font-family: 'Rubik', sans-serif;
-    max-width: ${(props) => props.theme.width.wrapperWidth};
-    margin: 0 auto;
+    overflow-y: scroll;
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
 `
 
 export const SectionHeader = styled.header`
-    width: 100%;
-    background-color: rgba(247, 247, 250, 0.6);
-    backdrop-filter: blur(10px);
+    width: calc(100vw - 280px);
     position: fixed;
-    top: 0;
-    left: 0;
-    padding: 50px 0 30px;
-    z-index: 200;
+    padding: 55px 40px 50px;
+    z-index: 7000;
+    /* background-color: ${props => props.theme.color.background.dark}; */
+    background-color: rgba(255, 255, 255, 0.7);
 `
 
 export const SectionHeaderWrapper = styled.div`
     display: flex;
     align-items: center;
-    margin: 0 auto;
-    max-width: ${(props) => props.theme.width.wrapperWidth};
 
     & i {
         vertical-align: -2px;
@@ -53,7 +54,9 @@ export const Form = styled.form`
     border-radius: ${(props) => props.theme.borderRadius.lv3};
     background-color: ${(props) => props.theme.color.background.content};
     color: ${props => props.theme.color.font.main};
-    margin-top: 112px;
+    // margin: 137px 40px 0;
+    width: 1000px;
+    margin: 137px auto 0;
 
     & > fieldset + fieldset {
         border-top: 1px solid ${(props) => props.theme.color.border.normal};
@@ -61,14 +64,14 @@ export const Form = styled.form`
 `
 
 export const DivideFieldSet = styled.fieldset`
-    display: grid;
-    grid-template-columns: 1fr 3fr;
+    display: flex;
+    flex-direction: column;
     padding: 32px 25px;
     font-size: ${(props) => props.theme.fontSize.content};
 
     & > input, & > textarea {
-        border: 1px solid ${(props) => props.theme.color.border.normal};
-        border-radius: ${(props) => props.theme.borderRadius.lv2};
+        border: none;
+        border-bottom: 1px solid ${(props) => props.theme.color.border.normal};
         padding: 8px 13px;
     }
 
@@ -83,11 +86,12 @@ export const DivideFieldSet = styled.fieldset`
 
     & > input:focus, & > textarea:focus {
         outline: 0;
-        border: 1px solid ${(props) => props.theme.color.theme.main};
+        border-bottom: 1px solid ${(props) => props.theme.color.theme.main};
     }
 
     & > label:nth-child(2), & > p:nth-child(2) {
-        padding-top: 2px;
+        padding-top: 5px;
+        margin-bottom: 22px;
 
         & > span {
             font-size: 10px;
@@ -97,6 +101,22 @@ export const DivideFieldSet = styled.fieldset`
             color: ${(props) => props.theme.color.font.desc};
         }
     }
+`
+
+export const InputFieldset = styled.fieldset`
+    padding: 35px 20px;
+
+    & > legend {
+        ${IROnly}
+    }
+`
+
+export const ValidText = styled.p`
+    margin-top: 10px;
+    padding-left: 10px;
+    display: ${props => props.visible ? 'block' : 'none'};
+    font-size: ${(props) => props.theme.fontSize.desc};
+    color: ${props => props.theme.color.theme.sub};
 `
 
 export const IROnlyFieldSetLegend = styled.legend`
@@ -160,8 +180,9 @@ export const SoftwareStackList = styled.ul`
 `
 
 export const SettingList = styled.ul`
-    display: flex;
+    display: ${props => props.visible ? 'flex' : 'none'};
     flex-direction: column;
+    margin-top: 20px;
     gap: 20px;
     padding: 16px;
     background-color: ${props => props.theme.color.background.main};
@@ -255,9 +276,13 @@ export const SettingListItemPort = styled(SettingListItem)`
     & > label {
         width: 17%;
         padding-top: 7px;
-    }
+    }   
+`
 
-    
+export const PortValidWrapper = styled.div`
+    width: 100%;
+    display: flex;
+    flex-direction: column;
 `
 
 export const PortInputWarpper = styled.div`

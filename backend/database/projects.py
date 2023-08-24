@@ -1,4 +1,4 @@
-from database import mysql_cli, select, insert, update
+from database import select, insert, update, delete
 
 
 class ProjectDB:
@@ -13,7 +13,7 @@ class ProjectDB:
         arg = ()
 
         return query, arg
-    
+
     @select
     def get_containers(name):
         query = """
@@ -26,19 +26,17 @@ class ProjectDB:
         arg = (name,)
 
         return query, arg
-    
+
     def create(name, description, subnet):
         @insert
-        def q1(name):
+        def q1(*args):
             query = """
             INSERT INTO project(user_id, name) VALUES (1, %s);
             """
-            arg = (name,)
+            return query, args
 
-            return query, arg
-        
         @insert
-        def q2(name, description, subnet):
+        def q2(*args):
             query = """
             INSERT INTO project_info (project_id, description, subnet) 
             VALUES (
@@ -47,27 +45,23 @@ class ProjectDB:
                 %s
             );
             """
-            arg = (name, description, subnet)
-
-            return query, arg
+            return query, args
 
         q1(name)
         q2(name, description, subnet)
 
-    def update(old_name, new_name, description, subnet):
+    def edit(old_name, new_name, description, subnet):
         @update
-        def q1(old_name, new_name):
+        def q1(*args):
             query = """
             UPDATE project
             SET name=%s
             WHERE name=%s;
             """
-            arg = (new_name, old_name)
-
-            return query, arg
+            return query, args
 
         @update
-        def q2(new_name, description, subnet):
+        def q2(*args):
             query = """
             UPDATE project_info
             SET
@@ -75,9 +69,16 @@ class ProjectDB:
                 subnet=%s
             WHERE project_id=(SELECT id FROM project WHERE name=%s)
             """
-            arg = (description, subnet, new_name)
-            
-            return query, arg
+            return query, args
 
         q1(old_name, new_name)
         q2(new_name, description, subnet)
+
+    @delete
+    def remove(name):
+        query = """
+        DELETE FROM project
+        WHERE name = %s
+        """
+        arg = (name,)
+        return query, arg

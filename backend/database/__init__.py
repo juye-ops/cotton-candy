@@ -2,7 +2,7 @@ from mysql.connector import pooling
 
 mysql_cli = pooling.MySQLConnectionPool(
     pool_name="aiomysql",
-    pool_size = 3,
+    pool_size=3,
     pool_reset_session=True,
     host="database",
     port="3306",
@@ -10,6 +10,7 @@ mysql_cli = pooling.MySQLConnectionPool(
     user="root",
     password="password",
 )
+
 
 def select(func):
     def _select(*args):
@@ -22,9 +23,11 @@ def select(func):
         ret = cursor.fetchall()
 
         conn.close()
-        
+
         return ret
+
     return _select
+
 
 def insert(func):
     def _insert(*args):
@@ -40,6 +43,7 @@ def insert(func):
 
     return _insert
 
+
 def update(func):
     def _update(*args):
         query, arg = func(*args)
@@ -49,7 +53,7 @@ def update(func):
 
         cursor.execute(query, arg)
         conn.commit()
-        
+
         conn.close()
 
     return _update
@@ -64,7 +68,7 @@ def delete(func):
 
         cursor.execute(query, arg)
         conn.commit()
-        
+
         conn.close()
 
     return _delete

@@ -3,13 +3,14 @@ import styled from "styled-components";
 export const Wrapper = styled.div`
     width: 100%;
     position: relative;
+    font-family: 'Rubik', sans-serif;
 `
 
 export const Button = styled.button`
     width: 100%;
     height: 32px;
     text-align: left;
-    padding: 0 12px;
+    padding: 5px 12px;
     position: relative;
     background-color: ${props => props.theme.color.background.content};
     font-size: ${props => props.theme.fontSize.button};
@@ -52,6 +53,7 @@ export const List = styled.ul`
     top: 37px;
     padding: 4px 0;
     box-shadow: 0 0 5px 1px #cecece;
+    z-index: 1000;
     border-radius: ${props => props.theme.borderRadius.lv1};
     background-color: ${props => props.theme.color.background.content};
     display: ${props => props.clicked ? "block" : "none"};
