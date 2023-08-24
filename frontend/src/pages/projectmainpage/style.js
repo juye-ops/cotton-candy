@@ -101,7 +101,7 @@ export const ModalForm = styled.form`
     & > input, & > textarea {
         border: 1px solid ${(props) => props.theme.color.border.normal};
         border-radius: ${(props) => props.theme.borderRadius.lv2};
-        padding: 8px 13px;
+        padding: 10px 13px;
         margin-bottom: 30px;
         resize: vertical;
     }
@@ -119,6 +119,19 @@ export const ModalForm = styled.form`
         outline: 0;
         border: 1px solid ${(props) => props.theme.color.theme.main};
     }
+
+    & > input:nth-child(2) {
+        margin-bottom: ${props => props.valid ? '1px' : '30px'};
+    }
+`
+
+export const ValidText = styled.p`
+    margin-top: 10px;
+    padding-left: 10px;
+    margin-bottom: 30px;
+    display: ${props => props.visible ? 'block' : 'none'};
+    font-size: ${(props) => props.theme.fontSize.desc};
+    color: ${props => props.theme.color.theme.sub};
 `
 
 export const ButtonWrapper = styled.div`

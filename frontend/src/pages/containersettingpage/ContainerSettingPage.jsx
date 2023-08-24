@@ -36,7 +36,7 @@ export default function ContainerSettingPage() {
 
     const onChangeInput = (e) => {
         if (e.target.name === "name") {
-            const reg = /[a-z,A-Z,-,_,0-9]/g;
+            const reg = /[a-z,A-Z,\-,_,0-9]/g;
             const rst = e.target.value.replace(reg, '');
 
             setValidState(!!rst ? "알파벳, 숫자, 하이픈(-), 언더바(_)만 입력해야 합니다!" : "");

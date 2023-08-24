@@ -41,13 +41,23 @@ export default function ProjectMainPage() {
         generateDesc: "",
     })
     const [generate, setGenerate] = useState(false);
+    const [generateValid, setGenerateValid] = useState("");
 
     const onChangeInput = (e) => {
+        if (e.target.id === "generateName") {
+            const reg = /[a-z,A-Z,\-,_,0-9]/g;
+            const rst = e.target.value.replace(reg, '');
+
+            setGenerateValid(!!rst ? "알파벳, 숫자, 하이픈(-), 언더바(_)만 입력해야 합니다!" : "");
+        }
+
         setInputs({
             ...inputs,
             [e.target.id]: e.target.value,
         })
     }
+
+    console.log(generateValid);
 
     const onClickModalOn = () => {
         setGenerate(true);
@@ -55,6 +65,7 @@ export default function ProjectMainPage() {
 
     const onClickModalOff = () => {
         setGenerate(false);
+        setGenerateValid("");
         setInputs({
             generateName: "",
             generateDesc: "",
@@ -68,6 +79,18 @@ export default function ProjectMainPage() {
 
     // 생성 버튼
     const onClickGenerate = () => {
+        if (!inputs.generateName) {
+            alert('이름을 입력해주세요.');
+
+            return;
+        }
+
+        if (generateValid) {
+            alert('이름에는 알파벳, 숫자, 하이픈(-), 언더바(_)만 입력해야 합니다!');
+
+            return;
+        }
+
         const generateProject = async () => {
             const result = await GenerateProject({
                 user_name: user.id,
@@ -92,8 +115,16 @@ export default function ProjectMainPage() {
     });
     const [modify, setModify] = useState(false);
     const [modifyTarget, setModifyTarget] = useState("");
+    const [modifyValid, setModifyValid] = useState("");
 
     const onChangeModifyInput = (e) => {
+        if (e.target.id === "modifyName") {
+            const reg = /[a-z,A-Z,\-,_,0-9]/g;
+            const rst = e.target.value.replace(reg, '');
+
+            setModifyValid(!!rst ? "알파벳, 숫자, 하이픈(-), 언더바(_)만 입력해야 합니다!" : "");
+        }
+
         setEditInput({
             ...editInput,
             [e.target.id]: e.target.value,
@@ -111,6 +142,7 @@ export default function ProjectMainPage() {
 
     const onClickModifyModalOff = () => {
         setModify(false);
+        setModifyValid("");
         setEditInput({
             modifyName: "",
             modifyDescription: "",
@@ -119,6 +151,18 @@ export default function ProjectMainPage() {
 
     // 수정 버튼
     const onClickModify = () => {
+        if (!editInput.modifyName) {
+            alert('이름을 입력해주세요.');
+
+            return;
+        }
+
+        if (modifyValid) {
+            alert('이름에는 알파벳, 숫자, 하이픈(-), 언더바(_)만 입력해야 합니다!');
+
+            return;
+        }
+
         const modifyProject = async () => {
             const result = await ModifyProject({
                 old_name: modifyTarget,
@@ -182,27 +226,29 @@ export default function ProjectMainPage() {
                         </S.CreateProjectButton>
                     </li>
                 </S.ProjectList>
-                <S.ModalWrapper visible={modify} onClick={onClickModifyModalOff}>
-                    <S.ModalForm onClick={onClickModalForm}>
-                        <label htmlFor="modifyName">Project Name</label>
-                        <input type="text" id="modifyName" placeholder="프로젝트 이름을 입력해주세요." onChange={onChangeModifyInput} value={editInput.modifyName}/>
-                        <label htmlFor="modifyDescription">Project Description</label>
-                        <input type="text" id="modifyDescription" placeholder="프로젝트 설명을 입력해주세요." onChange={onChangeModifyInput} value={editInput.modifyDescription} />
-                        <S.ButtonWrapper>
-                            <S.ConfirmButton onClick={onClickModify}>Edit</S.ConfirmButton>
-                            <S.CancelButton onClick={onClickModifyModalOff}>Cancel</S.CancelButton>
-                        </S.ButtonWrapper>
-                    </S.ModalForm>
-                </S.ModalWrapper>
                 <S.ModalWrapper visible={generate} onClick={onClickModalOff}>
-                    <S.ModalForm onClick={onClickModalForm}>
+                    <S.ModalForm onClick={onClickModalForm} valid={!!generateValid}>
                         <label htmlFor="generateName">Project Name</label>
                         <input type="text" id="generateName" placeholder="프로젝트 이름을 입력해주세요." onChange={onChangeInput} value={inputs.generateName} />
+                        <S.ValidText visible={!!generateValid}>{generateValid}</S.ValidText>
                         <label htmlFor="generateDesc">Project Description</label>
                         <textarea id="generateDesc" placeholder="프로젝트 설명을 입력해주세요." onChange={onChangeInput} value={inputs.generateDesc} />
                         <S.ButtonWrapper>
                             <S.ConfirmButton onClick={onClickGenerate}>Create</S.ConfirmButton>
                             <S.CancelButton onClick={onClickModalOff}>Cancel</S.CancelButton>
+                        </S.ButtonWrapper>
+                    </S.ModalForm>
+                </S.ModalWrapper>
+                <S.ModalWrapper visible={modify} onClick={onClickModifyModalOff}>
+                    <S.ModalForm onClick={onClickModalForm} valid={!!modifyValid}>
+                        <label htmlFor="modifyName">Project Name</label>
+                        <input type="text" id="modifyName" placeholder="프로젝트 이름을 입력해주세요." onChange={onChangeModifyInput} value={editInput.modifyName}/>
+                        <S.ValidText visible={!!modifyValid}>{modifyValid}</S.ValidText>
+                        <label htmlFor="modifyDescription">Project Description</label>
+                        <input type="text" id="modifyDescription" placeholder="프로젝트 설명을 입력해주세요." onChange={onChangeModifyInput} value={editInput.modifyDescription} />
+                        <S.ButtonWrapper>
+                            <S.ConfirmButton onClick={onClickModify}>Edit</S.ConfirmButton>
+                            <S.CancelButton onClick={onClickModifyModalOff}>Cancel</S.CancelButton>
                         </S.ButtonWrapper>
                     </S.ModalForm>
                 </S.ModalWrapper>
