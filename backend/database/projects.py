@@ -5,9 +5,9 @@ class ProjectDB:
     @select
     def get_list():
         query = """
-        SELECT name, description FROM (
-            project INNER JOIN project_info 
-            ON project.id=project_info.project_id
+        SELECT name, description FROM (project AS p
+            INNER JOIN project_info AS pi
+            ON p.id=pi.project_id
         );
         """
         arg = ()
@@ -22,6 +22,31 @@ class ProjectDB:
             SELECT id FROM project
             WHERE name=%s
         )
+        """
+        arg = (name,)
+
+        return query, arg
+    
+    @select
+    def get_len(name):
+        query = """
+        SELECT count(*) FROM container
+        WHERE project_id=(
+            SELECT id FROM project
+            WHERE name=%s
+        )
+        """
+        arg = (name,)
+
+        return query, arg
+
+    @select
+    def get_info(name):
+        query = """
+        SELECT name, description FROM (project AS p
+            INNER JOIN project_info AS pi
+            ON project.id=project_info.project_id
+        ) WHERE name=%s;
         """
         arg = (name,)
 
