@@ -9,16 +9,18 @@ app = FastAPI()
 
 # 데이터 구조 초기화
 proxies = {}
+nginx_config_path = '/etc/nginx/nginx.conf'
 
-class ProxyRequest(BaseModel):
+class Add(BaseModel):
     name: str
     ip: str
 
-@app.post('/api/proxies')
-def add_proxy(proxy: ProxyRequest):
-    proxies[proxy.name] = f"http://{proxy.ip}/"
+class Edit(BaseModel):
+    old_name: str
+    new_name: str
 
-    nginx_config_path = '/etc/nginx/nginx.conf'
+
+def write_config():
     proxy_config = ''
 
     for name, url in proxies.items():
@@ -49,10 +51,40 @@ def add_proxy(proxy: ProxyRequest):
     with open(nginx_config_path, 'w') as f:
         f.write(nginx_config)
 
+
+@app.post('/proxies/add')
+def add_proxy(proxy: Add):
+    proxies[proxy.name] = f"http://{proxy.ip}/"
+
+    write_config()
+
     # Nginx server reload
     subprocess.run(['nginx', '-s', 'reload'])
 
     return {'message': 'Proxy added successfully'} 
+
+@app.post('/proxies/edit')
+def add_proxy(names: Edit):
+    proxies[names.new_name] = proxies[names.old_name]
+    del proxies[names.old_name]
+
+    write_config()
+
+    # Nginx server reload
+    subprocess.run(['nginx', '-s', 'reload'])
+
+    return {'message': 'Proxy added successfully'} 
+
+@app.delete('/proxies/remove')
+def add_proxy(name):
+    del proxies[name]
+    
+    write_config()
+
+    # Nginx server reload
+    subprocess.run(['nginx', '-s', 'reload'])
+
+    return {'message': 'Proxy removed successfully'} 
 
 # 서버 시작
 if __name__ == '__main__':
