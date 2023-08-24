@@ -2,7 +2,7 @@ import styled from "styled-components";
 
 export const SoftwareButton = styled.button`
     width: 100%;
-    height: 90px;
+    height: 100px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -12,7 +12,8 @@ export const SoftwareButton = styled.button`
     outline: ${props => props.selected ? `2px solid ${props.theme.color.theme.main}` : "none"};
 
     & > img {
-        width: 60%;
+        width: 60px;
+        height: 60px;
     }
 
     & > span {
