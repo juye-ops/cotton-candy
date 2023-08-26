@@ -23,6 +23,11 @@ export const GlobalStyle = createGlobalStyle`
     }
 
     body {
-        background-color: ${props => props.theme.color.background.main};
+        background-color: ${props => props.theme.color.background.content};
+        overflow: hidden;
+
+        &::-webkit-scrollbar {
+            display: none;
+        }
     }
 `
