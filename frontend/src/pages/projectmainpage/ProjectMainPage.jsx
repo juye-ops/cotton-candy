@@ -57,8 +57,6 @@ export default function ProjectMainPage() {
         })
     }
 
-    console.log(generateValid);
-
     const onClickModalOn = () => {
         setGenerate(true);
     }

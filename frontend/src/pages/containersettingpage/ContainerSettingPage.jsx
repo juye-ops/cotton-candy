@@ -273,30 +273,27 @@ export default function ContainerSettingPage() {
             envRst[env.key] = env.value;
         });
 
-        const result = await GenerateContainer(JSON.stringify({
-            "project": projectName,
-            "name": inputs.name,
-            "description": inputs.desc,
-            "gpu": false,
-            "build": {
-                "os": {
-                    "name": "ubuntu",
-                    "version": "20.04",
-                },
-                "frameworks": selectedPlatforms,
-            },
-            "settings": {
-                "ports": ports,
-                "environments": envRst,
+        navigate('/container/generate', {
+            state: {
+                body: {
+                    "project": projectName,
+                    "name": inputs.name,
+                    "description": inputs.desc,
+                    "gpu": false,
+                    "build": {
+                        "os": {
+                            "name": "ubuntu",
+                            "version": "20.04",
+                        },
+                        "frameworks": selectedPlatforms,
+                    },
+                    "settings": {
+                        "ports": ports,
+                        "environments": envRst,
+                    }
+                }
             }
-        }));
-
-        if (result === 200) {
-            navigate("/" + projectName);
-        } else {
-            alert("컨테이너 생성 실패");
-        }
-
+        });
     }
 
     return (

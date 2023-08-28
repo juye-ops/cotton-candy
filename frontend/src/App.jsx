@@ -15,6 +15,8 @@ import ContainerSettingPage from "pages/containersettingpage/ContainerSettingPag
 import ContainerModifyPage from "pages/containermodifypage/ContainerModifyPage";
 import ContainerPage from "pages/containerpage/ContainerPage";
 
+import LoadingPage from "pages/loadingpage/LoadingPage";
+
 function App() {
     return (
         <ThemeProvider theme={theme}>
@@ -36,6 +38,9 @@ function App() {
 
                     {/* 컨테이너 실행 */}
                     <Route path="/container/:id" element={<ContainerPage />} />
+
+                    {/* 컨테이너 로딩 페이지 */}
+                    <Route path="/container/generate" element={<LoadingPage />} />
                 </Routes>
             </BrowserRouter>
         </ThemeProvider>
