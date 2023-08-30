@@ -3,16 +3,12 @@ from pydantic import BaseModel
 from typing import List, Dict, Any
 
 from database import *
-from utils import iac, dind, ide
+from utils import dind, iac, ide
 
 router = APIRouter(
     prefix="/container",
 )
 
-@router.get("/list/")
-def container_list(project: str):
-    container_list = ContainerDB.get_list(project)
-    return container_list
 
 class Create(BaseModel):
     class Build(BaseModel):
@@ -38,8 +34,29 @@ class Create(BaseModel):
     build: Build
     settings: Settings
 
+
+class Edit(BaseModel):
+    class Settings(BaseModel):
+        ports: list
+        environments: Dict[str, str]
+
+    old_name: str
+    new_name: str
+    project: str
+    description: str
+    gpu: bool
+    settings: Settings
+
+@router.get("/list")
+def _list(project: str):
+    return ContainerDB.get_list(project)
+
+@router.get("/info")
+def _info(name: str):
+    return ContainerDB.get_info(name)
+
 @router.post("/create")
-def container_build(config: Create):
+def _create(config: Create):
     config = config.dict()
 
     container_name = config["name"]
@@ -61,9 +78,11 @@ def container_build(config: Create):
     # create dockerfile
     iac.create(container_name, container_os, container_frameworks)
     dind.Container.build(container_name)
-    dind.Container.run(container_name, container_project, container_ports, container_envs)
+    dind.Container.run(
+        container_name, container_project, container_ports, container_envs
+    )
 
-    container_ip = dind.Container.get_info(container_name)["NetworkSettings"]["Networks"][container_project]["IPAddress"] # Get IP Address
+    container_ip = dind.Container.get_info(container_name)["NetworkSettings"]["Networks"][container_project]["IPAddress"]  # Get IP Address
 
     # Insert database
     ContainerDB.create(
@@ -75,7 +94,7 @@ def container_build(config: Create):
         container_envs,
         container_os,
         container_frameworks,
-        container_ip
+        container_ip,
     )
 
     # add ide proxy
@@ -83,19 +102,8 @@ def container_build(config: Create):
 
     return 200
 
-class Edit(BaseModel):
-    class Settings(BaseModel):
-        ports: list
-        environments: Dict[str, str]
-    old_name: str
-    new_name: str
-    project: str
-    description: str
-    gpu: bool
-    settings: Settings
-
 @router.post("/edit")
-def container_edit(config: Edit):
+def _edit(config: Edit):
     config = config.dict()
 
     old_name = config["old_name"]
@@ -111,10 +119,12 @@ def container_edit(config: Edit):
 
     container_ports = {p: p for p in container_ports}
 
-    dind.Container.edit(old_name, new_name, container_project, container_ports, container_envs)
+    dind.Container.edit(
+        old_name, new_name, container_project, container_ports, container_envs
+    )
 
     # Insert database
-    ContainerDB.update(
+    ContainerDB.edit(
         old_name,
         new_name,
         container_desc,
@@ -123,4 +133,11 @@ def container_edit(config: Edit):
         container_envs,
     )
 
+    return 200
+
+@router.delete("/remove")
+def _remove(name: str):
+    dind.Container.remove(name)
+    ContainerDB.remove(name)
+    ide.rm_proxy(name)
     return 200

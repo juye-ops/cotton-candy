@@ -1,17 +1,14 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router';
+import { useLocation, useParams } from 'react-router';
 
 import * as S from './style';
 import PreventDefault from 'utils/PreventDefault';
 import StopPropagation from 'utils/StopPropagation';
 
-
-
-export default function ContainerCard({ props: { container, clickedContainerModal, setClickedContainerModal } }) {
+export default function ContainerCard({ props: { container, clickedContainerModal, setClickedContainerModal, onClickRemoveModal, setRemoveTarget } }) {
+    const location = useLocation();
     const { projectName } = useParams();
     const [clicked, setClicked] = useState(false);
-
-    console.log(container);
 
     useEffect(() => {
         window.addEventListener("click", () => {
@@ -39,6 +36,10 @@ export default function ContainerCard({ props: { container, clickedContainerModa
         setClickedContainerModal(e.currentTarget.querySelector('span:nth-child(2)').innerText);
     }
 
+    const onClickExecute = () => {
+        window.location.href = window.location.href.replace(location.pathname, "") + '/ide/' + container.name + '/';
+    }
+
     return (
         <S.Container>
             <S.ContainerHeader>
@@ -59,7 +60,7 @@ export default function ContainerCard({ props: { container, clickedContainerModa
                             </S.MoreListLink>
                         </li>
                         <li>
-                            <S.MoreListButton>
+                            <S.MoreListButton onClick={() => { onClickRemoveModal(); setRemoveTarget(container.name); }}>
                                 <i className="fas fa-trash-alt"></i>
                                 <span>컨테이너 삭제하기</span>
                             </S.MoreListButton>
@@ -67,15 +68,10 @@ export default function ContainerCard({ props: { container, clickedContainerModa
                     </S.MoreList>
                 </S.MoreButtonWrapper>
             </S.ContainerHeader>
-            <S.SoftwareWrapper>
-                {/* <p>{container.build.os.name}</p> */}
-                {/* <p>{container.build.platforms[0].name}</p> */}
-            </S.SoftwareWrapper>
-            <p>test desc</p>
-            <S.ExecuteLink to={'/container/' + container.name} state={{ containerName: container.name }} >
-            {/* <S.ExecuteLink to={'http://container/' + container.name + '/'} state={{ containerName: container.name }} > */}
+            <S.ContainerDesc>{container.description}</S.ContainerDesc>
+            <S.ExecuteLink onClick={onClickExecute}>
                 <i className="fa-solid fa-play"></i>
-                <span>실행</span>
+                <span>Execute</span>
             </S.ExecuteLink>
         </S.Container>
     )
