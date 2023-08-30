@@ -43,7 +43,6 @@ def write_config():
 
             {proxy_config}
 
-            # 기타 설정 영역
         }}
     }}
     '''
