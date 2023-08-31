@@ -1,8 +1,9 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 
 from database import *
 from routers import ContainerCreate, ContainerEdit
 from utils import dind, iac, ide
+from utils.auth import check_access_token
 
 
 router = APIRouter(
@@ -14,11 +15,11 @@ def _list(project: str):
     return ContainerDB.get_containers_by_project(project)
 
 @router.get("/info")
-def _info(name: str):
+def _info(name: str, payload: dict = Depends(check_access_token)):
     return ContainerDB.get_info_by_name(name)
 
 @router.post("/create")
-def _create(config: ContainerCreate):
+def _create(config: ContainerCreate, payload: dict = Depends(check_access_token)):
     config = config.dict()
 
     container_name = config["name"]
@@ -65,7 +66,7 @@ def _create(config: ContainerCreate):
     return 200
 
 @router.post("/edit")
-def _edit(config: ContainerEdit):
+def _edit(config: ContainerEdit, payload: dict = Depends(check_access_token)):
     config = config.dict()
 
     old_name = config["old_name"]
@@ -98,7 +99,7 @@ def _edit(config: ContainerEdit):
     return 200
 
 @router.delete("/remove")
-def _remove(name: str):
+def _remove(name: str, payload: dict = Depends(check_access_token)):
     dind.Container.remove(name)
     ContainerDB.delete_by_name(name)
     ide.rm_proxy(name)
