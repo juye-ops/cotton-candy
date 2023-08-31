@@ -1,9 +1,9 @@
 from fastapi import APIRouter, HTTPException, status, Depends
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.responses import RedirectResponse
-from pydantic import BaseModel
 
 from database import *
+from routers import UserAuth, UserOut
 from utils.auth import (
     get_hashed_password,
     create_access_token,
@@ -16,10 +16,6 @@ from utils.auth import (
 router = APIRouter(
     prefix="/user",
 )
-
-class UserAuth(BaseModel):
-    username: str
-    password: str
 
 @router.post("/signup")
 def _signup(data: UserAuth):
@@ -59,20 +55,14 @@ def _signin(form_data: OAuth2PasswordRequestForm = Depends()):
     }
 
 @router.get("/signout")
-def _signout(token_data: dict = Depends(check_access_token)):
-    username = token_data.sub
+def _signout(payload: dict = Depends(check_access_token)):
+    username = payload["sub"]
     UserDB.delete_refresh_token(username)
-
-class UserOut(BaseModel):
-    username: str
-
-class SystemUser(UserOut):
-    password: str
 
 
 @router.get('/test', summary='Get details of currently logged in user', response_model=UserOut)
-def _test(token_data: dict = Depends(check_access_token)):
-    user = UserDB.get(token_data.sub)[0]
+def _test(payload: dict = Depends(check_access_token)):
+    user = UserDB.get(payload["sub"])[0]
     if user is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -82,9 +72,9 @@ def _test(token_data: dict = Depends(check_access_token)):
 
 @router.get('/check/refresh')
 def _check_rtoken(data = Depends(check_refresh_token)):
-    token_data = data["payload"]
+    payload = data["payload"]
     refresh_token = data["token"]
-    target_token = UserDB.get_rtoken_by_username(token_data.sub)[0]["refresh_token"].decode("ascii")
+    target_token = UserDB.get_rtoken_by_username(payload["sub"])[0]["refresh_token"].decode("ascii")
     
     if refresh_token != target_token:
         raise HTTPException(
@@ -93,5 +83,5 @@ def _check_rtoken(data = Depends(check_refresh_token)):
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    access_token = create_access_token(token_data.sub)
+    access_token = create_access_token(payload["sub"])
     return access_token
