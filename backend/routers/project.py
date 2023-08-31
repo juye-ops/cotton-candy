@@ -1,23 +1,12 @@
 from fastapi import APIRouter
-from pydantic import BaseModel
+
 from database import *
+from routers import ProjectCreate, ProjectEdit
 from utils import dind, ide
 
 router = APIRouter(
     prefix="/project",
 )
-
-
-class Create(BaseModel):
-    user_name: str
-    name: str
-    description: str
-
-
-class Edit(BaseModel):
-    old_name: str
-    new_name: str
-    description: str
 
 
 @router.get("/list")
@@ -34,7 +23,7 @@ def _len(name):
 
 
 @router.post("/create")
-def _create(info: Create):
+def _create(info: ProjectCreate):
     info = info.dict()
 
     project_name = info["name"]
@@ -47,7 +36,7 @@ def _create(info: Create):
     return 200
 
 @router.post("/edit")
-def _edit(res: Edit):
+def _edit(res: ProjectEdit):
     res = res.dict()
 
     old_name = res["old_name"]
