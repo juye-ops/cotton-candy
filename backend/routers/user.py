@@ -19,18 +19,18 @@ router = APIRouter(
 
 @router.post("/signup")
 def _signup(data: UserAuth):
-    user = UserDB.get(data.username)
+    user = UserDB.get_user_by_username(data.username)
     if user:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="User with this ID already exists"
         )
     
-    UserDB.add(data.username, get_hashed_password(data.password))
+    UserDB.insert_user(data.username, get_hashed_password(data.password))
 
 @router.post('/signin', summary="Create access and refresh tokens for user")
 def _signin(form_data: OAuth2PasswordRequestForm = Depends()):
-    user = UserDB.get(form_data.username)
+    user = UserDB.get_user_by_username(form_data.username)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -47,7 +47,7 @@ def _signin(form_data: OAuth2PasswordRequestForm = Depends()):
     access_token = create_access_token(user['username'])
     refresh_token = create_refresh_token(user['username'])
     
-    UserDB.add_refresh_token(user['username'], refresh_token)
+    UserDB.insert_refresh_token(user['username'], refresh_token)
 
     return {
         "access_token": access_token,
@@ -57,12 +57,12 @@ def _signin(form_data: OAuth2PasswordRequestForm = Depends()):
 @router.get("/signout")
 def _signout(payload: dict = Depends(check_access_token)):
     username = payload["sub"]
-    UserDB.delete_refresh_token(username)
+    UserDB.delete_refresh_token_by_username(username)
 
 
 @router.get('/test', summary='Get details of currently logged in user', response_model=UserOut)
 def _test(payload: dict = Depends(check_access_token)):
-    user = UserDB.get(payload["sub"])[0]
+    user = UserDB.get_user_by_username(payload["sub"])[0]
     if user is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
