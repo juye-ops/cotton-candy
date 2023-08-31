@@ -226,6 +226,7 @@ export const SelectedPlatformListItem = styled.li`
     width: 100%;
     height: 32px;
     display: flex;
+    align-items: center;
 
     & > p {
         display: flex;
@@ -243,18 +244,20 @@ export const SelectedPlatformListItem = styled.li`
 `
 
 export const SelectedPlatformRemoveButton = styled.button`
-    width: 30px;
-    height: 30px;
-    margin: 0 2px 0 auto;
+    width: 18px;
+    height: 18px;
+    margin: 0 12px 0 auto;
     transition: all 0.2s;
-    font-size: ${props => props.theme.fontSize.button};
-    border: 1px solid ${props => props.theme.color.font.disable};
-    background-color: ${props => props.theme.color.background.hover_red};
-    border-radius: ${props => props.theme.borderRadius.lv2};
-    color: ${props => props.theme.color.font.disable};
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: ${props => props.theme.fontSize.desc};
+    background-color: ${props => props.theme.color.theme.sub};
+    border-radius: ${props => props.theme.borderRadius.lv1};
+    color: ${props => props.theme.color.font.reverse};
 
     &:hover {
-        background-color: ${props => props.theme.color.background.hover_red_2};
+        background-color: ${props => props.theme.color.theme.sub_dark};
     }
 
     & > span {

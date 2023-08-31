@@ -100,6 +100,27 @@ export const GenerateContainer = async (body) => {
     }
 }
 
+export const GetContainerInfo = async (containerName) => {
+    try {
+        const response = await fetch("/api/container/info?name=" + containerName, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+
+        console.log(response);
+
+        const result = response.json();
+
+        return result;
+    } catch (e) {
+        console.log(e);
+
+        return 1;
+    }
+}
+
 export const UpdateContainer = async (body) => {
     try {
         const response = await fetch("/api/container/edit", {
@@ -109,8 +130,6 @@ export const UpdateContainer = async (body) => {
             },
             body,
         });
-
-        console.log(response);
 
         const result = response.json();
 
