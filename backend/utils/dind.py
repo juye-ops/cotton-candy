@@ -21,7 +21,7 @@ class Container:
             detach=True,
         )
 
-    def get_info(container_name):
+    def info(container_name):
         return docker_cli.api.inspect_container(container_name)
 
     def edit(old_name, new_name, project_name, container_ports, container_envs):

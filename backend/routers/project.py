@@ -11,15 +11,15 @@ router = APIRouter(
 
 @router.get("/list")
 def _list():
-    return ProjectDB.get_list()
+    return ProjectDB.get_projects()
 
 @router.get("/info")
 def _info(name):
-    return ProjectDB.get_info(name)[0]
+    return ProjectDB.get_info_by_name(name)[0]
 
 @router.get("/len")
 def _len(name):
-    return ProjectDB.get_len(name)[0]["count(*)"]
+    return ProjectDB.get_number_of_containers_by_name(name)[0]["count(*)"]
 
 
 @router.post("/create")
@@ -31,7 +31,7 @@ def _create(info: ProjectCreate):
 
     net_info = dind.Network.create(info["name"])
 
-    ProjectDB.create(project_name, project_desc, net_info["subnet"])
+    ProjectDB.insert_project(project_name, project_desc, net_info["subnet"])
 
     return 200
 
@@ -43,23 +43,23 @@ def _edit(res: ProjectEdit):
     new_name = res["new_name"]
     project_desc = res["description"]
     
-    container_list = ProjectDB.get_containers(old_name)
+    container_list = ProjectDB.get_containers_by_name(old_name)
 
     dind.Network.disconnect_all(res["old_name"])
     dind.Network.remove(res["old_name"])
     net_info = dind.Network.create(res["new_name"])
     dind.Network.connect_containers(new_name, container_list)
     
-    ProjectDB.edit(old_name, new_name, project_desc, net_info["subnet"])
+    ProjectDB.update_project_by_name(old_name, new_name, project_desc, net_info["subnet"])
     for c in container_list:
         container_ip = dind.Container.get_info(c["name"])["NetworkSettings"]["Networks"][new_name]["IPAddress"]
-        ContainerDB.update_ip(c["name"], container_ip)
+        ContainerDB.update_ip_by_name(c["name"], container_ip)
 
     return 200
 
 @router.delete("/remove")
 def _remove(name: str):
-    container_list = ProjectDB.get_containers(name)
+    container_list = ProjectDB.get_containers_by_name(name)
 
     for c in container_list:
         dind.Container.remove(c["name"])
@@ -67,4 +67,4 @@ def _remove(name: str):
 
     dind.Network.remove(name)
 
-    ProjectDB.remove(name)
+    ProjectDB.delete_by_name(name)

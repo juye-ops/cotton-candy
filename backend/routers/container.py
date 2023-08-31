@@ -11,11 +11,11 @@ router = APIRouter(
 
 @router.get("/list")
 def _list(project: str):
-    return ContainerDB.get_list(project)
+    return ContainerDB.get_containers_by_project(project)
 
 @router.get("/info")
 def _info(name: str):
-    return ContainerDB.get_info(name)
+    return ContainerDB.get_info_by_name(name)
 
 @router.post("/create")
 def _create(config: ContainerCreate):
@@ -44,10 +44,10 @@ def _create(config: ContainerCreate):
         container_name, container_project, container_ports, container_envs
     )
 
-    container_ip = dind.Container.get_info(container_name)["NetworkSettings"]["Networks"][container_project]["IPAddress"]  # Get IP Address
+    container_ip = dind.Container.info(container_name)["NetworkSettings"]["Networks"][container_project]["IPAddress"]  # Get IP Address
 
     # Insert database
-    ContainerDB.create(
+    ContainerDB.insert_container(
         container_name,
         container_project,
         container_desc,
@@ -86,7 +86,7 @@ def _edit(config: ContainerEdit):
     )
 
     # Insert database
-    ContainerDB.edit(
+    ContainerDB.update_container_by_name(
         old_name,
         new_name,
         container_desc,
@@ -100,6 +100,6 @@ def _edit(config: ContainerEdit):
 @router.delete("/remove")
 def _remove(name: str):
     dind.Container.remove(name)
-    ContainerDB.remove(name)
+    ContainerDB.delete_by_name(name)
     ide.rm_proxy(name)
     return 200
