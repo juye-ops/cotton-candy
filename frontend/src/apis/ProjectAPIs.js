@@ -17,6 +17,25 @@ export const GetProjectList = async () => {
     }
 }
 
+export const GetProjectContainers = async (projectName) => {
+    try {
+        const response = await fetch("/api/project/len?name=" + projectName, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+
+        const result = response.json();
+
+        return result;
+    } catch (e) {
+        console.log(e);
+
+        return [];
+    }
+}
+
 export const GenerateProject = async ({ user_name, name, description }) => {
     try {
         const response = await fetch("/api/project/create", {
