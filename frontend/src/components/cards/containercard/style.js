@@ -146,7 +146,7 @@ export const SoftwareWrapper = styled.div`
     }
 `
 
-export const ExecuteLink = styled(Link)`
+export const ExecuteLink = styled.button`
     width: 100%;
     height: 22px;
     display: flex;

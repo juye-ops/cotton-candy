@@ -6,7 +6,7 @@ export const theme = {
             main_light: "rgba(2, 132, 254, 0.3)",
             main_hover: "rgba(2, 132, 254, 0.5)",
             sub: "rgb(245, 83, 94)",
-            sub_dark: "rgb(245, 83, 94)",
+            sub_dark: "rgb(180, 23, 34)",
         },
         border: {
             normal: "#ddd",

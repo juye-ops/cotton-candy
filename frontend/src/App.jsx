@@ -13,7 +13,8 @@ import ProjectMainPage from "pages/projectmainpage/ProjectMainPage";
 import ContainerManagePage from "pages/containermanagepage/ContainerManagePage";
 import ContainerSettingPage from "pages/containersettingpage/ContainerSettingPage";
 import ContainerModifyPage from "pages/containermodifypage/ContainerModifyPage";
-import ContainerPage from "pages/containerpage/ContainerPage";
+
+import LoadingPage from "pages/loadingpage/LoadingPage";
 
 function App() {
     return (
@@ -34,8 +35,8 @@ function App() {
                         <Route path="/:projectName/:containerName/modify" element={<ContainerModifyPage />} />
                     </Route>
 
-                    {/* 컨테이너 실행 */}
-                    <Route path="/container/:id" element={<ContainerPage />} />
+                    {/* 컨테이너 로딩 페이지 */}
+                    <Route path="/container/generate" element={<LoadingPage />} />
                 </Routes>
             </BrowserRouter>
         </ThemeProvider>

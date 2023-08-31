@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
 from database import *
-from utils import iac, dind
+from utils import dind, ide
 
 router = APIRouter(
     prefix="/project",
@@ -22,8 +22,15 @@ class Edit(BaseModel):
 
 @router.get("/list")
 def _list():
-    project_list = ProjectDB.get_list()
-    return project_list
+    return ProjectDB.get_list()
+
+@router.get("/info")
+def _info(name):
+    return ProjectDB.get_info(name)[0]
+
+@router.get("/len")
+def _len(name):
+    return ProjectDB.get_len(name)[0]["count(*)"]
 
 
 @router.post("/create")
@@ -53,11 +60,10 @@ def _edit(res: Edit):
     dind.Network.remove(res["old_name"])
     net_info = dind.Network.create(res["new_name"])
     dind.Network.connect_containers(new_name, container_list)
-    print(net_info, flush=True)
+    
     ProjectDB.edit(old_name, new_name, project_desc, net_info["subnet"])
     for c in container_list:
         container_ip = dind.Container.get_info(c["name"])["NetworkSettings"]["Networks"][new_name]["IPAddress"]
-        print(container_ip, flush=True)
         ContainerDB.update_ip(c["name"], container_ip)
 
     return 200
@@ -68,6 +74,7 @@ def _remove(name: str):
 
     for c in container_list:
         dind.Container.remove(c["name"])
+        ide.rm_proxy(name)
 
     dind.Network.remove(name)
 
