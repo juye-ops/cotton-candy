@@ -1,51 +1,13 @@
 from fastapi import APIRouter
-from pydantic import BaseModel
-from typing import List, Dict, Any
 
 from database import *
+from routers import ContainerCreate, ContainerEdit
 from utils import dind, iac, ide
+
 
 router = APIRouter(
     prefix="/container",
 )
-
-
-class Create(BaseModel):
-    class Build(BaseModel):
-        class OperSys(BaseModel):
-            name: str
-            version: str
-
-        class Platform(BaseModel):
-            name: str
-            version: str
-
-        os: OperSys
-        frameworks: List[OperSys]
-
-    class Settings(BaseModel):
-        ports: list
-        environments: Dict[str, str]
-
-    name: str
-    project: str
-    description: str
-    gpu: bool
-    build: Build
-    settings: Settings
-
-
-class Edit(BaseModel):
-    class Settings(BaseModel):
-        ports: list
-        environments: Dict[str, str]
-
-    old_name: str
-    new_name: str
-    project: str
-    description: str
-    gpu: bool
-    settings: Settings
 
 @router.get("/list")
 def _list(project: str):
@@ -56,7 +18,7 @@ def _info(name: str):
     return ContainerDB.get_info(name)
 
 @router.post("/create")
-def _create(config: Create):
+def _create(config: ContainerCreate):
     config = config.dict()
 
     container_name = config["name"]
@@ -103,7 +65,7 @@ def _create(config: Create):
     return 200
 
 @router.post("/edit")
-def _edit(config: Edit):
+def _edit(config: ContainerEdit):
     config = config.dict()
 
     old_name = config["old_name"]
