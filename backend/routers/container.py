@@ -1,62 +1,24 @@
 from fastapi import APIRouter
-from pydantic import BaseModel
-from typing import List, Dict, Any
 
 from database import *
+from routers import ContainerCreate, ContainerEdit
 from utils import dind, iac, ide
+
 
 router = APIRouter(
     prefix="/container",
 )
 
-
-class Create(BaseModel):
-    class Build(BaseModel):
-        class OperSys(BaseModel):
-            name: str
-            version: str
-
-        class Platform(BaseModel):
-            name: str
-            version: str
-
-        os: OperSys
-        frameworks: List[OperSys]
-
-    class Settings(BaseModel):
-        ports: list
-        environments: Dict[str, str]
-
-    name: str
-    project: str
-    description: str
-    gpu: bool
-    build: Build
-    settings: Settings
-
-
-class Edit(BaseModel):
-    class Settings(BaseModel):
-        ports: list
-        environments: Dict[str, str]
-
-    old_name: str
-    new_name: str
-    project: str
-    description: str
-    gpu: bool
-    settings: Settings
-
 @router.get("/list")
 def _list(project: str):
-    return ContainerDB.get_list(project)
+    return ContainerDB.get_containers_by_project(project)
 
 @router.get("/info")
 def _info(name: str):
-    return ContainerDB.get_info(name)
+    return ContainerDB.get_info_by_name(name)
 
 @router.post("/create")
-def _create(config: Create):
+def _create(config: ContainerCreate):
     config = config.dict()
 
     container_name = config["name"]
@@ -82,10 +44,10 @@ def _create(config: Create):
         container_name, container_project, container_ports, container_envs
     )
 
-    container_ip = dind.Container.get_info(container_name)["NetworkSettings"]["Networks"][container_project]["IPAddress"]  # Get IP Address
+    container_ip = dind.Container.info(container_name)["NetworkSettings"]["Networks"][container_project]["IPAddress"]  # Get IP Address
 
     # Insert database
-    ContainerDB.create(
+    ContainerDB.insert_container(
         container_name,
         container_project,
         container_desc,
@@ -103,7 +65,7 @@ def _create(config: Create):
     return 200
 
 @router.post("/edit")
-def _edit(config: Edit):
+def _edit(config: ContainerEdit):
     config = config.dict()
 
     old_name = config["old_name"]
@@ -124,7 +86,7 @@ def _edit(config: Edit):
     )
 
     # Insert database
-    ContainerDB.edit(
+    ContainerDB.update_container_by_name(
         old_name,
         new_name,
         container_desc,
@@ -138,6 +100,6 @@ def _edit(config: Edit):
 @router.delete("/remove")
 def _remove(name: str):
     dind.Container.remove(name)
-    ContainerDB.remove(name)
+    ContainerDB.delete_by_name(name)
     ide.rm_proxy(name)
     return 200

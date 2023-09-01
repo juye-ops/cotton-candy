@@ -3,7 +3,7 @@ from database import select, insert, update, delete
 
 class ContainerDB:
     @select
-    def get_list(project):
+    def get_containers_by_project(project):
         query = """
         SELECT name, description FROM (container AS c
             INNER JOIN container_info AS ci
@@ -17,7 +17,7 @@ class ContainerDB:
 
         return query, arg
 
-    def get_info(name):
+    def get_info_by_name(name):
         @select
         def q1(*args):
             query = """
@@ -54,7 +54,7 @@ class ContainerDB:
 
         return info
 
-    def create(name, project, description, gpu, ports, envs, os, frameworks, ip_addr):
+    def insert_container(name, project, description, gpu, ports, envs, os, frameworks, ip_addr):
         # Add container
         @insert
         def q1(*args):
@@ -152,7 +152,7 @@ class ContainerDB:
         for framework in frameworks:
             q6(name, framework["name"], framework["version"])
 
-    def edit(old_name, new_name, description, gpu, ports, envs):
+    def update_container_by_name(old_name, new_name, description, gpu, ports, envs):
         # Modify container
         @update
         def q1(*args):
@@ -208,7 +208,7 @@ class ContainerDB:
             q4(new_name, k, v)
 
     @update
-    def update_ip(name, ip_addr):
+    def update_ip_by_name(name, ip_addr):
         query = """
         UPDATE container_info
         SET ip=%s
@@ -221,7 +221,7 @@ class ContainerDB:
         return query, arg
 
     @delete
-    def remove(name):
+    def delete_by_name(name):
         query = """
         DELETE FROM container
         WHERE name=%s
