@@ -3,7 +3,7 @@ from database import mysql_cli, select
 
 class OSDB:
     @select
-    def get_list():
+    def get_os():
         query = """
         SELECT name from os
         """
@@ -12,7 +12,7 @@ class OSDB:
         return query, arg
 
     @select
-    def get_version(name) -> dict:
+    def get_versions_by_name(name) -> dict:
         query = """
         SELECT version FROM os_version 
         WHERE os_id=(
