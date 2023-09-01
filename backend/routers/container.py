@@ -11,7 +11,7 @@ router = APIRouter(
 )
 
 @router.get("/list")
-def _list(project: str):
+def _list(project: str, payload: dict = Depends(check_access_token)):
     return ContainerDB.get_containers_by_project(project)
 
 @router.get("/info")
