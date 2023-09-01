@@ -153,9 +153,31 @@ class ContainerDB:
             q6(name, framework["name"], framework["version"])
 
     def update_container_by_name(old_name, new_name, description, gpu, ports, envs):
+        @delete
+        def q1(*args):
+            query = """
+            DELETE FROM container_ports
+            WHERE container_id=(
+                SELECT id FROM container 
+                WHERE name=%s
+            );
+            """
+            return query, args
+
+        @delete
+        def q2(*args):
+            query = """
+            DELETE FROM container_envs
+            WHERE container_id=(
+                SELECT id FROM container 
+                WHERE name=%s
+            );
+            """
+            return query, args
+
         # Modify container
         @update
-        def q1(*args):
+        def q3(*args):
             query = """
             UPDATE container
             SET name=%s
@@ -165,7 +187,7 @@ class ContainerDB:
 
         # Modify container info
         @update
-        def q2(*args):
+        def q4(*args):
             query = """
             UPDATE container_info
             SET
@@ -176,7 +198,7 @@ class ContainerDB:
             return query, args
 
         @update
-        def q3(*args):
+        def q5(*args):
             query = """
             INSERT INTO container_ports(container_id, port)
             VALUES (
@@ -187,7 +209,7 @@ class ContainerDB:
             return query, args
 
         @update
-        def q4(*args):
+        def q6(*args):
             query = """
             INSERT INTO container_envs(container_id, k, v)
             VALUES (
@@ -198,14 +220,17 @@ class ContainerDB:
             """
             return query, args
 
-        q1(new_name, old_name)
-        q2(description, gpu, new_name)
+        q1(old_name)
+        q2(old_name)
+
+        q3(new_name, old_name)
+        q4(description, gpu, new_name)
 
         for port in ports:
-            q3(new_name, port)
+            q5(new_name, port)
 
         for k, v in envs.items():
-            q4(new_name, k, v)
+            q6(new_name, k, v)
 
     @update
     def update_ip_by_name(name, ip_addr):

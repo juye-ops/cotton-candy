@@ -1,22 +1,18 @@
-import { useState, useRef } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router'
-import { useDispatch } from 'react-redux'
-
-import { loginUser } from 'redux/slice/userSlice'
 
 import * as S from './style';
 
-import { TrySignin } from 'apis/UserAPIs';
+import { TrySignup } from 'apis/UserAPIs';
 
-export default function LoginPage() {
-    const dispatch = useDispatch();
+export default function SignupPage() {
     const navigate = useNavigate();
 
     const [inputs, setInputs] = useState({
-        username: "",
+        id: "",
         password: "",
+        password_confirm: "",
     });
-    const formRef = useRef(null);
 
     const handleChange = (e) => {
         setInputs({
@@ -29,22 +25,23 @@ export default function LoginPage() {
         e.preventDefault();
 
         // 예외 처리 & 유효성 검사
-        if (!!!inputs.username || !!!inputs.password) {
+        if (!!!inputs.id || !!!inputs.password) {
             alert("아이디 혹은 비밀번호를 입력해주세요.");
             return;
         }
 
-        // 로그인
-        const result = await TrySignin(inputs.username, inputs.password);
+        if (inputs.password !== inputs.password_confirm) {
+            alert("비밀번호가 일치하지 않습니다.");
+            return;
+        }
 
-        // // 사용자 정보 저장
-        dispatch(loginUser({
-            accessToken: result.access_token,
-            refreshToken: result.refresh_token,
-        }));
+        const result = await TrySignup(inputs.id, inputs.password);
 
-        // // 페이지 이동
-        navigate('/');
+        if (!result) {
+            navigate('/login');
+        } else {
+            alert(result.detail);
+        }
     }
 
     return (
@@ -57,17 +54,17 @@ export default function LoginPage() {
                     <S.SectionHeader>
                         <h2>회원정보 입력 영역</h2>
                     </S.SectionHeader>
-                    <S.Form action='/api/user/signin' method='post' ref={formRef}>
+                    <S.Form>
                         <label
-                            htmlFor='username'>
+                            htmlFor='id'>
                             아이디
                         </label>
                         <input
                             type='text'
-                            id='username'
-                            name='username'
+                            id='id'
+                            name='id'
                             onChange={handleChange}
-                            value={inputs.username}
+                            value={inputs.id}
                             placeholder='아이디를 입력해주세요.' />
                         <label
                             htmlFor='password'>
@@ -80,13 +77,20 @@ export default function LoginPage() {
                             onChange={handleChange}
                             value={inputs.password}
                             placeholder='비밀번호를 입력해주세요.' />
-                        <S.TextWrapper>
-                            <S.SignupText>Don't have an account?</S.SignupText>
-                            <S.SignupLink to='/signup'>Click here!</S.SignupLink>
-                        </S.TextWrapper>
+                        <label
+                            htmlFor='password_confirm'>
+                            비밀번호 확인
+                        </label>
+                        <input
+                            type='password'
+                            id='password_confirm'
+                            name='password_confirm'
+                            onChange={handleChange}
+                            value={inputs.password_confirm}
+                            placeholder='비밀번호를 다시 입력해주세요.' />
                         <S.FormButton
                             onClick={handleCheck}>
-                            <span>Sign in</span>
+                            <span>Sign up</span>
                         </S.FormButton>
                     </S.Form>
                 </section>

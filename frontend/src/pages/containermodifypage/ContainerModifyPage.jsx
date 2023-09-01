@@ -186,8 +186,6 @@ export default function ContainerModifyPage() {
             }
         }));
 
-        console.log(result);
-
         if (result === 200) {
             navigate("/" + projectName);
         } else {

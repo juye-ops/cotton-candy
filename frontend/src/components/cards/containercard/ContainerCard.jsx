@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react';
-import { useLocation, useParams } from 'react-router';
+import { useParams, useLocation } from 'react-router';
 
 import * as S from './style';
 import PreventDefault from 'utils/PreventDefault';
 import StopPropagation from 'utils/StopPropagation';
 
 export default function ContainerCard({ props: { container, clickedContainerModal, setClickedContainerModal, onClickRemoveModal, setRemoveTarget } }) {
-    const location = useLocation();
     const { projectName } = useParams();
     const [clicked, setClicked] = useState(false);
+    const location = useLocation();
 
     useEffect(() => {
         window.addEventListener("click", () => {
@@ -37,7 +37,7 @@ export default function ContainerCard({ props: { container, clickedContainerModa
     }
 
     const onClickExecute = () => {
-        window.location.href = window.location.href.replace(location.pathname, "") + '/ide/' + container.name + '/';
+        window.location.pathname = window.location.pathname.replace(location.pathname, "") + "ide/" + container.name + "/";
     }
 
     return (
