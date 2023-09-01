@@ -7,7 +7,7 @@ export const GetProjectList = async () => {
             },
         });
 
-        const result = response.json();
+        const result = await response.json();
 
         return result;
     } catch (e) {
@@ -26,7 +26,7 @@ export const GetProjectContainers = async (projectName) => {
             },
         });
 
-        const result = response.json();
+        const result = await response.json();
 
         return result;
     } catch (e) {
@@ -50,7 +50,7 @@ export const GenerateProject = async ({ user_name, name, description }) => {
             }),
         });
 
-        const result = response.json();
+        const result = await response.json();
 
         return result;
     } catch (e) {
@@ -72,7 +72,7 @@ export const ModifyProject = async ({ old_name, new_name, description }) => {
             }),
         });
 
-        const result = response.json();
+        const result = await response.json();
 
         return result;
     } catch (e) {
@@ -89,7 +89,7 @@ export const DeleteProject = async (name) => {
             },
         });
 
-        const result = response.json();
+        const result = await response.json();
 
         return result;
     } catch (e) {
