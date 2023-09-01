@@ -3,7 +3,7 @@ from database import select, insert, update, delete
 
 class ProjectDB:
     @select
-    def get_list():
+    def get_projects():
         query = """
         SELECT name, description FROM (project AS p
             INNER JOIN project_info AS pi
@@ -15,7 +15,7 @@ class ProjectDB:
         return query, arg
 
     @select
-    def get_containers(name):
+    def get_containers_by_name(name):
         query = """
         SELECT name FROM container
         WHERE project_id=(
@@ -28,7 +28,7 @@ class ProjectDB:
         return query, arg
     
     @select
-    def get_len(name):
+    def get_number_of_containers_by_name(name):
         query = """
         SELECT count(*) FROM container
         WHERE project_id=(
@@ -41,7 +41,7 @@ class ProjectDB:
         return query, arg
 
     @select
-    def get_info(name):
+    def get_info_by_name(name):
         query = """
         SELECT name, description FROM (project AS p
             INNER JOIN project_info AS pi
@@ -52,7 +52,7 @@ class ProjectDB:
 
         return query, arg
 
-    def create(name, description, subnet):
+    def insert_project(name, description, subnet):
         @insert
         def q1(*args):
             query = """
@@ -75,7 +75,7 @@ class ProjectDB:
         q1(name)
         q2(name, description, subnet)
 
-    def edit(old_name, new_name, description, subnet):
+    def update_project_by_name(old_name, new_name, description, subnet):
         @update
         def q1(*args):
             query = """
@@ -100,7 +100,7 @@ class ProjectDB:
         q2(description, subnet, new_name)
 
     @delete
-    def remove(name):
+    def delete_by_name(name):
         query = """
         DELETE FROM project
         WHERE name = %s
