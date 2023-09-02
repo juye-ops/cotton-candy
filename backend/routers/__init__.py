@@ -41,7 +41,6 @@ class ContainerEdit(BaseModel):
 
 # Project models
 class ProjectCreate(BaseModel):
-    user_name: str
     name: str
     description: str
 

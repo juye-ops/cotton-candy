@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router';
-
+import { useDispatch } from 'react-redux';
+ 
 import * as S from './style'
 
 import ConfirmButton from 'components/buttons/confirmbutton/ConfirmButton';
@@ -12,15 +13,17 @@ import LongTextarea1 from 'components/textareas/longtextarea1';
 
 import PreventDefault from 'utils/PreventDefault';
 
-import { GetOSList, GetOSVersionList, GetPlatformList, GetPlatformVersionList, GenerateContainer } from 'apis/ContainerAPIs';
+import { GetOSList, GetOSVersionList, GetPlatformList, GetPlatformVersionList } from 'apis/ContainerAPIs';
 
 import { Images } from 'utils/Images';
+import { addGeneratingContainer } from 'redux/slice/containerSlice';
 
 const osSelectText = "Select your Operating-System";
 
 export default function ContainerSettingPage() {
     const { projectName } = useParams();
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     const onClickBack = () => {
         navigate(-1);
@@ -273,27 +276,26 @@ export default function ContainerSettingPage() {
             envRst[env.key] = env.value;
         });
 
-        navigate('/container/generate', {
-            state: {
-                body: {
-                    "project": projectName,
-                    "name": inputs.name,
-                    "description": inputs.desc,
-                    "gpu": false,
-                    "build": {
-                        "os": {
-                            "name": "ubuntu",
-                            "version": "20.04",
-                        },
-                        "frameworks": selectedPlatforms,
+        dispatch(addGeneratingContainer({
+            container: {
+                "project": projectName,
+                "name": inputs.name,
+                "description": inputs.desc,
+                "gpu": false,
+                "build": {
+                    "os": {
+                        "name": infra,
+                        "version": infraVersion,
                     },
-                    "settings": {
-                        "ports": ports,
-                        "environments": envRst,
-                    }
+                    "frameworks": selectedPlatforms,
+                },
+                "settings": {
+                    "ports": ports,
+                    "environments": envRst,
                 }
             }
-        });
+        }));
+        navigate("/" + projectName);
     }
 
     return (

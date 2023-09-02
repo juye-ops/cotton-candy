@@ -3,14 +3,16 @@ from database import select, insert, update, delete
 
 class ProjectDB:
     @select
-    def get_projects():
+    def get_projects(username):
         query = """
         SELECT name, description FROM (project AS p
             INNER JOIN project_info AS pi
             ON p.id=pi.project_id
+        ) WHERE user_id=(
+            SELECT id FROM user WHERE username=%s
         );
         """
-        arg = ()
+        arg = (username, )
 
         return query, arg
 
@@ -52,11 +54,14 @@ class ProjectDB:
 
         return query, arg
 
-    def insert_project(name, description, subnet):
+    def insert_project(username, name, description, subnet):
         @insert
         def q1(*args):
             query = """
-            INSERT INTO project(user_id, name) VALUES (1, %s);
+            INSERT INTO project(user_id, name) VALUES (
+                (SELECT id FROM user WHERE username=%s),
+                %s
+            );
             """
             return query, args
 
@@ -72,7 +77,7 @@ class ProjectDB:
             """
             return query, args
 
-        q1(name)
+        q1(username, name)
         q2(name, description, subnet)
 
     def update_project_by_name(old_name, new_name, description, subnet):
