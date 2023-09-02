@@ -3,28 +3,34 @@ from database import select, insert, update, delete
 
 class ContainerDB:
     @select
-    def get_containers_by_project(project):
+    def get_containers_by_project_id(project_id):
         query = """
         SELECT name, description FROM (container AS c
             INNER JOIN container_info AS ci
             ON c.id=ci.container_id
-        ) WHERE project_id = (
-            SELECT id FROM project
-            WHERE name=%s
-        );
+        ) WHERE c.project_id = %s;
         """
-        arg = (project,)
+        arg = (project_id,)
 
         return query, arg
 
-    def get_info_by_name(name):
+    @select
+    def get_id_by_name(project_id, name):
+        query = """
+        SELECT id FROM container
+        WHERE project_id=%s AND name=%s
+        """
+        arg = (project_id, name)
+        return query, arg
+
+    def get_info_by_id(id):
         @select
         def q1(*args):
             query = """
             SELECT name, description, gpu FROM (container AS c
                 INNER JOIN container_info AS ci
                 ON c.id=ci.container_id
-            ) WHERE name=%s
+            ) WHERE c.id=%s
             """
             return query, args
         @select
@@ -33,7 +39,7 @@ class ContainerDB:
             SELECT port FROM container_ports
             WHERE container_id=(
                 SELECT id FROM container
-                WHERE name=%s
+                WHERE id=%s
             )
             """
             return query, args
@@ -43,25 +49,25 @@ class ContainerDB:
             SELECT k, v FROM container_envs
             WHERE container_id=(
                 SELECT id FROM container
-                WHERE name=%s
+                WHERE id=%s
             )
             """
             return query, args
         
-        info = q1(name)[0]
-        info["ports"] = [x["port"] for x in q2(name)]
-        info["envs"] = {x["k"]: x["v"] for x in q3(name)}
+        info = q1(id)[0]
+        info["ports"] = [x["port"] for x in q2(id)]
+        info["envs"] = {x["k"]: x["v"] for x in q3(id)}
 
         return info
 
-    def insert_container(name, project, description, gpu, ports, envs, os, frameworks, ip_addr):
+    def insert_container(name, project_id, description, gpu, ports, envs, os, frameworks, ip_addr):
         # Add container
         @insert
         def q1(*args):
             query = """
             INSERT INTO container(project_id, name)
             VALUES (
-                (SELECT id FROM project WHERE name=%s),
+                %s,
                 %s
             );
             """
@@ -138,7 +144,7 @@ class ContainerDB:
             """
             return query, args
 
-        q1(project, name)
+        q1(project_id, name)
         q2(name, description, gpu, ip_addr)
 
         for port in ports:
@@ -147,65 +153,84 @@ class ContainerDB:
         for k, v in envs.items():
             q4(name, k, v)
 
-        q5(name, os["name"], os["version"])
+        q5(name, os.name, os.version)
 
         for framework in frameworks:
-            q6(name, framework["name"], framework["version"])
+            q6(name, framework.name, framework.version)
 
-    def update_container_by_name(old_name, new_name, description, gpu, ports, envs):
+    def update_container_by_id(id, new_name, description, gpu, ports, envs):
+        @delete
+        def q1(*args):
+            query = """
+            DELETE FROM container_ports
+            WHERE container_id=%s;
+            """
+            return query, args
+
+        @delete
+        def q2(*args):
+            query = """
+            DELETE FROM container_envs
+            WHERE container_id=%s;
+            """
+            return query, args
+
         # Modify container
         @update
-        def q1(*args):
+        def q3(*args):
             query = """
             UPDATE container
             SET name=%s
-            WHERE name=%s
+            WHERE id=%s
             """
             return query, args
 
         # Modify container info
         @update
-        def q2(*args):
+        def q4(*args):
             query = """
             UPDATE container_info
             SET
                 description=%s,
                 gpu=%s
-            WHERE container_id=(SELECT id FROM container WHERE name=%s)
+            WHERE container_id=%s
             """
             return query, args
 
         @update
-        def q3(*args):
+        def q5(*args):
             query = """
             INSERT INTO container_ports(container_id, port)
             VALUES (
-                (SELECT id FROM container WHERE name=%s),
-                %s
-            );
-            """
-            return query, args
-
-        @update
-        def q4(*args):
-            query = """
-            INSERT INTO container_envs(container_id, k, v)
-            VALUES (
-                (SELECT id FROM container WHERE name=%s),
                 %s,
                 %s
             );
             """
             return query, args
 
-        q1(new_name, old_name)
-        q2(description, gpu, new_name)
+        @update
+        def q6(*args):
+            query = """
+            INSERT INTO container_envs(container_id, k, v)
+            VALUES (
+                %s,
+                %s,
+                %s
+            );
+            """
+            return query, args
+
+        q1(id)
+        q2(id)
+
+        q3(new_name, id)
+        q4(description, gpu, id)
 
         for port in ports:
-            q3(new_name, port)
+            q5(id, port)
 
         for k, v in envs.items():
-            q4(new_name, k, v)
+            q6(id, k, v)
 
     @update
     def update_ip_by_name(name, ip_addr):

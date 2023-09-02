@@ -2,6 +2,15 @@ from database import select, insert, update, delete
 
 class UserDB:
     @select
+    def get_id_by_username(username):
+        query = """
+        SELECT id FROM user
+        WHERE username=%s
+        """
+        arg = (username, )
+        return query, arg
+    
+    @select
     def get_user_by_username(username):
         query = """
         SELECT username, password FROM (user AS u

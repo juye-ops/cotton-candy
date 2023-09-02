@@ -29,14 +29,14 @@ export default function ProjectCard({ props: { project, clickedProjectModal, set
     }, [clickedProjectModal, project]);
 
     useEffect(() => {
-        const getProjectContainers = async () => {
+        const getContainers = async () => {
             const result = await GetProjectContainers(project.name);
 
             setContainers(result);
         }
 
-        getProjectContainers();
-    }, [project]);
+        getContainers();
+    }, [project])
 
     const onClickButton = (e) => {
         PreventDefault(e);

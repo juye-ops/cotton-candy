@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router';
+import { useLocation } from 'react-router';
 
 import * as S from './style';
 import { GetProjectList } from 'apis/ProjectAPIs';
 import { GetContainerList } from 'apis/ContainerAPIs';
 
 export default function Sidebar() {
-    const navigate = useNavigate();
     const [projectState, setProjectState] = useState({});
+    const location = useLocation();
 
     // 프로젝트 리스트
     useEffect(() => {
@@ -48,12 +48,8 @@ export default function Sidebar() {
         setProjectState(update);
     }
 
-    const onDoubleClickProject = (project) => {
-        // navigate('/' + project);
-    }
-
-    const onDoubleClickConatiner = (container) => {
-        navigate('/container/' + container);
+    const onClickConatiner = (container) => {
+        window.location.pathname = window.location.pathname.replace(location.pathname, "") + "ide/" + container + "/";
     }
 
     return (
@@ -66,7 +62,7 @@ export default function Sidebar() {
                     Object.keys(projectState).map(project => {
                         return (
                             <li key={project}>
-                                <S.ListButton onClick={() => onClickProject(project)} onDoubleClick={() => {onDoubleClickProject(project)}}>
+                                <S.ListButton onClick={() => onClickProject(project)}>
                                     {
                                         projectState[project].open ? <i className="fas fa-chevron-down"></i> : <i className="fas fa-chevron-right"></i>
                                     }
@@ -79,7 +75,7 @@ export default function Sidebar() {
                                             projectState[project].list.map(container => {
                                                 return (
                                                     <li key={container.name}>
-                                                        <S.ContainerButton onClick={() => onDoubleClickConatiner(container.name)}>
+                                                        <S.ContainerButton onClick={() => onClickConatiner(container.name)}>
                                                             {/* <i className="far fa-file"></i> */}
                                                             <i className="fab fa-docker"></i>
                                                             <span>{container.name}</span>
