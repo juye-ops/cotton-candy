@@ -11,8 +11,9 @@ router = APIRouter(
 
 
 @router.get("/list")
-def _list():
-    return ProjectDB.get_projects()
+def _list(payload: dict = Depends(check_access_token)):
+    username = payload["sub"]
+    return ProjectDB.get_projects(username)
 
 @router.get("/info")
 def _info(name, payload: dict = Depends(check_access_token)):
@@ -30,9 +31,11 @@ def _create(info: ProjectCreate, payload: dict = Depends(check_access_token)):
     project_name = info["name"]
     project_desc = info["description"]
 
+    username = payload["sub"]
+
     net_info = dind.Network.create(info["name"])
 
-    ProjectDB.insert_project(project_name, project_desc, net_info["subnet"])
+    ProjectDB.insert_project(username, project_name, project_desc, net_info["subnet"])
 
     return 200
 
