@@ -65,7 +65,7 @@ def _edit(res: ProjectEdit, payload: dict = Depends(check_access_token)):
 @router.delete("/remove")
 def _remove(name: str, payload: dict = Depends(check_access_token)):
     user_id = UserDB.get_id_by_username(payload["sub"])[0]["id"]
-    project_id = ProjectDB.get_id_by_name(user_id, name)
+    project_id = ProjectDB.get_id_by_name(user_id, name)[0]["id"]
     container_list = ProjectDB.get_containers_by_id(project_id)
 
     for c in container_list:
