@@ -5,9 +5,9 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { clearUser } from 'redux/slice/userSlice';
 
-import { SignoutUser, GetUserName } from 'apis/UserAPIs';
+import { SignoutUser } from 'apis/UserAPIs';
 
-// import { UpdateAccess } from 'apis/TokenAPIs';
+import { UpdateAccess } from 'apis/TokenAPIs';
 
 import * as S from './style';
 
@@ -19,39 +19,23 @@ export default function Header() {
     useEffect(() => {
         if (!user.refreshToken) {
             navigate('/login');
+
+            return;
         }
-    }, [user, navigate]);
 
-    // useEffect(() => {
-    //     if (!user.refreshToken) {
-    //         return;
-    //     }
+        const checkRefresh = async () => {
+            const result = await UpdateAccess(dispatch, user);
 
-    //     const updateAccess = async () => {
-    //         await UpdateAccess(dispatch, user.refreshToken);
-    //     }
+            if (result.detail) {
+                dispatch(clearUser());
+            }
+        }
 
-    //     updateAccess();
-    // }, [user, dispatch]);
-
-    // useEffect(() => {
-    //     if (!user.refreshToken) {
-    //         return;
-    //     }
-
-    //     const getUserName = async () => {
-    //         const result = await GetUserName(user.accessToken);
-
-    //         console.log(result);
-    //     }
-
-    //     getUserName();
-    // }, [user, dispatch]);
-
-    // console.log(user);
+        checkRefresh();
+    }, [user, navigate, dispatch]);
 
     const onClickHeader = async () => {
-        await SignoutUser(user.accessToken);
+        await SignoutUser(dispatch, user);
         dispatch(clearUser());
     }
 
@@ -59,7 +43,7 @@ export default function Header() {
         <S.HeaderWrapper>
             <S.Header>
                 <Link to="/">
-                    <h1>Cotton Candy</h1>
+                    <h1>On Premiser</h1>
                 </Link>
                 <S.HeaderButton onClick={onClickHeader}>Sign out</S.HeaderButton>
             </S.Header>

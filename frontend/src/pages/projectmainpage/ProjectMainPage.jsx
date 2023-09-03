@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from 'react-redux';
 
 import * as S from './style';
 
@@ -6,14 +7,26 @@ import { GetProjectList, GenerateProject, ModifyProject, DeleteProject } from "a
 
 import ProjectCard from "components/cards/projectcard/ProjectCard";
 import ConfirmButton from "components/buttons/confirmbutton/ConfirmButton";
+import { GetUserName } from "apis/UserAPIs";
 
 export default function ProjectMainPage() {
+    const user = useSelector(state => state.user);
+    const dispatch = useDispatch();
+
     // 프로젝트 리스트
     const [projectList, setProjectList] = useState([]);
 
     useEffect(() => {
+        if (!user.refreshToken) {
+            return;
+        }
+
         const getProjectList = async () => {
-            const result = await GetProjectList();
+            let result = await GetProjectList(dispatch, user);
+
+            if (!result) {
+                result = [];
+            }
 
             setProjectList(result);
         }
@@ -79,13 +92,15 @@ export default function ProjectMainPage() {
         }
 
         const generateProject = async () => {
-            const result = await GenerateProject({
-                user_name: "admin",
+            const result_name = await GetUserName(dispatch, user);
+
+            const result_create = await GenerateProject(dispatch, user, {
+                user_name: result_name,
                 name: inputs.generateName,
                 description: inputs.generateDesc,
             });
 
-            if (result === 200) {
+            if (result_create === 200) {
                 window.location.replace("/")
             } else {
                 alert("프로젝트 생성 중 문제 발생!");
@@ -151,7 +166,7 @@ export default function ProjectMainPage() {
         }
 
         const modifyProject = async () => {
-            const result = await ModifyProject({
+            const result = await ModifyProject(dispatch, user, {
                 old_name: modifyTarget,
                 new_name: editInput.modifyName,
                 description: editInput.modifyDescription,
@@ -181,7 +196,7 @@ export default function ProjectMainPage() {
 
     const onClickRemove = () => {
         const removeProject = async () => {
-            await DeleteProject(removeTarget);
+            await DeleteProject(dispatch, user, removeTarget);
             window.location.replace("/");
         }
 
@@ -229,7 +244,7 @@ export default function ProjectMainPage() {
                 <S.ModalWrapper visible={modify} onClick={onClickModifyModalOff}>
                     <S.ModalForm onClick={onClickModalForm} valid={!!modifyValid}>
                         <label htmlFor="modifyName">Project Name</label>
-                        <input type="text" id="modifyName" placeholder="프로젝트 이름을 입력해주세요." onChange={onChangeModifyInput} value={editInput.modifyName}/>
+                        <input type="text" id="modifyName" placeholder="프로젝트 이름을 입력해주세요." onChange={onChangeModifyInput} value={editInput.modifyName} />
                         <S.ValidText visible={!!modifyValid}>{modifyValid}</S.ValidText>
                         <label htmlFor="modifyDescription">Project Description</label>
                         <textarea id="modifyDescription" placeholder="프로젝트 설명을 입력해주세요." onChange={onChangeModifyInput} value={editInput.modifyDescription} />

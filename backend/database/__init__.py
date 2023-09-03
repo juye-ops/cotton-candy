@@ -6,7 +6,7 @@ mysql_cli = pooling.MySQLConnectionPool(
     pool_reset_session=True,
     host="database",
     port="3306",
-    database="cotton",
+    database="premiser",
     user="root",
     password="password",
 )

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useLocation } from 'react-router';
+import { useSelector, useDispatch } from 'react-redux';
 
 import * as S from './style';
 import { GetProjectList } from 'apis/ProjectAPIs';
@@ -7,13 +8,23 @@ import { GetContainerList } from 'apis/ContainerAPIs';
 
 export default function Sidebar() {
     const [projectState, setProjectState] = useState({});
+    const user = useSelector(state => state.user);
+    const dispatch = useDispatch();
     const location = useLocation();
 
     // 프로젝트 리스트
     useEffect(() => {
+        if (!user.refreshToken) {
+            return;
+        }
+
         const getProjectList = async () => {
-            const result = await GetProjectList();
+            let result = await GetProjectList(dispatch, user);
             const state = {};
+
+            if (!result) {
+                result = [];
+            }
 
             result.forEach((res) => {
                 state[res.name] = {
@@ -26,7 +37,7 @@ export default function Sidebar() {
         }
 
         getProjectList();
-    }, []);
+    }, [dispatch, user]);
 
     const onClickProject = async (project) => {
         const update = { ...projectState };
@@ -35,7 +46,11 @@ export default function Sidebar() {
             update[project].list = [];
         } else {
             const getContainerList = async (projectName) => {
-                const result = await GetContainerList(projectName);
+                let result = await GetContainerList(dispatch, user, projectName);
+
+                if (!result) {
+                    result = [];
+                }
 
                 update[project].list = result;
             }

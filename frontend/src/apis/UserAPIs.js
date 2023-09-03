@@ -1,3 +1,5 @@
+import FetchTemplate from "utils/FetchTemplate";
+
 export const TrySignup = async (username, password) => {
     try {
         const response = await fetch("/api/user/signup", {
@@ -43,40 +45,36 @@ export const TrySignin = async (username, password) => {
     }
 }
 
-export const SignoutUser = async (accessToken) => {
-    try {
+export const SignoutUser = async (dispatch, user) => {
+    const result = FetchTemplate(dispatch, user, async (accessToken) => {
         const response = await fetch("/api/user/signout", {
             method: "GET",
             headers: {
                 "Authorization": "Bearer " + accessToken,
-            }
+            },
         });
 
         const result = await response.json();
 
         return result;
-    } catch (e) {
-        console.log(e);
+    });
 
-        return [];
-    }
+    return result;
 }
 
-export const GetUserName = async (accessToken) => {
-    try {
+export const GetUserName = async (dispatch, user) => {
+    const result = FetchTemplate(dispatch, user, async (accessToken) => {
         const response = await fetch("/api/user/test", {
             method: "GET",
             headers: {
                 "Authorization": "Bearer " + accessToken,
-            }
+            },
         });
 
         const result = await response.json();
 
         return result;
-    } catch (e) {
-        console.log(e);
+    });
 
-        return [];
-    }
+    return result;
 }

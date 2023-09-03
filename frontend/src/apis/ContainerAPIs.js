@@ -1,18 +1,21 @@
-export const GetContainerList = async (projectName) => {
-    try {
+import FetchTemplate from "utils/FetchTemplate";
+
+export const GetContainerList = async (dispatch, user, projectName) => {
+    const result = FetchTemplate(dispatch, user, async (accessToken) => {
         const response = await fetch("/api/container/list?project=" + projectName, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
+                "Authorization": "Bearer " + accessToken,
             },
         });
 
         const result = await response.json();
 
         return result;
-    } catch (e) {
-        console.log(e);
-    }
+    });
+
+    return result;
 }
 
 export const GetOSList = async () => {
@@ -82,72 +85,75 @@ export const GetPlatformVersionList = async (framework) => {
     }
 }
 
-export const GenerateContainer = async (body) => {
-    try {
+export const GenerateContainer = async (dispatch, user, body) => {
+    const result = FetchTemplate(dispatch, user, async (accessToken) => {
         const response = await fetch("/api/container/create", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
+                "Authorization": "Bearer " + accessToken,
             },
-            body,
+            body: JSON.stringify(body),
         });
 
         const result = await response.json();
 
         return result;
-    } catch (e) {
-        console.log(e);
-    }
+    });
+
+    return result;
 }
 
-export const GetContainerInfo = async (name) => {
-    try {
-        const response = await fetch("/api/container/info?name=" + name, {
+export const GetContainerInfo = async (dispatch, user, project, name) => {
+    const result = FetchTemplate(dispatch, user, async (accessToken) => {
+        const response = await fetch("/api/container/info?project=" + project + "&name=" + name, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
+                "Authorization": "Bearer " + accessToken,
             },
         });
 
         const result = await response.json();
 
         return result;
-    } catch (e) {
-        console.log(e);
-    }
+    });
+
+    return result;
 }
 
-export const UpdateContainer = async (body) => {
-    try {
+export const UpdateContainer = async (dispatch, user, body) => {
+    const result = FetchTemplate(dispatch, user, async (accessToken) => {
         const response = await fetch("/api/container/edit", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
+                "Authorization": "Bearer " + accessToken,
             },
-            body,
+            body: JSON.stringify(body),
         });
 
         const result = await response.json();
 
         return result;
-    } catch (e) {
-        console.log(e);
-    }
+    });
+
+    return result;
 }
 
-export const DeleteContainer = async (name) => {
-    try {
+export const DeleteContainer = async (dispatch, user, name) => {
+    const result = FetchTemplate(dispatch, user, async (accessToken) => {
         const response = await fetch("/api/container/remove?name=" + name, {
             method: "DELETE",
             headers: {
-                "Content-Type": "application/json",
+                "Authorization": "Bearer " + accessToken,
             },
         });
 
         const result = await response.json();
 
         return result;
-    } catch (e) {
-        console.log(e);
-    }
+    });
+
+    return result;
 }
