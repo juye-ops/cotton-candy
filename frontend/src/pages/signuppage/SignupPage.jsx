@@ -47,7 +47,7 @@ export default function SignupPage() {
     return (
         <S.Wrapper>
             <S.Header>
-                <h1>Cotton Candy</h1>
+                <h1>On Premiser</h1>
             </S.Header>
             <main>
                 <section>

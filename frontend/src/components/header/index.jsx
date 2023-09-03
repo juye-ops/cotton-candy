@@ -59,7 +59,7 @@ export default function Header() {
         <S.HeaderWrapper>
             <S.Header>
                 <Link to="/">
-                    <h1>Cotton Candy</h1>
+                    <h1>On Premiser</h1>
                 </Link>
                 <S.HeaderButton onClick={onClickHeader}>Sign out</S.HeaderButton>
             </S.Header>
