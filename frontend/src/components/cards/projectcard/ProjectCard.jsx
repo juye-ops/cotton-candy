@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
 import * as S from './style';
 
@@ -7,6 +8,8 @@ import StopPropagation from 'utils/StopPropagation';
 import { GetProjectContainers } from 'apis/ProjectAPIs';
 
 export default function ProjectCard({ props: { project, clickedProjectModal, setClickedProjectModal, onClickModifyModalOn, onClickRemoveModal, setRemoveTarget } }) {
+    const user = useSelector(state => state.user);
+    const dispatch = useDispatch();
     const [clicked, setClicked] = useState(false);
     const [containers, setContainers] = useState(0);
     
@@ -30,8 +33,12 @@ export default function ProjectCard({ props: { project, clickedProjectModal, set
 
     useEffect(() => {
         const getContainers = async () => {
-            const result = await GetProjectContainers(project.name);
-
+            const result = await GetProjectContainers(dispatch, user, project.name);
+            
+            if (!result) {
+                return;
+            }
+            
             setContainers(result);
         }
 

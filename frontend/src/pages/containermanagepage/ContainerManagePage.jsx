@@ -14,6 +14,7 @@ import ContainerGenerateCard from 'components/cards/containergeneratecard/Contai
 export default function ContainerManagePage() {
     const { projectName } = useParams();
     const dispatch = useDispatch();
+    const user = useSelector(state => state.user);
     const generatingContainers = useSelector(state => state.container);
 
     // 컨테이너 리스트
@@ -62,7 +63,7 @@ export default function ContainerManagePage() {
 
     const onClickRemove = () => {
         const removeContainer = async () => {
-            await DeleteContainer(removeTarget);
+            await DeleteContainer(dispatch, user, removeTarget);
             window.location.replace("/" + projectName);
         }
 

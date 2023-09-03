@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router';
+import { useDispatch, useSelector } from 'react-redux';
 
 import * as S from './style'
 
@@ -15,6 +16,8 @@ import LongTextarea1 from 'components/textareas/longtextarea1';
 export default function ContainerModifyPage() {
     const { projectName, containerName } = useParams();
     const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const user = useSelector(state => state.user);
 
     const onClickBack = () => {
         navigate(-1);
@@ -26,7 +29,11 @@ export default function ContainerModifyPage() {
     useEffect(() => {
         // 비동기로 컨테이너 데이터 불러오기
         const getContainerInfo = async () => {
-            const result = await GetContainerInfo(containerName);
+            const result = await GetContainerInfo(dispatch, user, containerName);
+
+            if (!result) {
+                return;
+            }
 
             setNowContainer({...result});
         }
@@ -174,7 +181,7 @@ export default function ContainerModifyPage() {
             envRst[env.key] = env.value;
         });
 
-        const result = await UpdateContainer(JSON.stringify({
+        const result = await UpdateContainer(dispatch, user, {
             "project": projectName,
             "old_name": containerName,
             "new_name": inputs.name,
@@ -184,7 +191,7 @@ export default function ContainerModifyPage() {
                 "ports": ports,
                 "environments": envRst,
             }
-        }));
+        });
 
         if (result === 200) {
             navigate("/" + projectName);

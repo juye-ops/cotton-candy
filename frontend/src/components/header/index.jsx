@@ -5,9 +5,9 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { clearUser } from 'redux/slice/userSlice';
 
-import { SignoutUser, GetUserName } from 'apis/UserAPIs';
+import { SignoutUser } from 'apis/UserAPIs';
 
-// import { UpdateAccess } from 'apis/TokenAPIs';
+import { UpdateAccess } from 'apis/TokenAPIs';
 
 import * as S from './style';
 
@@ -16,42 +16,26 @@ export default function Header() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
+    console.log(user.accessToken);
+
     useEffect(() => {
         if (!user.refreshToken) {
             navigate('/login');
         }
+
+        const checkRefresh = async () => {
+            const result = await UpdateAccess(dispatch, user);
+
+            if (result.detail) {
+                dispatch(clearUser());
+            }
+        }
+
+        checkRefresh();
     }, [user, navigate]);
 
-    // useEffect(() => {
-    //     if (!user.refreshToken) {
-    //         return;
-    //     }
-
-    //     const updateAccess = async () => {
-    //         await UpdateAccess(dispatch, user.refreshToken);
-    //     }
-
-    //     updateAccess();
-    // }, [user, dispatch]);
-
-    // useEffect(() => {
-    //     if (!user.refreshToken) {
-    //         return;
-    //     }
-
-    //     const getUserName = async () => {
-    //         const result = await GetUserName(user.accessToken);
-
-    //         console.log(result);
-    //     }
-
-    //     getUserName();
-    // }, [user, dispatch]);
-
-    // console.log(user);
-
     const onClickHeader = async () => {
-        await SignoutUser(user.accessToken);
+        await SignoutUser(dispatch, user);
         dispatch(clearUser());
     }
 

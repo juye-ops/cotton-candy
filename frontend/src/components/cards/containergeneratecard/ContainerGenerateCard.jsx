@@ -1,5 +1,5 @@
 import { useLocation } from 'react-router';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import * as S from './style';
 
@@ -9,6 +9,7 @@ import { clearGeneratingContainer, updateGenerateState } from 'redux/slice/conta
 
 export default function ContainerGenerateCard({ props: { container } }) {
     const dispatch = useDispatch();
+    const user = useSelector(state => state.user);
     const location = useLocation();
 
     const generateContainer = async () => {
@@ -16,9 +17,9 @@ export default function ContainerGenerateCard({ props: { container } }) {
             name: container.name,
         }));
 
-        await GenerateContainer(JSON.stringify({
+        await GenerateContainer(dispatch, user, {
             ...container,
-        }));
+        });
 
         dispatch(clearGeneratingContainer({
             name: container.name,
