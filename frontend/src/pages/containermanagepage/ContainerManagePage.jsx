@@ -22,7 +22,11 @@ export default function ContainerManagePage() {
 
     useEffect(() => {
         const getContainerList = async () => {
-            const result = await GetContainerList(projectName);
+            let result = await GetContainerList(dispatch, user, projectName);
+
+            if (!result) {
+                result = [];
+            }
 
             setContainerList(result);
         }

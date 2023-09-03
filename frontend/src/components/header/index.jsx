@@ -16,11 +16,11 @@ export default function Header() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    console.log(user.accessToken);
-
     useEffect(() => {
         if (!user.refreshToken) {
             navigate('/login');
+
+            return;
         }
 
         const checkRefresh = async () => {
@@ -32,7 +32,7 @@ export default function Header() {
         }
 
         checkRefresh();
-    }, [user, navigate]);
+    }, [user, navigate, dispatch]);
 
     const onClickHeader = async () => {
         await SignoutUser(dispatch, user);

@@ -1,18 +1,21 @@
-export const GetContainerList = async (projectName) => {
-    try {
+import FetchTemplate from "utils/FetchTemplate";
+
+export const GetContainerList = async (dispatch, user, projectName) => {
+    const result = FetchTemplate(dispatch, user, async (accessToken) => {
         const response = await fetch("/api/container/list?project=" + projectName, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
+                "Authorization": "Bearer " + accessToken,
             },
         });
 
         const result = await response.json();
 
         return result;
-    } catch (e) {
-        console.log(e);
-    }
+    });
+
+    return result;
 }
 
 export const GetOSList = async () => {
@@ -101,9 +104,9 @@ export const GenerateContainer = async (dispatch, user, body) => {
     return result;
 }
 
-export const GetContainerInfo = async (dispatch, user, name) => {
+export const GetContainerInfo = async (dispatch, user, project, name) => {
     const result = FetchTemplate(dispatch, user, async (accessToken) => {
-        const response = await fetch("/api/container/info?name=" + name, {
+        const response = await fetch("/api/container/info?project=" + project + "&name=" + name, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -119,7 +122,7 @@ export const GetContainerInfo = async (dispatch, user, name) => {
     return result;
 }
 
-export const UpdateContainer = async (body) => {
+export const UpdateContainer = async (dispatch, user, body) => {
     const result = FetchTemplate(dispatch, user, async (accessToken) => {
         const response = await fetch("/api/container/edit", {
             method: "POST",

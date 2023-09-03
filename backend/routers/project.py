@@ -18,13 +18,13 @@ def _list(payload: dict = Depends(check_access_token)):
 @router.get("/info")
 def _info(name: str, payload: dict = Depends(check_access_token)):
     user_id = UserDB.get_id_by_username(payload["sub"])[0]["id"]
-    project_id = ProjectDB.get_id_by_name(user_id, name)
+    project_id = ProjectDB.get_id_by_name(user_id, name)[0]["id"]
     return ProjectDB.get_info_by_id(project_id)[0]
 
 @router.get("/len")
 def _len(name, payload: dict = Depends(check_access_token)):
     user_id = UserDB.get_id_by_username(payload["sub"])[0]["id"]
-    project_id = ProjectDB.get_id_by_name(user_id, name)
+    project_id = ProjectDB.get_id_by_name(user_id, name)[0]["id"]
     return ProjectDB.get_number_of_containers_by_id(project_id)[0]["count(*)"]
 
 

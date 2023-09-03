@@ -5,8 +5,6 @@ const FetchTemplate = async (dispatch, user, callback) => {
     try {
         const result_origin = await callback(user.accessToken);
 
-        console.log(result_origin);
-
         if (!result_origin.detail) {
             return result_origin;
         }

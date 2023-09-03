@@ -77,7 +77,7 @@ export const ModalWrapper = styled.div`
     bottom: 0;
     left: 0;
     right: 0;
-    z-index: 1000;
+    z-index: 2000;
     background-color: ${props => props.theme.color.background.wrapper};
 `
 

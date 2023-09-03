@@ -37,7 +37,7 @@ export default function Sidebar() {
         }
 
         getProjectList();
-    }, []);
+    }, [dispatch, user]);
 
     const onClickProject = async (project) => {
         const update = { ...projectState };
@@ -46,7 +46,11 @@ export default function Sidebar() {
             update[project].list = [];
         } else {
             const getContainerList = async (projectName) => {
-                const result = await GetContainerList(projectName);
+                let result = await GetContainerList(dispatch, user, projectName);
+
+                if (!result) {
+                    result = [];
+                }
 
                 update[project].list = result;
             }

@@ -29,7 +29,7 @@ export default function ContainerModifyPage() {
     useEffect(() => {
         // 비동기로 컨테이너 데이터 불러오기
         const getContainerInfo = async () => {
-            const result = await GetContainerInfo(dispatch, user, containerName);
+            const result = await GetContainerInfo(dispatch, user, projectName, containerName);
 
             if (!result) {
                 return;
