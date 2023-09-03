@@ -4,9 +4,11 @@ import * as S from './style';
 
 import PreventDefault from 'utils/PreventDefault';
 import StopPropagation from 'utils/StopPropagation';
+import { GetProjectContainers } from 'apis/ProjectAPIs';
 
 export default function ProjectCard({ props: { project, clickedProjectModal, setClickedProjectModal, onClickModifyModalOn, onClickRemoveModal, setRemoveTarget } }) {
     const [clicked, setClicked] = useState(false);
+    const [containers, setContainers] = useState(0);
     
     useEffect(() => {
         window.addEventListener("click", () => {
@@ -24,7 +26,17 @@ export default function ProjectCard({ props: { project, clickedProjectModal, set
         }
 
         setClicked(false);
-    }, [clickedProjectModal, project])
+    }, [clickedProjectModal, project]);
+
+    useEffect(() => {
+        const getContainers = async () => {
+            const result = await GetProjectContainers(project.name);
+
+            setContainers(result);
+        }
+
+        getContainers();
+    }, [project])
 
     const onClickButton = (e) => {
         PreventDefault(e);
@@ -42,7 +54,7 @@ export default function ProjectCard({ props: { project, clickedProjectModal, set
                     <S.ProjectDescription>{project.description}</S.ProjectDescription>
                 </S.HeaderTextWrapper>
                 <S.HeaderCountWrapper>
-                    <S.ContainerCount>0</S.ContainerCount>
+                    <S.ContainerCount>{containers}</S.ContainerCount>
                     <S.ContainerCountText>Containers</S.ContainerCountText>
                 </S.HeaderCountWrapper>
             </S.ModalHeader>

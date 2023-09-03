@@ -3,7 +3,7 @@ from database import select
 
 class FrameworkDB:
     @select
-    def get_list():
+    def get_frameworks():
         query = """
         SELECT name, type from framework
         """
@@ -11,7 +11,7 @@ class FrameworkDB:
         return query, arg
 
     @select
-    def get_version(name) -> dict:
+    def get_versions_by_name(name) -> dict:
         query = """
         SELECT version FROM framework_version 
         WHERE framework_id=(

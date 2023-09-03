@@ -4,11 +4,10 @@ export const Section = styled.section`
     width: 280px;
     height: calc(100vh - 92px);
     background-color: ${props => props.theme.color.theme.main_light};
-    font-family: 'Rubik', sans-serif;
 `
 
 export const Header = styled.header`
-    font-family: 'Rubik', sans-serif;
+    font-family: 'Righteous', cursive;
     margin-top: 35px;
     margin-left: 30px;
 
@@ -22,7 +21,6 @@ export const List = styled.ul`
     display: flex;
     flex-direction: column;
     padding-top: 8px;
-    font-family: 'Rubik', sans-serif;
 
     & > li {
         position: relative;
@@ -36,6 +34,7 @@ export const ListButton = styled.button`
     padding: 6px 0 6px 45px;
     gap: 10px;
     background-color: inherit;
+    font-family: 'Righteous', cursive;
     font-size: ${props => props.theme.fontSize.button};
 
     & > i:first-child {
@@ -67,6 +66,7 @@ export const ContainerButton = styled.button`
     padding: 6px 0 6px 70px;
     gap: 6px;
     background-color: inherit;
+    font-family: 'Righteous', cursive;
     font-size: ${props => props.theme.fontSize.button};
 
     &:hover {

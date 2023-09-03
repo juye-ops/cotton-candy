@@ -1,6 +1,4 @@
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { useNavigate } from "react-router";
 
 import * as S from './style';
 
@@ -10,15 +8,6 @@ import ProjectCard from "components/cards/projectcard/ProjectCard";
 import ConfirmButton from "components/buttons/confirmbutton/ConfirmButton";
 
 export default function ProjectMainPage() {
-    const user = useSelector(state => state.user);
-    const navigate = useNavigate();
-
-    useEffect(() => {
-        if (!user.id) {
-            navigate('/login');
-        }
-    }, [user, navigate]);
-
     // 프로젝트 리스트
     const [projectList, setProjectList] = useState([]);
 
@@ -57,8 +46,6 @@ export default function ProjectMainPage() {
         })
     }
 
-    console.log(generateValid);
-
     const onClickModalOn = () => {
         setGenerate(true);
     }
@@ -93,7 +80,7 @@ export default function ProjectMainPage() {
 
         const generateProject = async () => {
             const result = await GenerateProject({
-                user_name: user.id,
+                user_name: "admin",
                 name: inputs.generateName,
                 description: inputs.generateDesc,
             });

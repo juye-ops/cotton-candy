@@ -7,13 +7,13 @@ import { GlobalStyle } from "styles/GlobalStyle";
 import HeaderLayout from "components/layouts/HeaderLayout";
 
 import LoginPage from "pages/loginpage/LoginPage";
+import SignupPage from "pages/signuppage/SignupPage";
 
 import ProjectMainPage from "pages/projectmainpage/ProjectMainPage";
 
 import ContainerManagePage from "pages/containermanagepage/ContainerManagePage";
 import ContainerSettingPage from "pages/containersettingpage/ContainerSettingPage";
 import ContainerModifyPage from "pages/containermodifypage/ContainerModifyPage";
-import ContainerPage from "pages/containerpage/ContainerPage";
 
 function App() {
     return (
@@ -23,6 +23,7 @@ function App() {
                 <Routes>
                     {/* 로그인 */}
                     <Route path="/login" element={<LoginPage />} />
+                    <Route path="/signup" element={<SignupPage />} />
 
                     <Route element={<HeaderLayout />}>
                         {/* 프로젝트 관련 */}
@@ -33,9 +34,6 @@ function App() {
                         <Route path="/:projectName/container" element={<ContainerSettingPage />} />
                         <Route path="/:projectName/:containerName/modify" element={<ContainerModifyPage />} />
                     </Route>
-
-                    {/* 컨테이너 실행 */}
-                    <Route path="/container/:id" element={<ContainerPage />} />
                 </Routes>
             </BrowserRouter>
         </ThemeProvider>

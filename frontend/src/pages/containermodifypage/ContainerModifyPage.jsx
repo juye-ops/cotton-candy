@@ -9,7 +9,7 @@ import LongInput1 from 'components/inputs/longinput1';
 
 import PreventDefault from 'utils/PreventDefault';
 
-import { UpdateContainer } from 'apis/ContainerAPIs';
+import { GetContainerInfo, UpdateContainer } from 'apis/ContainerAPIs';
 import LongTextarea1 from 'components/textareas/longtextarea1';
 
 export default function ContainerModifyPage() {
@@ -25,23 +25,13 @@ export default function ContainerModifyPage() {
 
     useEffect(() => {
         // 비동기로 컨테이너 데이터 불러오기
+        const getContainerInfo = async () => {
+            const result = await GetContainerInfo(containerName);
 
+            setNowContainer({...result});
+        }
 
-        setNowContainer(
-            {
-                "name": "test_container",
-                "description": "test description",
-                "gpu": false,
-                "ports": [
-                    "8080",
-                    "8081",
-                    "8082"
-                ],
-                "envs": {
-                    "key01": "value01"
-                }
-            }
-        )
+        getContainerInfo();
     }, [containerName]);
 
     // 사용자 입력 관련
@@ -83,10 +73,6 @@ export default function ContainerModifyPage() {
                 setPortValidState("");
                 setPorts([...ports, parseInt(value.slice(0, -1))]);
             }
-
-            // if (parseInt(value.slice(0, -1)) <= 65535 && parseInt(value.slice(0, -1)) >= 1024 && !ports.includes(parseInt(value.slice(0, -1)))) {
-            //     setPorts([...ports, parseInt(value.slice(0, -1))]);
-            // }
 
             setPortInput("");
         } else {
@@ -200,8 +186,6 @@ export default function ContainerModifyPage() {
             }
         }));
 
-        console.log(result);
-
         if (result === 200) {
             navigate("/" + projectName);
         } else {
@@ -242,26 +226,6 @@ export default function ContainerModifyPage() {
                             <input type="radio" id='notUseGpu' name='useGpu' defaultChecked />
                             <label htmlFor="notUseGpu">미사용</label>
                         </S.ScopeList>
-                    </S.DivideFieldSet>
-                    <S.DivideFieldSet onClick={PreventDefault}>
-                        <S.IROnlyFieldSetLegend>OS 설정 영역</S.IROnlyFieldSetLegend>
-                        <p>OS</p>
-                        <p>{nowContainer.name ? nowContainer.build.os.name + " - " + nowContainer.build.os.version : ""}</p>
-                    </S.DivideFieldSet>
-                    <S.DivideFieldSet onClick={PreventDefault}>
-                        <S.IROnlyFieldSetLegend>Platform 설정 영역</S.IROnlyFieldSetLegend>
-                        <p>Platforms</p>
-                        <S.SoftwareVersionList>
-                            {
-                                nowContainer.name ? nowContainer.build.frameworks.map(framework => {
-                                    return (
-                                        <li key={framework.name}>
-                                            <p>{framework.name + " - " + framework.version}</p>
-                                        </li>
-                                    )
-                                }) : <></>
-                            }
-                        </S.SoftwareVersionList>
                     </S.DivideFieldSet>
                     <S.DivideFieldSet onClick={PreventDefault}>
                         <S.IROnlyFieldSetLegend>환경 설정 영역</S.IROnlyFieldSetLegend>

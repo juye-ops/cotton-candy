@@ -6,7 +6,7 @@ mysql_cli = pooling.MySQLConnectionPool(
     pool_reset_session=True,
     host="database",
     port="3306",
-    database="cotton_db",
+    database="cotton",
     user="root",
     password="password",
 )
@@ -78,4 +78,4 @@ from .containers import *
 from .operating_systems import *
 from .frameworks import *
 from .projects import *
-from .members import *
+from .users import *

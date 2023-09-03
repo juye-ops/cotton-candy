@@ -1,16 +1,27 @@
 version: '3.8'
 
 services:
+  load_balancer:
+    image: nginx
+    container_name: cotton-load_balancer
+    ports:
+      - 80:80
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    networks:
+      cotton-net:
+        ipv4_address: 172.24.0.2
+
   frontend:
     build: ./frontend
     container_name: cotton-frontend
-    ports:
-      - 3000:3000
+    expose:
+      - 3000
     volumes:
       - ./frontend/:/root/frontend
     networks:
       cotton-net:
-        ipv4_address: 172.24.0.2
+        ipv4_address: 172.24.0.3
     stdin_open: true
     tty: true
 
@@ -18,13 +29,13 @@ services:
     build: ./backend
     container_name: cotton-backend
     restart: always
-    ports:
-      - 5000:5000
+    expose:
+      - 5000
     volumes:
       - ./backend/:/root/backend
     networks:
       cotton-net:
-        ipv4_address: 172.24.0.3
+        ipv4_address: 172.24.0.4
     command: python app.py
 
   container:
@@ -32,15 +43,15 @@ services:
     container_name: cotton-container
     environment:
       DOCKER_TLS_CERTDIR: ""
-    ports:
-      - 80:80
-      - 2375:2375
-      - 28001:28001
+    expose:
+      - 2375
+      - 80
+      - 28001
     volumes:
       - ./container/:/root/container
     networks:
       cotton-net:
-        ipv4_address: 172.24.0.4
+        ipv4_address: 172.24.0.5
     privileged: true
     command: sh -c "nginx & python3 app.py & dockerd -H tcp://0.0.0.0:2375"
 
@@ -51,13 +62,13 @@ services:
     environment:
       - MYSQL_PORT=3306
       - MYSQL_ROOT_PASSWORD=password
-    ports:
-      - 3306:3306
+    expose:
+      - 3306
     networks:
       cotton-net:
-        ipv4_address: 172.24.0.5
+        ipv4_address: 172.24.0.6
     volumes:
-      - ./db/:/docker-entrypoint-initdb.d/
+      - ./cotton.sql:/docker-entrypoint-initdb.d/cotton.sql
 
 networks:
   cotton-net:

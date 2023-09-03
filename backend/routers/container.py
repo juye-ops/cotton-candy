@@ -1,74 +1,45 @@
-from fastapi import APIRouter
-from pydantic import BaseModel
-from typing import List, Dict, Any
+from fastapi import APIRouter, Depends
 
 from database import *
-from utils import iac, dind, ide
+from routers import ContainerCreate, ContainerEdit
+from utils import dind, iac, ide
+from utils.auth import check_access_token
+
 
 router = APIRouter(
     prefix="/container",
 )
 
-
-class Create(BaseModel):
-    class Build(BaseModel):
-        class OperSys(BaseModel):
-            name: str
-            version: str
-
-        class Platform(BaseModel):
-            name: str
-            version: str
-
-        os: OperSys
-        frameworks: List[OperSys]
-
-    class Settings(BaseModel):
-        ports: list
-        environments: Dict[str, str]
-
-    name: str
-    project: str
-    description: str
-    gpu: bool
-    build: Build
-    settings: Settings
-
-
-class Edit(BaseModel):
-    class Settings(BaseModel):
-        ports: list
-        environments: Dict[str, str]
-
-    old_name: str
-    new_name: str
-    project: str
-    description: str
-    gpu: bool
-    settings: Settings
-
 @router.get("/list")
-def _list(project: str):
-    container_list = ContainerDB.get_list(project)
-    return container_list
+def _list(project: str, payload: dict = Depends(check_access_token)):
+    username = payload["sub"]
+    user_id = UserDB.get_id_by_username(username)[0]["id"]
+    project_id = ProjectDB.get_id_by_name(user_id, project)[0]["id"]
+    return ContainerDB.get_containers_by_project_id(project_id)
+
+@router.get("/info")
+def _info(project: str, name: str, payload: dict = Depends(check_access_token)):
+    username = payload["sub"]
+    user_id = UserDB.get_id_by_username(username)[0]["id"]
+    project_id = ProjectDB.get_id_by_name(user_id, project)[0]["id"]
+    container_id = ContainerDB.get_id_by_name(project_id, name)[0]["id"]
+    return ContainerDB.get_info_by_id(container_id)
 
 @router.post("/create")
-def _create(config: Create):
-    config = config.dict()
+def _create(config: ContainerCreate, payload: dict = Depends(check_access_token)):
+    container_name = config.name
+    container_project = config.project
+    container_desc = config.description
+    container_gpu = config.gpu
 
-    container_name = config["name"]
-    container_project = config["project"]
-    container_desc = config["description"]
-    container_gpu = config["gpu"]
+    build_config = config.build
+    settings_config = config.settings
 
-    build_config = config["build"]
-    settings_config = config["settings"]
+    container_os = build_config.os
+    container_frameworks = build_config.frameworks
 
-    container_os = build_config["os"]
-    container_frameworks = build_config["frameworks"]
-
-    container_ports = settings_config["ports"]
-    container_envs = settings_config["environments"]
+    container_ports = settings_config.ports
+    container_envs = settings_config.environments
 
     container_ports = {p: p for p in container_ports}
 
@@ -79,12 +50,14 @@ def _create(config: Create):
         container_name, container_project, container_ports, container_envs
     )
 
-    container_ip = dind.Container.get_info(container_name)["NetworkSettings"]["Networks"][container_project]["IPAddress"]  # Get IP Address
-
+    container_ip = dind.Container.info(container_name)["NetworkSettings"]["Networks"][container_project]["IPAddress"]  # Get IP Address
+    
     # Insert database
-    ContainerDB.create(
+    user_id = UserDB.get_id_by_username(payload["sub"])[0]["id"]
+    project_id = ProjectDB.get_id_by_name(user_id, container_project)[0]["id"]
+    ContainerDB.insert_container(
         container_name,
-        container_project,
+        project_id,
         container_desc,
         container_gpu,
         container_ports,
@@ -100,19 +73,17 @@ def _create(config: Create):
     return 200
 
 @router.post("/edit")
-def _edit(config: Edit):
-    config = config.dict()
+def _edit(config: ContainerEdit, payload: dict = Depends(check_access_token)):
+    old_name = config.old_name
+    new_name = config.new_name
+    container_project = config.project
+    container_desc = config.description
+    container_gpu = config.gpu
 
-    old_name = config["old_name"]
-    new_name = config["new_name"]
-    container_project = config["project"]
-    container_desc = config["description"]
-    container_gpu = config["gpu"]
+    settings_config = config.settings
 
-    settings_config = config["settings"]
-
-    container_ports = settings_config["ports"]
-    container_envs = settings_config["environments"]
+    container_ports = settings_config.ports
+    container_envs = settings_config.environments
 
     container_ports = {p: p for p in container_ports}
 
@@ -120,9 +91,13 @@ def _edit(config: Edit):
         old_name, new_name, container_project, container_ports, container_envs
     )
 
+    user_id = UserDB.get_id_by_username(payload["sub"])[0]["id"]
+    project_id = ProjectDB.get_id_by_name(user_id, container_project)[0]["id"]
+    container_id = ContainerDB.get_id_by_name(project_id, old_name)[0]["id"]
+
     # Insert database
-    ContainerDB.edit(
-        old_name,
+    ContainerDB.update_container_by_id(
+        container_id,
         new_name,
         container_desc,
         container_gpu,
@@ -133,7 +108,8 @@ def _edit(config: Edit):
     return 200
 
 @router.delete("/remove")
-def _remove(name: str):
+def _remove(name: str, payload: dict = Depends(check_access_token)):
     dind.Container.remove(name)
-    ContainerDB.remove(name)
+    ContainerDB.delete_by_name(name)
+    ide.rm_proxy(name)
     return 200

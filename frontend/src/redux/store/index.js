@@ -42,6 +42,7 @@
 
 import { createStore, applyMiddleware, combineReducers } from "redux";
 import userSlice from 'redux/slice/userSlice';
+import containerSlice from "redux/slice/containerSlice";
 
 import {
     createStateSyncMiddleware,
@@ -58,6 +59,7 @@ const persistConfig = {
 
 const rootReducer = combineReducers({
     user: userSlice,
+    container: containerSlice,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

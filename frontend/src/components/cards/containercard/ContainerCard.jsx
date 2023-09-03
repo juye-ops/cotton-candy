@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router';
+import { useParams, useLocation } from 'react-router';
 
 import * as S from './style';
 import PreventDefault from 'utils/PreventDefault';
@@ -8,6 +8,7 @@ import StopPropagation from 'utils/StopPropagation';
 export default function ContainerCard({ props: { container, clickedContainerModal, setClickedContainerModal, onClickRemoveModal, setRemoveTarget } }) {
     const { projectName } = useParams();
     const [clicked, setClicked] = useState(false);
+    const location = useLocation();
 
     useEffect(() => {
         window.addEventListener("click", () => {
@@ -33,6 +34,10 @@ export default function ContainerCard({ props: { container, clickedContainerModa
 
         setClicked(clicked => !clicked);
         setClickedContainerModal(e.currentTarget.querySelector('span:nth-child(2)').innerText);
+    }
+
+    const onClickExecute = () => {
+        window.location.pathname = window.location.pathname.replace(location.pathname, "") + "ide/" + container.name + "/";
     }
 
     return (
@@ -64,7 +69,7 @@ export default function ContainerCard({ props: { container, clickedContainerModa
                 </S.MoreButtonWrapper>
             </S.ContainerHeader>
             <S.ContainerDesc>{container.description}</S.ContainerDesc>
-            <S.ExecuteLink to={'/container/' + container.name} state={{ containerName: container.name }} >
+            <S.ExecuteLink onClick={onClickExecute}>
                 <i className="fa-solid fa-play"></i>
                 <span>Execute</span>
             </S.ExecuteLink>

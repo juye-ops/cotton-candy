@@ -1,6 +1,5 @@
 import styled from "styled-components";
 import IROnly from "styles/IROnly";
-import { Link } from "react-router-dom";
 
 export const Wrapper = styled.div`
     width: 550px;
@@ -44,34 +43,13 @@ export const Form = styled.form`
         font-size: ${props => props.theme.fontSize.button};
         border: 1px solid ${props => props.theme.color.border.normal};
         border-radius: ${props => props.theme.borderRadius.lv3};
+        margin-bottom: 20px;
     }
 
     & > input:focus {
         outline: none;
         border: 1px solid ${props => props.theme.color.theme.main};
     }
-
-    & > input:nth-child(4) {
-        margin: 25px 0 10px;
-    }
-`
-
-export const TextWrapper = styled.div`
-    display: flex;
-    gap: 6px;
-    margin-bottom: 50px;
-`
-
-export const SignupText = styled.p`
-    font-family: 'Righteous', cursive;
-    font-size: ${props => props.theme.fontSize.lv2};
-    color: ${props => props.theme.color.font.desc};
-`
-
-export const SignupLink = styled(Link)`
-    font-family: 'Righteous', cursive;
-    font-size: ${props => props.theme.fontSize.lv2};
-    color: ${props => props.theme.color.theme.main};
 `
 
 export const FormButton = styled.button`
@@ -79,6 +57,7 @@ export const FormButton = styled.button`
     padding: 18px;
     letter-spacing: 3px;
     transition: all 0.2s;
+    margin-top: 30px;
     font-size: ${props => props.theme.fontSize.button};
     color: ${props => props.theme.color.font.reverse};
     background-color: ${props => props.theme.color.theme.main};

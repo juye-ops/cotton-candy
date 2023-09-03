@@ -7,7 +7,7 @@ export const GetContainerList = async (projectName) => {
             },
         });
 
-        const result = response.json();
+        const result = await response.json();
 
         return result;
     } catch (e) {
@@ -23,7 +23,7 @@ export const GetOSList = async () => {
                 "Content-Type": "application/json",
             },
         });
-        const result = response.json();
+        const result = await response.json();
 
         return result;
     } catch (e) {
@@ -40,7 +40,7 @@ export const GetOSVersionList = async (os) => {
             },
         });
 
-        const result = response.json();
+        const result = await response.json();
 
         return result;
     } catch (e) {
@@ -57,7 +57,7 @@ export const GetPlatformList = async () => {
             },
         });
 
-        const result = response.json();
+        const result = await response.json();
 
         return result;
     } catch (e) {
@@ -92,7 +92,24 @@ export const GenerateContainer = async (body) => {
             body,
         });
 
-        const result = response.json();
+        const result = await response.json();
+
+        return result;
+    } catch (e) {
+        console.log(e);
+    }
+}
+
+export const GetContainerInfo = async (name) => {
+    try {
+        const response = await fetch("/api/container/info?name=" + name, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+
+        const result = await response.json();
 
         return result;
     } catch (e) {
@@ -110,9 +127,7 @@ export const UpdateContainer = async (body) => {
             body,
         });
 
-        console.log(response);
-
-        const result = response.json();
+        const result = await response.json();
 
         return result;
     } catch (e) {
@@ -129,7 +144,7 @@ export const DeleteContainer = async (name) => {
             },
         });
 
-        const result = response.json();
+        const result = await response.json();
 
         return result;
     } catch (e) {
