@@ -19,6 +19,15 @@ router = APIRouter(
 
 @router.post("/signup")
 def _signup(data: UserAuth):
+    register_token = UserDB.get_register_token()[0]["token"]
+    register_token = str(register_token, encoding="utf-8")
+    
+    if data.token != register_token:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Could not validate credentials",
+        )
+
     user = UserDB.get_user_by_username(data.username)
     if user:
         raise HTTPException(

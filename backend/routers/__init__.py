@@ -54,6 +54,7 @@ class ProjectEdit(BaseModel):
 class UserAuth(BaseModel):
     username: str
     password: str
+    token: str
 
 class UserOut(BaseModel):
     username: str
