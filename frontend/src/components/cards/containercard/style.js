@@ -3,8 +3,8 @@ import styled from "styled-components";
 import IROnly from "styles/IROnly";
 
 export const Container = styled.section`
-    height: 280px;
-    padding: 16px 20px 20px 20px;
+    height: 180px;
+    padding: 28px 25px 24px;
     display: flex;
     flex-direction: column;
     background-color: ${props => props.theme.color.background.content};
@@ -15,7 +15,19 @@ export const Container = styled.section`
 export const ContainerHeader = styled.header`
     display: flex;
     align-items: center;
-    margin-bottom: 16px;
+    margin-bottom: 8px;
+`
+
+export const ContainerDesc = styled.p`
+    line-height: 16px;
+    white-space: normal;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;  
+    padding-left: 2px;
+    font-size: ${props => props.theme.fontSize.content};
+    color: ${props => props.theme.color.font.desc};
 `
 
 export const ConatinerState = styled.div`
@@ -134,22 +146,21 @@ export const SoftwareWrapper = styled.div`
     }
 `
 
-export const ExecuteLink = styled(Link)`
+export const ExecuteLink = styled.button`
     width: 100%;
-    height: 32px;
+    height: 22px;
     display: flex;
     align-items: center;
     justify-content: center;
     margin-top: auto;
     transition: all 0.2s;
-    background-color: ${props => props.theme.color.background.hover};
-    border: 1px solid ${props => props.theme.color.theme.main};
+    background-color: ${props => props.theme.color.theme.main};
     border-radius: ${props => props.theme.borderRadius.lv2};
-    color: ${props => props.theme.color.theme.main};
+    color: ${props => props.theme.color.font.reverse};
     font-size: ${props => props.theme.fontSize.desc};
 
     &:hover {
-        background-color: ${props => props.theme.color.background.hover3};
+        background-color: ${props => props.theme.color.theme.dark};
     }
 
     & > i {

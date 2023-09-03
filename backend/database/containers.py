@@ -1,72 +1,95 @@
-from database import mysql_cli
+from database import select, insert, update, delete
 
 
 class ContainerDB:
-    def get_len():
-        conn = mysql_cli.get_connection()
-        cursor = conn.cursor(dictionary=True)
-
+    @select
+    def get_containers_by_project_id(project_id):
         query = """
-        SELECT * from container
+        SELECT name, description FROM (container AS c
+            INNER JOIN container_info AS ci
+            ON c.id=ci.container_id
+        ) WHERE c.project_id = %s;
         """
+        arg = (project_id,)
 
-        cursor.execute(query)
-        ret = cursor.fetchall()
+        return query, arg
 
-        conn.close()
-
-        return len(ret)
-
-    def get_list(project):
-        conn = mysql_cli.get_connection()
-        cursor = conn.cursor(dictionary=True)
-
+    @select
+    def get_id_by_name(project_id, name):
         query = """
-        SELECT name, description FROM (
-            container INNER JOIN container_info 
-            ON container.id=container_info.container_id
-        ) WHERE project_id = (
-            SELECT id FROM project
-            WHERE name=%s
-        );
+        SELECT id FROM container
+        WHERE project_id=%s AND name=%s
         """
-        cursor.execute(query, (project, ))
-        ret = cursor.fetchall()
+        arg = (project_id, name)
+        return query, arg
 
-        conn.close()
+    def get_info_by_id(id):
+        @select
+        def q1(*args):
+            query = """
+            SELECT name, description, gpu FROM (container AS c
+                INNER JOIN container_info AS ci
+                ON c.id=ci.container_id
+            ) WHERE c.id=%s
+            """
+            return query, args
+        @select
+        def q2(*args):
+            query = """
+            SELECT port FROM container_ports
+            WHERE container_id=(
+                SELECT id FROM container
+                WHERE id=%s
+            )
+            """
+            return query, args
+        @select
+        def q3(*args):
+            query = """
+            SELECT k, v FROM container_envs
+            WHERE container_id=(
+                SELECT id FROM container
+                WHERE id=%s
+            )
+            """
+            return query, args
+        
+        info = q1(id)[0]
+        info["ports"] = [x["port"] for x in q2(id)]
+        info["envs"] = {x["k"]: x["v"] for x in q3(id)}
 
-        return ret
+        return info
 
-    def create(name, project, description, gpu, ports, envs, os, frameworks, ip_addr):
-        conn = mysql_cli.get_connection()
-        cursor = conn.cursor(dictionary=True)
-
+    def insert_container(name, project_id, description, gpu, ports, envs, os, frameworks, ip_addr):
         # Add container
-        query = """
-        INSERT INTO container(project_id, name)
-        VALUES (
-            (SELECT id FROM project WHERE name=%s),
-            %s
-        );
-        """
-        cursor.execute(query, (project, name))
-        conn.commit()
+        @insert
+        def q1(*args):
+            query = """
+            INSERT INTO container(project_id, name)
+            VALUES (
+                %s,
+                %s
+            );
+            """
+            return query, args
 
         # Add container info
-        query = """
-        INSERT INTO container_info(container_id, description, gpu, ip)
-        VALUES (
-            (SELECT id FROM container WHERE name=%s),
-            %s,
-            %s,
-            %s
-        );
-        """
-        cursor.execute(query, (name, description, gpu, ip_addr))
-        conn.commit()
+        @insert
+        def q2(*args):
+            query = """
+            INSERT INTO container_info(container_id, description, gpu, ip)
+            VALUES (
+                (SELECT id FROM container WHERE name=%s),
+                %s,
+                %s,
+                %s
+            );
+            """
+            return query, args
 
         # Add ports of container
-        for port in ports:
+        @insert
+        def q3(*args):
             query = """
             INSERT INTO container_ports(container_id, port)
             VALUES (
@@ -74,11 +97,11 @@ class ContainerDB:
                 %s
             );
             """
-            cursor.execute(query, (name, port))
-        conn.commit()
+            return query, args
 
         # Add envs of container
-        for k, v in envs.items():
+        @insert
+        def q4(*args):
             query = """
             INSERT INTO container_envs(container_id, k, v)
             VALUES (
@@ -87,91 +110,130 @@ class ContainerDB:
                 %s
             );
             """
-
-            cursor.execute(query, (name, k, v))
-        conn.commit()
+            return query, args
 
         # Add os of container
-        query = """
-        INSERT INTO container_os(container_id, version_id)
-        VALUES (
-            (SELECT id FROM container WHERE name=%s),
-            (SELECT os_version.id from os_version INNER JOIN os ON os_version.os_id=os.id where name=%s AND version=%s)
-        );
-        """
-        cursor.execute(query, (name, os["name"], os["version"]))
-        conn.commit()
+        @insert
+        def q5(*args):
+            query = """
+            INSERT INTO container_os(container_id, version_id)
+            VALUES (
+                (SELECT id FROM container WHERE name=%s),
+                (SELECT ov.id FROM os_version AS ov
+                    INNER JOIN os AS o
+                    ON ov.os_id=o.id 
+                    WHERE name=%s AND version=%s
+                )
+            );
+            """
+            return query, args
 
         # Add envs of container
-        for framework in frameworks:
+        @insert
+        def q6(*args):
             query = """
             INSERT INTO container_framework(container_id, version_id)
             VALUES (
                 (SELECT id FROM container WHERE name=%s),
-                (SELECT framework_version.id from framework_version INNER JOIN framework ON framework_version.framework_id=framework.id where name=%s AND version=%s)
+                (SELECT fv.id FROM framework_version AS fv
+                    INNER JOIN framework AS f
+                    ON fv.framework_id=f.id 
+                    WHERE name=%s AND version=%s
+                )
             );
             """
-            cursor.execute(query, (name, framework["name"], framework["version"]))
-        conn.commit()
+            return query, args
 
-        conn.close()
-
-        return
-
-    def update(old_name, new_name, description, gpu, ports, envs):
-        conn = mysql_cli.get_connection()
-        cursor = conn.cursor(dictionary=True)
-
-        # Modify container
-        query = """
-        UPDATE container
-        SET name=%s
-        WHERE name=%s
-        """
-        cursor.execute(query, (new_name, old_name))
-        conn.commit()
-
-        # Modify container info
-        query = """
-        UPDATE container_info
-        SET
-            description=%s,
-            gpu=%s
-        WHERE container_id=(SELECT id FROM container WHERE name=%s)
-        """
-        cursor.execute(query, (description, gpu, new_name))
-        conn.commit()
+        q1(project_id, name)
+        q2(name, description, gpu, ip_addr)
 
         for port in ports:
+            q3(name, port)
+
+        for k, v in envs.items():
+            q4(name, k, v)
+
+        q5(name, os.name, os.version)
+
+        for framework in frameworks:
+            q6(name, framework.name, framework.version)
+
+    def update_container_by_id(id, new_name, description, gpu, ports, envs):
+        @delete
+        def q1(*args):
+            query = """
+            DELETE FROM container_ports
+            WHERE container_id=%s;
+            """
+            return query, args
+
+        @delete
+        def q2(*args):
+            query = """
+            DELETE FROM container_envs
+            WHERE container_id=%s;
+            """
+            return query, args
+
+        # Modify container
+        @update
+        def q3(*args):
+            query = """
+            UPDATE container
+            SET name=%s
+            WHERE id=%s
+            """
+            return query, args
+
+        # Modify container info
+        @update
+        def q4(*args):
+            query = """
+            UPDATE container_info
+            SET
+                description=%s,
+                gpu=%s
+            WHERE container_id=%s
+            """
+            return query, args
+
+        @update
+        def q5(*args):
             query = """
             INSERT INTO container_ports(container_id, port)
             VALUES (
-                (SELECT id FROM container WHERE name=%s),
-                %s
-            );
-            """
-            cursor.execute(query, (new_name, port))
-        conn.commit()
-
-        for k, v in envs.items():
-            query = """
-            INSERT INTO container_envs(container_id, k, v)
-            VALUES (
-                (SELECT id FROM container WHERE name=%s),
                 %s,
                 %s
             );
             """
-            cursor.execute(query, (new_name, k, v))
-        conn.commit()
-        conn.close()
+            return query, args
 
-        return
+        @update
+        def q6(*args):
+            query = """
+            INSERT INTO container_envs(container_id, k, v)
+            VALUES (
+                %s,
+                %s,
+                %s
+            );
+            """
+            return query, args
 
-    def update_ip(name, ip_addr):
-        conn = mysql_cli.get_connection()
-        cursor = conn.cursor(dictionary=True)
+        q1(id)
+        q2(id)
 
+        q3(new_name, id)
+        q4(description, gpu, id)
+
+        for port in ports:
+            q5(id, port)
+
+        for k, v in envs.items():
+            q6(id, k, v)
+
+    @update
+    def update_ip_by_name(name, ip_addr):
         query = """
         UPDATE container_info
         SET ip=%s
@@ -180,7 +242,14 @@ class ContainerDB:
             WHERE name=%s
         );
         """
-        cursor.execute(query, (ip_addr, name))
-        conn.commit()
-        return
+        arg = (ip_addr, name)
+        return query, arg
 
+    @delete
+    def delete_by_name(name):
+        query = """
+        DELETE FROM container
+        WHERE name=%s
+        """
+        arg = (name,)
+        return query, arg

@@ -2,9 +2,9 @@ import { Link } from "react-router-dom";
 import styled from "styled-components";
 import IROnly from "styles/IROnly";
 
-export const Project = styled(Link)`
+export const Section = styled.section`
     height: 180px;
-    padding: 30px 25px;
+    padding: 28px 25px 24px;
     display: flex;
     flex-direction: column;
     background-color: ${props => props.theme.color.background.content};
@@ -12,26 +12,24 @@ export const Project = styled(Link)`
     border-radius: ${props => props.theme.borderRadius.lv2};
 `
 
-export const ModalWrapper = styled.div`
+export const ModalHeader = styled.header`
     display: flex;
-    align-items: center;
-    padding-left: 2px;
+    gap: 20px;
 `
 
-export const ProjectState = styled.div`
-    width: 8px;
-    height: 8px;
-    margin-right: 12px;
-    border-radius: 50%;
-    background-color: ${props => props.theme.color.theme.main};
+export const HeaderTextWrapper = styled.div`
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 `
 
-export const ProjectName = styled.p`
+export const ProjectName = styled.h3`
     font-size: 16px;
 `
 
 export const ProjectDescription = styled.p`
-    margin-top: 15px;
+    /* margin-top: 15px; */
     line-height: 16px;
     white-space: normal;
     display: -webkit-box;
@@ -43,10 +41,44 @@ export const ProjectDescription = styled.p`
     color: ${props => props.theme.color.font.desc};
 `
 
-export const DesignDiv = styled.div`
-    /* margin-right: 10px; */
-    margin-top: 15px;
-    border-bottom: 1px solid ${props => props.theme.color.theme.main};
+export const ContainerCount = styled.p`
+    text-align: center;
+    margin-bottom: 5px;
+    color: ${props => props.theme.color.font.main};
+`
+
+export const ContainerCountText = styled.p`
+    color: ${props => props.theme.color.font.desc};
+    font-size: ${props => props.theme.fontSize.desc};
+`
+
+export const HeaderCountWrapper = styled.div`
+    display: flex;
+    flex-direction: column;
+`
+
+export const ModalButtonWrapper = styled.div`
+    display: flex;
+    margin-top: auto;
+    gap: 14px;
+`
+
+export const ExecuteLink = styled(Link)`
+    border: none;
+    flex-grow: 1;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    font-size: ${props => props.theme.fontSize.desc};
+    background-color:  ${props => props.theme.color.theme.main};
+    color: ${props => props.theme.color.font.reverse};
+    border-radius: ${props => props.theme.borderRadius.lv1};
+
+    &:hover {
+        background-color:  ${props => props.theme.color.theme.dark};
+    }
 `
 
 export const MoreButtonWrapper = styled.div`
@@ -55,7 +87,7 @@ export const MoreButtonWrapper = styled.div`
 `
 
 export const MoreButton = styled.button`
-    padding: 1px 5px;
+    height: 22px;
     background-color: ${props => props.theme.color.background.dark};
     border-radius: ${props => props.theme.borderRadius.lv1};
 
@@ -69,13 +101,13 @@ export const MoreButton = styled.button`
 `
 
 export const MoreList = styled.ul`
-    box-shadow: 0 0 10px 3px ${props => props.theme.color.background.hover2};
+    /* box-shadow: 0 0 10px 3px ${props => props.theme.color.background.hover2}; */
     display: ${props => props.clicked ? "flex" : "none"};
     flex-direction: column;
     width: 160px;
     padding: 5px 0;
     position: absolute;
-    top: 26px;
+    bottom: 30px;
     right: 0;
     background-color: ${props => props.theme.color.background.content};
     border: 1px solid ${props => props.theme.color.border.normal};

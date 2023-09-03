@@ -1,22 +1,22 @@
 import { useState, useRef } from 'react'
 import { useNavigate } from 'react-router'
 import { useDispatch } from 'react-redux'
+
 import { loginUser } from 'redux/slice/userSlice'
 
 import * as S from './style';
 
-import * as API from 'apis/HomePageAPIs';
+import { TrySignin } from 'apis/UserAPIs';
 
 export default function LoginPage() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
     const [inputs, setInputs] = useState({
-        id: "",
+        username: "",
         password: "",
     });
-
-    const inputRef = useRef([]);
+    const formRef = useRef(null);
 
     const handleChange = (e) => {
         setInputs({
@@ -25,24 +25,25 @@ export default function LoginPage() {
         });
     }
 
-    const handleCheck = (e) => {
+    const handleCheck = async (e) => {
         e.preventDefault();
 
         // 예외 처리 & 유효성 검사
-        if (!!!inputs.id || !!!inputs.password) {
+        if (!!!inputs.username || !!!inputs.password) {
             alert("아이디 혹은 비밀번호를 입력해주세요.");
             return;
         }
 
         // 로그인
-        API.trySignin(inputs.id, inputs.password);
+        const result = await TrySignin(inputs.username, inputs.password);
 
-        // 사용자 정보 저장
+        // // 사용자 정보 저장
         dispatch(loginUser({
-            id: inputs.id,
+            accessToken: result.access_token,
+            refreshToken: result.refresh_token,
         }));
 
-        // 페이지 이동
+        // // 페이지 이동
         navigate('/');
     }
 
@@ -56,18 +57,17 @@ export default function LoginPage() {
                     <S.SectionHeader>
                         <h2>회원정보 입력 영역</h2>
                     </S.SectionHeader>
-                    <S.Form>
+                    <S.Form action='/api/user/signin' method='post' ref={formRef}>
                         <label
-                            htmlFor='id'>
+                            htmlFor='username'>
                             아이디
                         </label>
                         <input
                             type='text'
-                            id='id'
-                            name='id'
+                            id='username'
+                            name='username'
                             onChange={handleChange}
-                            ref={(element) => (inputRef.current[0] = element)}
-                            value={inputs.id}
+                            value={inputs.username}
                             placeholder='아이디를 입력해주세요.' />
                         <label
                             htmlFor='password'>
@@ -78,9 +78,12 @@ export default function LoginPage() {
                             id='password'
                             name='password'
                             onChange={handleChange}
-                            ref={(element) => (inputRef.current[1] = element)}
                             value={inputs.password}
                             placeholder='비밀번호를 입력해주세요.' />
+                        <S.TextWrapper>
+                            <S.SignupText>Don't have an account?</S.SignupText>
+                            <S.SignupLink to='/signup'>Click here!</S.SignupLink>
+                        </S.TextWrapper>
                         <S.FormButton
                             onClick={handleCheck}>
                             <span>Sign in</span>

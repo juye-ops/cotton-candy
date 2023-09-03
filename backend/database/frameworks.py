@@ -1,44 +1,23 @@
-from database import mysql_cli
+from database import select
 
 
 class FrameworkDB:
-    def get_list():
+    @select
+    def get_frameworks():
         query = """
         SELECT name, type from framework
         """
+        arg = ()
+        return query, arg
 
-        conn = mysql_cli.get_connection()
-        cursor = conn.cursor(dictionary=True)
-
-        cursor.execute(query)
-        ret = cursor.fetchall()
-
-        conn.close()
-
-        return ret
-
-    def get_version(key: str) -> dict:
-        """
-        Read collection's data with any key
-
-        :param key: to get specific data that matches
-        """
+    @select
+    def get_versions_by_name(name) -> dict:
         query = """
         SELECT version FROM framework_version 
         WHERE framework_id=(
             SELECT id from framework
-            WHERE name="{key}"
+            WHERE name=%s
         );
         """
-
-        conn = mysql_cli.get_connection()
-        cursor = conn.cursor(dictionary=True)
-
-        cursor.execute(query)
-        ret = cursor.fetchall()
-
-        framework_versions = [x["version"] for x in ret]
-
-        conn.close()
-
-        return framework_versions
+        arg = (name,)
+        return query, arg

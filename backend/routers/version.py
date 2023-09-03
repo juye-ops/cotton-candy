@@ -8,20 +8,27 @@ router = APIRouter(
 
 
 @router.get("/framework/{app}")
-def get_framework_version(app):
-    return FrameworkDB.get_version(app)
+def _framework_version(app):
+    data = FrameworkDB.get_versions_by_name(app)
+    ret = [x["version"] for x in data]
+    return ret
 
 
-@router.get("/framework/")
-def get_framework_list():
-    return FrameworkDB.get_list()
+@router.get("/framework")
+def _framework_list():
+    return FrameworkDB.get_frameworks()
 
 
 @router.get("/os/{app}")
-def get_os_version(app):
-    return OSDB.get_version(app)
+def _os_version(app):
+    data = OSDB.get_versions_by_name(app)
+    ret = [x["version"] for x in data]
+    return ret
 
 
-@router.get("/os/")
-def get_os_list():
-    return OSDB.get_list()
+@router.get("/os")
+def _os_list():
+    data = OSDB.get_os()
+    ret = [x["name"] for x in data]
+
+    return ret

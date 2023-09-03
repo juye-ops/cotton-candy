@@ -21,7 +21,7 @@ class Container:
             detach=True,
         )
 
-    def get_info(container_name):
+    def info(container_name):
         return docker_cli.api.inspect_container(container_name)
 
     def edit(old_name, new_name, project_name, container_ports, container_envs):
@@ -39,12 +39,16 @@ class Container:
             detach=True,
         )
 
+    def remove(container_name):
+        container = docker_cli.containers.get(container_name)
+        container.stop()
+        container.remove()
+
+
 class Network:
     def create(network_name):
         net_info = docker_cli.networks.create(name=network_name, driver="bridge")
-        return {
-            'subnet': net_info.attrs['IPAM']['Config'][0]['Subnet']
-        }
+        return {"subnet": net_info.attrs["IPAM"]["Config"][0]["Subnet"]}
 
     def remove(network_name):
         net = docker_cli.networks.get(network_name)
@@ -54,10 +58,10 @@ class Network:
         net = docker_cli.networks.get(network_name)
 
         for c in containers:
-            net.connect(c['name'])
+            net.connect(c["name"])
 
     def disconnect_all(network_name):
         net = docker_cli.networks.get(network_name)
         containers = net.containers
         for c in containers:
-            net.disconnect(c.attrs['Id'])
+            net.disconnect(c.attrs["Id"])

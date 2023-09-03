@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import IROnly from "styles/IROnly";
+import { Link } from "react-router-dom";
 
 export const Wrapper = styled.div`
     width: 550px;
@@ -51,8 +52,26 @@ export const Form = styled.form`
     }
 
     & > input:nth-child(4) {
-        margin: 25px 0 50px;
+        margin: 25px 0 10px;
     }
+`
+
+export const TextWrapper = styled.div`
+    display: flex;
+    gap: 6px;
+    margin-bottom: 50px;
+`
+
+export const SignupText = styled.p`
+    font-family: 'Righteous', cursive;
+    font-size: ${props => props.theme.fontSize.lv2};
+    color: ${props => props.theme.color.font.desc};
+`
+
+export const SignupLink = styled(Link)`
+    font-family: 'Righteous', cursive;
+    font-size: ${props => props.theme.fontSize.lv2};
+    color: ${props => props.theme.color.theme.main};
 `
 
 export const FormButton = styled.button`

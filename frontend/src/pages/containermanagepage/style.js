@@ -3,36 +3,23 @@ import styled from "styled-components";
 import IROnly from "styles/IROnly";
 
 export const Wrapper = styled.div`
-    max-width: 1140px;
-    margin: 0 auto;
-`
-
-export const Header = styled.header`
-    ${IROnly}
+    width: calc(100vw - 280px);
 `
 
 export const Section = styled.section`
-    margin-top: 50px;
+    height: calc(100vh - 92px);
+    padding: 55px 40px;
     font-family: 'Rubik', sans-serif;
-    margin-bottom: 50px;
 `
 
 export const SectionHeader = styled.header`
     width: 100%;
-    background-color: rgba(247, 247, 250, 0.6);
-    backdrop-filter: blur(10px);
-    position: fixed;
-    top: 0;
-    left: 0;
-    padding: 50px 0 30px;
-    z-index: 200;
 `
 
 export const SectionHeaderWrapper = styled.div`
     display: flex;
     align-items: center;
-    margin: 0 auto;
-    max-width: ${(props) => props.theme.width.wrapperWidth};
+    height: 32px;
 
     & i {
         vertical-align: -2px;
@@ -54,17 +41,24 @@ export const SectionHeaderBackLink = styled(Link)`
 `
 
 export const ContainerList = styled.ul`
-    margin-top: 112px;
+    margin-top: 50px;
+    height: calc(100vh - 229px);
+    padding-bottom: 55px;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     grid-gap: 20px;
+    overflow-y: scroll;
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
 `
 
 export const CreateContainerLink = styled(Link)`
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 280px;
+    height: 180px;
     transition: all 0.2s;
     font-family: 'Ubuntu', sans-serif;
     font-weight: 700;
@@ -81,4 +75,48 @@ export const CreateContainerLink = styled(Link)`
     & > span {
         margin-left: 10px;
     }
+`
+
+export const ModalWrapper = styled.div`
+    display: ${props => props.visible ? "blick" : "none"};
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background-color: ${props => props.theme.color.background.wrapper};
+`
+
+export const DeleteModal = styled.div`
+    width: 480px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    padding: 40px 30px;
+    background-color: ${props => props.theme.color.background.content};
+    border-radius: ${props => props.theme.borderRadius.lv2};
+    color: ${props => props.theme.color.font.main};
+`
+
+export const DeleteButtonWrapper = styled.div`
+    display: flex;
+    gap: 15px;
+
+    & > button {
+        width: 100%;
+    }
+`
+
+export const DeleteButton = styled.button`
+    margin-left: auto;
+    color: white;
+    padding: 8px 16px;
+    background-color: ${(props) => props.theme.color.theme.sub};
+    font-size: ${(props) => props.theme.fontSize.button};
+    border-radius: ${(props) => props.theme.borderRadius.lv2};
 `
