@@ -2,6 +2,14 @@ from database import select, insert, update, delete
 
 class UserDB:
     @select
+    def get_register_token():
+        query = """
+        SELECT token FROM signup_token
+        """
+        arg = ()
+        return query, arg
+
+    @select
     def get_id_by_username(username):
         query = """
         SELECT id FROM user

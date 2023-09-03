@@ -11,6 +11,22 @@ mysql_cli = pooling.MySQLConnectionPool(
     password="password",
 )
 
+def add_token_into_database(token):
+    query = """
+    INSERT INTO signup_token(token)
+    VALUES (
+        %s
+    )
+    """
+    arg = (token, )
+
+    conn = mysql_cli.get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute(query, arg)
+    conn.commit()
+
+    conn.close() 
 
 def select(func):
     def _select(*args):
