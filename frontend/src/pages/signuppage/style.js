@@ -15,13 +15,13 @@ export const Wrapper = styled.div`
 
 export const Header = styled.header`
     display: flex;
-    justify-content: center;
-    margin-bottom: 70px;
-    letter-spacing: -5px;
+    // justify-content: center;
+    margin-bottom: 40px;
+    letter-spacing: -2px;
 
-    & > h1 {
+    & > a > h1 {
         font-family: 'Righteous', cursive;
-        font-size: ${props => props.theme.fontSize.title};
+        font-size: ${props => props.theme.fontSize.logo};
         color: ${props => props.theme.color.theme.main};
     }
 `
@@ -42,8 +42,17 @@ export const Form = styled.form`
         padding: 18px 16px;
         font-size: ${props => props.theme.fontSize.button};
         border: 1px solid ${props => props.theme.color.border.normal};
-        border-radius: ${props => props.theme.borderRadius.lv3};
-        margin-bottom: 20px;
+        // border-bottom: none;
+        // border-radius: ${props => props.theme.borderRadius.lv3};
+        margin-bottom: 2px;
+    }
+
+    & > input:nth-child(2) {
+        border-radius: ${props => props.theme.borderRadius.lv3} ${props => props.theme.borderRadius.lv3} 0 0;
+    }
+    & > input:nth-child(8) {
+        border-radius: 0 0 ${props => props.theme.borderRadius.lv3} ${props => props.theme.borderRadius.lv3};
+        // border-bottom: 1px solid ${props => props.theme.color.border.normal};
     }
 
     & > input:focus {
@@ -57,7 +66,7 @@ export const FormButton = styled.button`
     padding: 18px;
     letter-spacing: 3px;
     transition: all 0.2s;
-    margin-top: 30px;
+    margin-top: 40px;
     font-size: ${props => props.theme.fontSize.button};
     color: ${props => props.theme.color.font.reverse};
     background-color: ${props => props.theme.color.theme.main};

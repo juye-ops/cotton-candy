@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router'
+import { Link } from 'react-router-dom';
 
 import * as S from './style';
 
@@ -12,6 +13,7 @@ export default function SignupPage() {
         id: "",
         password: "",
         password_confirm: "",
+        token: "",
     });
 
     const handleChange = (e) => {
@@ -35,7 +37,7 @@ export default function SignupPage() {
             return;
         }
 
-        const result = await TrySignup(inputs.id, inputs.password);
+        const result = await TrySignup(inputs.id, inputs.password, inputs.token);
 
         if (!result) {
             navigate('/login');
@@ -47,7 +49,9 @@ export default function SignupPage() {
     return (
         <S.Wrapper>
             <S.Header>
-                <h1>On Premiser</h1>
+                <Link to='/login'>
+                    <h1>On Premiser</h1>
+                </Link>
             </S.Header>
             <main>
                 <section>
@@ -88,6 +92,17 @@ export default function SignupPage() {
                             onChange={handleChange}
                             value={inputs.password_confirm}
                             placeholder='비밀번호를 다시 입력해주세요.' />
+                        <label
+                            htmlFor='password_confirm'>
+                            토큰 확인
+                        </label>
+                        <input
+                            type='password'
+                            id='token'
+                            name='token'
+                            onChange={handleChange}
+                            value={inputs.token}
+                            placeholder='토큰을 입력해주세요.' />
                         <S.FormButton
                             onClick={handleCheck}>
                             <span>Sign up</span>

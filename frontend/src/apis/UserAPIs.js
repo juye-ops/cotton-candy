@@ -1,6 +1,6 @@
 import FetchTemplate from "utils/FetchTemplate";
 
-export const TrySignup = async (username, password) => {
+export const TrySignup = async (username, password, token) => {
     try {
         const response = await fetch("/api/user/signup", {
             method: "POST",
@@ -10,6 +10,7 @@ export const TrySignup = async (username, password) => {
             body: JSON.stringify({
                 username,
                 password,
+                token,
             })
         });
 
