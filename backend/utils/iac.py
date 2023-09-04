@@ -6,6 +6,7 @@ pf_installer = {
         f"RUN curl -fsSL https://deb.nodesource.com/setup_{ver}.x | bash -",
         "RUN apt-get install -y nodejs",
     ],
+    "mysql": lambda ver:[f"RUN apt-get install mysql-server-{ver} -y"]
 }
 
 
