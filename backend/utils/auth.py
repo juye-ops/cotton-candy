@@ -5,7 +5,7 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import jwt
 from passlib.context import CryptContext
-from pydantic import BaseModel, ValidationError
+from pydantic import ValidationError
 from typing import Union, Any
 
 ACCESS_TOKEN_EXPIRE_MINUTES = 30  # 30 minutes
@@ -45,24 +45,16 @@ def create_refresh_token(subject: Union[str, Any], expires_delta: int = None) ->
     return encoded_jwt
 
 reusable_oauth = OAuth2PasswordBearer(
-    tokenUrl="/signin",
+    tokenUrl="/user/signin",
     scheme_name="JWT"
 )
 
-class UserOut(BaseModel):
-    username: str
-class SystemUser(UserOut):
-    password: str
-class TokenPayload(BaseModel):
-    sub: str
-    exp: int
 def check_access_token(token: str = Depends(reusable_oauth)):
     try:
         payload = jwt.decode(
             token, JWT_SECRET_KEY, algorithms=[ALGORITHM]
         )
-        token_data = TokenPayload(**payload)
-        if datetime.fromtimestamp(token_data.exp) < datetime.now():
+        if datetime.fromtimestamp(payload["exp"]) < datetime.now():
             raise HTTPException(
                 status_code = status.HTTP_401_UNAUTHORIZED,
                 detail="Token expired",
@@ -75,15 +67,14 @@ def check_access_token(token: str = Depends(reusable_oauth)):
             headers={"WWW-Authenticate": "Bearer"},
         )
     
-    return token_data
+    return payload
 
 def check_refresh_token(token: str = Depends(reusable_oauth)):
     try:
         payload = jwt.decode(
             token, JWT_REFRESH_SECRET_KEY, algorithms=[ALGORITHM]
         )
-        token_data = TokenPayload(**payload)
-        if datetime.fromtimestamp(token_data.exp) < datetime.now():
+        if datetime.fromtimestamp(payload["exp"]) < datetime.now():
             raise HTTPException(
                 status_code = status.HTTP_401_UNAUTHORIZED,
                 detail="Token expired",
@@ -96,4 +87,4 @@ def check_refresh_token(token: str = Depends(reusable_oauth)):
             headers={"WWW-Authenticate": "Bearer"},
         )
     
-    return {"payload": token_data, "token": token}
+    return {"payload": payload, "token": token}

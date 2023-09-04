@@ -2,7 +2,24 @@ from database import select, insert, update, delete
 
 class UserDB:
     @select
-    def get(username):
+    def get_register_token():
+        query = """
+        SELECT token FROM signup_token
+        """
+        arg = ()
+        return query, arg
+
+    @select
+    def get_id_by_username(username):
+        query = """
+        SELECT id FROM user
+        WHERE username=%s
+        """
+        arg = (username, )
+        return query, arg
+    
+    @select
+    def get_user_by_username(username):
         query = """
         SELECT username, password FROM (user AS u
             INNER JOIN user_password AS ua
@@ -27,7 +44,7 @@ class UserDB:
 
         return query, arg
 
-    def add(username, password):
+    def insert_user(username, password):
         @insert
         def q1(*args):
             query = """
@@ -53,7 +70,7 @@ class UserDB:
         q2(username, password)
     
     @insert
-    def add_refresh_token(username, token):
+    def insert_refresh_token(username, token):
         query = """
         INSERT INTO user_auth(user_id, refresh_token)
         VALUES (
@@ -66,7 +83,7 @@ class UserDB:
         return query, arg
 
     @delete
-    def delete_refresh_token(username):
+    def delete_refresh_token_by_username(username):
         query = """
         DELETE FROM user_auth
         WHERE user_id=(

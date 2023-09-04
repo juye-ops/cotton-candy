@@ -1,98 +1,92 @@
-export const GetProjectList = async () => {
-    try {
+import FetchTemplate from "utils/FetchTemplate";
+
+export const GetProjectList = async (dispatch, user) => {
+    const result = FetchTemplate(dispatch, user, async (accessToken) => {
         const response = await fetch("/api/project/list", {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
+                "Authorization": "Bearer " + accessToken,
             },
         });
 
-        const result = response.json();
+        const result = await response.json();
 
         return result;
-    } catch (e) {
-        console.log(e);
+    });
 
-        return [];
-    }
+    return result;
 }
 
-export const GetProjectContainers = async (projectName) => {
-    try {
+export const GetProjectContainers = async (dispatch, user, projectName) => {
+    const result = FetchTemplate(dispatch, user, async (accessToken) => {
         const response = await fetch("/api/project/len?name=" + projectName, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
+                "Authorization": "Bearer " + accessToken,
             },
         });
 
-        const result = response.json();
+        const result = await response.json();
 
         return result;
-    } catch (e) {
-        console.log(e);
+    });
 
-        return [];
-    }
+    return result;
 }
 
-export const GenerateProject = async ({ user_name, name, description }) => {
-    try {
+export const GenerateProject = async (dispatch, user, body) => {
+    const result = FetchTemplate(dispatch, user, async (accessToken) => {
         const response = await fetch("/api/project/create", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
+                "Authorization": "Bearer " + accessToken,
             },
-            body: JSON.stringify({
-                user_name,
-                name,
-                description,
-            }),
+            body: JSON.stringify(body),
         });
 
-        const result = response.json();
+        const result = await response.json();
 
         return result;
-    } catch (e) {
-        console.log(e);
-    }
+    });
+
+    return result;
 }
 
-export const ModifyProject = async ({ old_name, new_name, description }) => {
-    try {
+export const ModifyProject = async (dispatch, user, body) => {
+    const result = FetchTemplate(dispatch, user, async (accessToken) => {
         const response = await fetch("/api/project/edit", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
+                "Authorization": "Bearer " + accessToken,
             },
-            body: JSON.stringify({
-                old_name,
-                new_name,
-                description,
-            }),
+            body: JSON.stringify(body),
         });
 
-        const result = response.json();
+        const result = await response.json();
 
         return result;
-    } catch (e) {
-        console.log(e);
-    }
+    });
+
+    return result;
 }
 
-export const DeleteProject = async (name) => {
-    try {
+export const DeleteProject = async (dispatch, user, name) => {
+    const result = FetchTemplate(dispatch, user, async (accessToken) => {
         const response = await fetch("/api/project/remove?name=" + name, {
             method: "DELETE",
             headers: {
-                "Content-Type": "application/json",
+                "Authorization": "Bearer " + accessToken,
             },
         });
 
-        const result = response.json();
+        const result = await response.json();
 
         return result;
-    } catch (e) {
-        console.log(e);
-    }
+    });
+
+    return result;
 }

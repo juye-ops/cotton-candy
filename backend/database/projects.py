@@ -3,60 +3,67 @@ from database import select, insert, update, delete
 
 class ProjectDB:
     @select
-    def get_list():
+    def get_id_by_name(user_id, name):
+        query = """
+        SELECT id FROM project
+        WHERE user_id=%s AND name=%s
+        """
+        arg = (user_id, name)
+        
+        return query, arg
+
+    @select
+    def get_projects_by_user_id(user_id):
         query = """
         SELECT name, description FROM (project AS p
             INNER JOIN project_info AS pi
             ON p.id=pi.project_id
-        );
+        ) WHERE user_id=%s;
         """
-        arg = ()
+        arg = (user_id, )
 
         return query, arg
 
     @select
-    def get_containers(name):
+    def get_containers_by_id(id):
         query = """
         SELECT name FROM container
-        WHERE project_id=(
-            SELECT id FROM project
-            WHERE name=%s
-        )
+        WHERE project_id=%s
         """
-        arg = (name,)
+        arg = (id, )
 
         return query, arg
     
     @select
-    def get_len(name):
+    def get_number_of_containers_by_id(id):
         query = """
         SELECT count(*) FROM container
-        WHERE project_id=(
-            SELECT id FROM project
-            WHERE name=%s
-        )
+        WHERE project_id=%s
         """
-        arg = (name,)
+        arg = (id, )
 
         return query, arg
 
     @select
-    def get_info(name):
+    def get_info_by_id(id):
         query = """
         SELECT name, description FROM (project AS p
             INNER JOIN project_info AS pi
-            ON project.id=project_info.project_id
-        ) WHERE name=%s;
+            ON p.id=pi.project_id
+        ) WHERE p.id=%s;
         """
-        arg = (name,)
+        arg = (id,)
 
         return query, arg
 
-    def create(name, description, subnet):
+    def insert_project(user_id, name, description, subnet):
         @insert
         def q1(*args):
             query = """
-            INSERT INTO project(user_id, name) VALUES (1, %s);
+            INSERT INTO project(user_id, name) VALUES (
+                %s,
+                %s
+            );
             """
             return query, args
 
@@ -72,16 +79,16 @@ class ProjectDB:
             """
             return query, args
 
-        q1(name)
+        q1(user_id, name)
         q2(name, description, subnet)
 
-    def edit(old_name, new_name, description, subnet):
+    def update_project_by_id(id, new_name, description, subnet):
         @update
         def q1(*args):
             query = """
             UPDATE project
             SET name=%s
-            WHERE name=%s;
+            WHERE id=%s;
             """
             return query, args
 
@@ -92,15 +99,15 @@ class ProjectDB:
             SET
                 description=%s,
                 subnet=%s
-            WHERE project_id=(SELECT id FROM project WHERE name=%s)
+            WHERE project_id=%s
             """
             return query, args
 
-        q1(new_name, old_name)
-        q2(description, subnet, new_name)
+        q1(new_name, id)
+        q2(description, subnet, id)
 
     @delete
-    def remove(name):
+    def delete_by_name(name):
         query = """
         DELETE FROM project
         WHERE name = %s
